@@ -387,7 +387,7 @@ class MesaData:
         if not self.is_history():
             return None
         if dbg:
-            print "Scrubbing history..."
+            print("Scrubbing history...")
         to_remove = []
         for i in range(len(self.data('model_number'))-1):
             smallest_future = np.min(self.data('model_number')[i+1:])
@@ -395,10 +395,10 @@ class MesaData:
                 to_remove.append(i)
         if len(to_remove) == 0:
             if dbg:
-                print "Already clean!"
+                print("Already clean!")
             return None
         if dbg:
-            print "Removing {} lines.".format(len(to_remove))
+            print("Removing {} lines.".format(len(to_remove)))
         self.bulk_data.remove_rows(to_remove)
 
     def __getattr__(self, method_name):
@@ -407,7 +407,7 @@ class MesaData:
         elif self.in_header(method_name):
             return self.header(method_name)
         else:
-            raise AttributeError, method_name
+            raise AttributeError(method_name)
 
 class MesaProfileIndex:
     '''Structure containing data from the profile index from MESA output.
@@ -497,7 +497,7 @@ class MesaProfileIndex:
         if method_name in self.index_data.colnames:
             return self.data(method_name)
         else:
-            raise AttributeError, method_name
+            raise AttributeError(method_name)
 
 class MesaLogDir:
 
