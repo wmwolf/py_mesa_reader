@@ -72,6 +72,7 @@ class MesaData:
         ----------
         file_name : string, optional
                     File name to be read in. Default is 'LOGS/history.data'
+                    which works for 
         '''
         self.file_name = file_name
         self.read_data()
@@ -123,6 +124,11 @@ class MesaData:
         numpy.array
             Array of values for data corresponding to key at various time steps
             (history) or grid points (profile).
+            
+        Raises
+        ------
+        KeyError
+            If `key` is an invalid key (i.e. not in `self.bulk_names`)
         '''
         if not self.in_data(key):
             raise KeyError("'" + str(key) + "' is not a valid data type.")
@@ -157,6 +163,11 @@ class MesaData:
         int/string/float
             Returns whatever value is below the corresponding key in the header
             lines of the source file.
+            
+        Raises
+        ------
+        KeyError
+            If `key` is an invalid key (i.e. not in `self.header_names`)
         '''
         
         if not self.in_header(key):
@@ -271,6 +282,14 @@ class MesaData:
         int
             The index where MesaData.data('model_number') == `m_num`
             
+        Raises
+        ------
+        HistoryError
+            If trying to access a non-history file
+            
+        ModelNumberError
+            If zero or more than one model numbers matching `m_num` are found.
+            
         See Also
         --------
         data_at_model_number : returns the datum of a specific key a model no.
@@ -288,8 +307,6 @@ class MesaData:
                                    "number " + str(m_num) + ".")
         elif len(index) == 1:
             return index[0]
-        else:
-            raise Exception("Couldn't find index of model number " + str(m_num))
 
     def remove_backups(self, dbg = False):
         '''Cleases a history file of backups and restarts
