@@ -410,6 +410,38 @@ class MesaData:
             raise AttributeError, method_name
 
 class MesaProfileIndex:
+    '''Structure containing data from the profile index from MESA output.
+    
+    Reads in data from profile index file from MESA, allowing a mapping from
+    profile number to model number and vice versa. Mostly accessed via the 
+    MesaLogDir class.
+    
+    Parameters
+    ----------
+    file_name : string, optional
+                Path to the profile index file to be read in. Default is
+                'LOGS/profiles.index', which should work when the working
+                directory is a standard work directory and the logs directory is
+                of the default name.
+                
+    Attributes
+    ----------
+    file_name             : string
+                            path to the profile index file
+    index_data            : astropy.table.Table
+                            Astropy table containing all index data.
+    model_number_string   : string
+                            header name of the model number column in
+                            `file_name`
+    profile_number_string : string
+                            header name of the profile number column in
+                            `file_name`
+    profile_numbers       : numpy_array
+                            List of all available profile numbers in order of
+                            their corresponding model numbers (i.e. time-order).
+    model_numbers         : numpy_array
+                            Sorted list of all available model numbers.
+    '''
     index_reader = ascii.get_reader(Reader=ascii.NoHeader)
     index_reader.data.splitter.delimiter = ' '
     index_reader.data.start_line = 1
