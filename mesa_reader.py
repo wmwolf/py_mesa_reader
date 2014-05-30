@@ -23,6 +23,52 @@ class BadPathError(Exception):
         Exception.__init__(self, msg)
 
 class MesaData:
+    '''Structure containing data from a Mesa output file.
+    
+    Reads a profile or history output file from mesa. Assumes a file with 
+    the following structure:
+
+    line 1: header names
+    
+    line 2: header data
+    
+    line 3: blank
+    
+    line 4: main data names
+    
+    line 5: main data values
+    
+    This structure can be altered by using the class methods
+    MesaData.set_header_rows and MesaData.set_data_rows.
+    
+    Parameters
+    ----------
+    file_name : string, optional
+                File name to be read in. Default is 'LOGS/history.data',
+                which works for scripts in a standard work directory with a 
+                standard logs directory for accessing the history data.
+                
+    
+    Attributes
+    ----------
+    file_name    : string
+                   Path to file from which the data is read.
+    bulk_data    : astropy.table.Table
+                   The main data (line 6 and below) in astropy table format.
+                   Primarily accessed via the `data` method.
+    bulk_names   : list
+                   List of all available data column names that are valid
+                   inputs for `data`. Essentially the column names in line
+                   4 of `file_name`.
+    header_data  : astroy.table.Table
+                   Header data (line 2 of `file_name`) in astropy table
+                   format.
+    header_names : list
+                   List of all available header dolumn names that are valid
+                   inputs for `header`. Essentially the column names in line
+                   1 of `file_name`.
+    '''
+    
     data_reader = ascii.get_reader(Reader=ascii.Basic)
     data_reader.header.splitter.delimiter = ' '
     data_reader.data.splitter.delimiter = ' '
@@ -60,9 +106,13 @@ class MesaData:
         the following structure:
 
         line 1: header names
+        
         line 2: header data
+        
         line 3: blank
+        
         line 4: main data names
+        
         line 5: main data values
         
         This structure can be altered by using the class methods
@@ -80,7 +130,7 @@ class MesaData:
     def read_data(self):
         '''Update data by re-reading from the original file name.
         
-        This re-reades the data from the originally-provided file name. Mostly
+        This re-reads the data from the originally-provided file name. Mostly
         useful if the data file has been changed since it was first read in or
         if the class methods MesaData.set_header_rows or MesaData.set_data_rows
         have been used to alter how the data have been read in.
@@ -101,19 +151,8 @@ class MesaData:
         Accepts a string key, like star_age (for history files) or logRho (for
         profile files) and returns the corresponding numpy array of data for
         that data type. Can also just use the shorthand methods that have the 
-        same name of the key. For instance
-        
-        m = MesaData()
-        
-        x = m.data('star_age')
-        y = m.star_age
-        
-        x == y # => True
-        
-        In this case, x and y are the same because the non-existent method
-        MesaData.star_age will direct to to the corresponding MesaData.data
-        call.
-        
+        same name of the key.
+                
         Parameters
         ----------
         key : string
@@ -129,6 +168,23 @@ class MesaData:
         ------
         KeyError
             If `key` is an invalid key (i.e. not in `self.bulk_names`)
+            
+        Examples
+        --------
+        You can either call `data` explicitly with `key` as an argument, or get
+        the same result by calling it implicitly by treating `key` as an
+        attribute.
+        
+        >>> m = MesaData()
+        >>> x = m.data('star_age')
+        >>> y = m.star_age
+        >>> x == y
+        True
+
+        In this case, x and y are the same because the non-existent method
+        MesaData.star_age will direct to to the corresponding MesaData.data
+        call.
+        
         '''
         if not self.in_data(key):
             raise KeyError("'" + str(key) + "' is not a valid data type.")
@@ -139,19 +195,7 @@ class MesaData:
         
         Accepts a string key, like version_number and returns the corresponding
         datum for that key. Can also just use the shorthand
-        methods that have the same name of the key. For instance
-        
-        m = MesaData()
-        
-        x = m.data('version_number')
-        y = m.version_number
-        
-        x == y # => True
-        
-        In this case, x and y are the same because the non-existent method
-        MesaData.version_number will first see if it can call
-        MesaData.data('version_number'). Then, realizing that this doesn't make
-        sense, it will instead call MesaData.header('version_number')
+        methods that have the same name of the key.
         
         Parameters
         ----------
@@ -168,6 +212,22 @@ class MesaData:
         ------
         KeyError
             If `key` is an invalid key (i.e. not in `self.header_names`)
+            
+        Examples
+        --------
+        Can call `header` explicitly with `key` as argument or implicitly,
+        treating `key` as an attribute. 
+        
+        In this case, x and y are the same because the non-existent method
+        MesaData.version_number will first see if it can call
+        MesaData.data('version_number'). Then, realizing that this doesn't make
+        sense, it will instead call MesaData.header('version_number')
+                
+        >>> m = MesaData()        
+        >>> x = m.data('version_number')
+        >>> y = m.version_number        
+        >>> x == y
+        True        
         '''
         
         if not self.in_header(key):
@@ -263,7 +323,7 @@ class MesaData:
             
         See Also
         --------
-        index_of_model_number : returns the index for smapling, not the value
+        index_of_model_number : returns the index for sampling, not the value
         '''
         return self.data(key)[self.index_of_model_number(m_num)]
 
