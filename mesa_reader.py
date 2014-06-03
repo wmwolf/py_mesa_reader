@@ -1,6 +1,6 @@
 import numpy as np
 from os import path
-from astropy.io import ascii
+from astropy.io import ascii as io_ascii
 
 class KeyError(Exception):
     def __init__(self, msg):
@@ -69,7 +69,7 @@ class MesaData:
                    1 of `file_name`.
     '''
     
-    data_reader = ascii.get_reader(Reader=ascii.Basic)
+    data_reader = io_ascii.get_reader(Reader=io_ascii.Basic)
     data_reader.header.splitter.delimiter = ' '
     data_reader.data.splitter.delimiter = ' '
     data_reader.header.start_line = 4
@@ -78,7 +78,7 @@ class MesaData:
     data_reader.header.comment = r'\s*#'
     data_reader.data.comment = r'\s*#'
 
-    hdr_reader = ascii.get_reader(Reader=ascii.Basic)
+    hdr_reader = io_ascii.get_reader(Reader=io_ascii.Basic)
     hdr_reader.header.splitter.delimiter = ' '
     hdr_reader.data.splitter.delimiter = ' '
     hdr_reader.header.start_line = 1
@@ -442,7 +442,7 @@ class MesaProfileIndex:
     model_numbers         : numpy_array
                             Sorted list of all available model numbers.
     '''
-    index_reader = ascii.get_reader(Reader=ascii.NoHeader)
+    index_reader = io_ascii.get_reader(Reader=io_ascii.NoHeader)
     index_reader.data.splitter.delimiter = ' '
     index_reader.data.start_line = 1
     index_reader.data.end_line = None
