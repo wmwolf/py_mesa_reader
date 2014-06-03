@@ -1,6 +1,6 @@
 import numpy as np
 from os import path
-from astropy.io import ascii
+from astropy.io import ascii as io_ascii
 
 class KeyError(Exception):
     def __init__(self, msg):
@@ -69,7 +69,7 @@ class MesaData:
                    1 of `file_name`.
     '''
     
-    data_reader = ascii.get_reader(Reader=ascii.Basic)
+    data_reader = io_ascii.get_reader(Reader=io_ascii.Basic)
     data_reader.header.splitter.delimiter = ' '
     data_reader.data.splitter.delimiter = ' '
     data_reader.header.start_line = 4
@@ -78,7 +78,7 @@ class MesaData:
     data_reader.header.comment = r'\s*#'
     data_reader.data.comment = r'\s*#'
 
-    hdr_reader = ascii.get_reader(Reader=ascii.Basic)
+    hdr_reader = io_ascii.get_reader(Reader=io_ascii.Basic)
     hdr_reader.header.splitter.delimiter = ' '
     hdr_reader.data.splitter.delimiter = ' '
     hdr_reader.header.start_line = 1
@@ -387,7 +387,7 @@ class MesaData:
         if not self.is_history():
             return None
         if dbg:
-            print "Scrubbing history..."
+            print("Scrubbing history...")
         to_remove = []
         for i in range(len(self.data('model_number'))-1):
             smallest_future = np.min(self.data('model_number')[i+1:])
@@ -395,10 +395,10 @@ class MesaData:
                 to_remove.append(i)
         if len(to_remove) == 0:
             if dbg:
-                print "Already clean!"
+                print("Already clean!")
             return None
         if dbg:
-            print "Removing {} lines.".format(len(to_remove))
+            print("Removing {} lines.".format(len(to_remove)))
         self.bulk_data.remove_rows(to_remove)
 
     def __getattr__(self, method_name):
@@ -407,7 +407,7 @@ class MesaData:
         elif self.in_header(method_name):
             return self.header(method_name)
         else:
-            raise AttributeError, method_name
+            raise AttributeError(method_name)
 
 class MesaProfileIndex:
     '''Structure containing data from the profile index from MESA output.
@@ -442,7 +442,7 @@ class MesaProfileIndex:
     model_numbers         : numpy_array
                             Sorted list of all available model numbers.
     '''
-    index_reader = ascii.get_reader(Reader=ascii.NoHeader)
+    index_reader = io_ascii.get_reader(Reader=io_ascii.NoHeader)
     index_reader.data.splitter.delimiter = ' '
     index_reader.data.start_line = 1
     index_reader.data.end_line = None
@@ -497,7 +497,7 @@ class MesaProfileIndex:
         if method_name in self.index_data.colnames:
             return self.data(method_name)
         else:
-            raise AttributeError, method_name
+            raise AttributeError(method_name)
 
 class MesaLogDir:
 
