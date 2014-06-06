@@ -1,6 +1,6 @@
 import numpy as np
 from os import path
-from astropy.io import ascii
+from astropy.io import ascii as io_ascii
 
 class KeyError(Exception):
     def __init__(self, msg):
@@ -24,31 +24,31 @@ class BadPathError(Exception):
 
 class MesaData:
     '''Structure containing data from a Mesa output file.
-    
-    Reads a profile or history output file from mesa. Assumes a file with 
+
+    Reads a profile or history output file from mesa. Assumes a file with
     the following structure:
 
     line 1: header names
-    
+
     line 2: header data
-    
+
     line 3: blank
-    
+
     line 4: main data names
-    
+
     line 5: main data values
-    
+
     This structure can be altered by using the class methods
     MesaData.set_header_rows and MesaData.set_data_rows.
-    
+
     Parameters
     ----------
     file_name : string, optional
                 File name to be read in. Default is 'LOGS/history.data',
-                which works for scripts in a standard work directory with a 
+                which works for scripts in a standard work directory with a
                 standard logs directory for accessing the history data.
-                
-    
+
+
     Attributes
     ----------
     file_name    : string
@@ -68,8 +68,8 @@ class MesaData:
                    inputs for `header`. Essentially the column names in line
                    1 of `file_name`.
     '''
-    
-    data_reader = ascii.get_reader(Reader=ascii.Basic)
+
+    data_reader = io_ascii.get_reader(Reader=io_ascii.Basic)
     data_reader.header.splitter.delimiter = ' '
     data_reader.data.splitter.delimiter = ' '
     data_reader.header.start_line = 4
@@ -78,7 +78,7 @@ class MesaData:
     data_reader.header.comment = r'\s*#'
     data_reader.data.comment = r'\s*#'
 
-    hdr_reader = ascii.get_reader(Reader=ascii.Basic)
+    hdr_reader = io_ascii.get_reader(Reader=io_ascii.Basic)
     hdr_reader.header.splitter.delimiter = ' '
     hdr_reader.data.splitter.delimiter = ' '
     hdr_reader.header.start_line = 1
@@ -101,40 +101,40 @@ class MesaData:
 
     def __init__(self, file_name = './LOGS/history.data'):
         '''Make a MesaData object from a Mesa output file.
-        
-        Reads a profile or history output file from mesa. Assumes a file with 
+
+        Reads a profile or history output file from mesa. Assumes a file with
         the following structure:
 
         line 1: header names
-        
+
         line 2: header data
-        
+
         line 3: blank
-        
+
         line 4: main data names
-        
+
         line 5: main data values
-        
+
         This structure can be altered by using the class methods
         MesaData.set_header_rows and MesaData.set_data_rows.
-        
+
         Parameters
         ----------
         file_name : string, optional
                     File name to be read in. Default is 'LOGS/history.data'
-                    which works for 
+                    which works for
         '''
         self.file_name = file_name
         self.read_data()
 
     def read_data(self):
         '''Update data by re-reading from the original file name.
-        
+
         This re-reads the data from the originally-provided file name. Mostly
         useful if the data file has been changed since it was first read in or
         if the class methods MesaData.set_header_rows or MesaData.set_data_rows
         have been used to alter how the data have been read in.
-        
+
         Parameters
         ----------
         None
@@ -147,34 +147,34 @@ class MesaData:
 
     def data(self, key):
         '''Accesses the data and returns a numpy array with the appropriate data
-        
+
         Accepts a string key, like star_age (for history files) or logRho (for
         profile files) and returns the corresponding numpy array of data for
-        that data type. Can also just use the shorthand methods that have the 
+        that data type. Can also just use the shorthand methods that have the
         same name of the key.
-                
+
         Parameters
         ----------
         key : string
               Name of data. Must match a main data title in the source file.
-              
+
         Returns
         -------
         numpy.array
             Array of values for data corresponding to key at various time steps
             (history) or grid points (profile).
-            
+
         Raises
         ------
         KeyError
             If `key` is an invalid key (i.e. not in `self.bulk_names`)
-            
+
         Examples
         --------
         You can either call `data` explicitly with `key` as an argument, or get
         the same result by calling it implicitly by treating `key` as an
         attribute.
-        
+
         >>> m = MesaData()
         >>> x = m.data('star_age')
         >>> y = m.star_age
@@ -184,7 +184,7 @@ class MesaData:
         In this case, x and y are the same because the non-existent method
         MesaData.star_age will direct to to the corresponding MesaData.data
         call.
-        
+
         '''
         if not self.in_data(key):
             raise KeyError("'" + str(key) + "' is not a valid data type.")
@@ -192,59 +192,59 @@ class MesaData:
 
     def header(self, key):
         '''Accesses the header, returning a scalar the appropriate data
-        
+
         Accepts a string key, like version_number and returns the corresponding
         datum for that key. Can also just use the shorthand
         methods that have the same name of the key.
-        
+
         Parameters
         ----------
         key : string
               Name of data. Must match a main data title in the source file.
-              
+
         Returns
         -------
         int/string/float
             Returns whatever value is below the corresponding key in the header
             lines of the source file.
-            
+
         Raises
         ------
         KeyError
             If `key` is an invalid key (i.e. not in `self.header_names`)
-            
+
         Examples
         --------
         Can call `header` explicitly with `key` as argument or implicitly,
-        treating `key` as an attribute. 
-        
+        treating `key` as an attribute.
+
         In this case, x and y are the same because the non-existent method
         MesaData.version_number will first see if it can call
         MesaData.data('version_number'). Then, realizing that this doesn't make
         sense, it will instead call MesaData.header('version_number')
-                
-        >>> m = MesaData()        
+
+        >>> m = MesaData()
         >>> x = m.data('version_number')
-        >>> y = m.version_number        
+        >>> y = m.version_number
         >>> x == y
-        True        
+        True
         '''
-        
+
         if not self.in_header(key):
             raise KeyError("'" + str(key) + "' is not a valid header name.")
         return self.header_data[key][0]
 
     def is_history(self):
         '''Determine if the source file is a history file
-        
+
         Checks if 'model_number' is a valid key for self.data. If it is, return
         True. Otherwise return False. This is used in determining whether or not
         to cleanse the file of backups and restarts in the MesaData.read_data.
-        
+
         Parameters
         ----------
         None
-        
+
         Returns
         -------
         bool
@@ -254,21 +254,21 @@ class MesaData:
 
     def in_header(self, key):
         '''Determine if `key` is an available header data category.
-        
+
         Checks if string `key` is a valid argument of MesaData.header. Returns
         True if it is, otherwise False
-        
+
         Parameters
         ----------
         key : string
               Candidate string for accessing header data. This is what you want
               to be able to use as an argument of MesaData.header.
-              
+
         Returns
         -------
         bool
             True if `key` is a valid input to MesaData.header, otherwise False.
-            
+
         Notes
         -----
         This is automatically called by MesaData.header, so the average user
@@ -278,21 +278,21 @@ class MesaData:
 
     def in_data(self, key):
         '''Determine if `key` is an available main data category.
-        
+
         Checks if string `key` is a valid argument of MesaData.data. Returns
         True if it is, otherwise False
-        
+
         Parameters
         ----------
         key : string
               Candidate string for accessing main data. This is what you want
               to be able to use as an argument of MesaData.data.
-              
+
         Returns
         -------
         bool
             True if `key` is a valid input to MesaData.data, otherwise False.
-            
+
         Notes
         -----
         This is automatically called by MesaData.data, so the average user
@@ -302,25 +302,25 @@ class MesaData:
 
     def data_at_model_number(self, key, m_num):
         '''Return main data at a specific model number (for history files).
-        
+
         Finds the index i where MesaData.data('model_number')[i] == m_num. Then
         returns MesaData.data(key)[i]. Essentially lets you use model numbers
         to index data.
-        
+
         Parameters
         ----------
         key : string
               Name of data. Must match a main data title in the source file.
-                  
+
         m_num : int
                 Model number where you want to sample the data
-                
+
         Returns
         -------
         float/int
             Value of MesaData.data(`key`) at the same index where
             MesaData.data('model_number') == `m_num`
-            
+
         See Also
         --------
         index_of_model_number : returns the index for sampling, not the value
@@ -329,27 +329,27 @@ class MesaData:
 
     def index_of_model_number(self, m_num):
         '''Return index where MesaData.data('model_number') is `m_num`.
-        
+
         Returns the index i where MesaData.data('model_number')[i] == m_num.
-        
+
         Parameters
-        ----------                  
+        ----------
         m_num : int
                 Model number where you want to sample data
-                
+
         Returns
         -------
         int
             The index where MesaData.data('model_number') == `m_num`
-            
+
         Raises
         ------
         HistoryError
             If trying to access a non-history file
-            
+
         ModelNumberError
             If zero or more than one model numbers matching `m_num` are found.
-            
+
         See Also
         --------
         data_at_model_number : returns the datum of a specific key a model no.
@@ -370,16 +370,16 @@ class MesaData:
 
     def remove_backups(self, dbg = False):
         '''Cleases a history file of backups and restarts
-        
-        If the file is a history file, goes through and ensure that the 
+
+        If the file is a history file, goes through and ensure that the
         model_number data are monotonically increasing. It removes rows of data
         from all categories if there are earlier ones later in the file.
-        
+
         Parameters
         ----------
         dbg : bool, optional
               If True, will output how many lines are cleansed. Default is False
-              
+
         Returns
         -------
         None
@@ -387,7 +387,7 @@ class MesaData:
         if not self.is_history():
             return None
         if dbg:
-            print "Scrubbing history..."
+            print("Scrubbing history...")
         to_remove = []
         for i in range(len(self.data('model_number'))-1):
             smallest_future = np.min(self.data('model_number')[i+1:])
@@ -395,10 +395,10 @@ class MesaData:
                 to_remove.append(i)
         if len(to_remove) == 0:
             if dbg:
-                print "Already clean!"
+                print("Already clean!")
             return None
         if dbg:
-            print "Removing {} lines.".format(len(to_remove))
+            print("Removing {} lines.".format(len(to_remove)))
         self.bulk_data.remove_rows(to_remove)
 
     def __getattr__(self, method_name):
@@ -407,15 +407,15 @@ class MesaData:
         elif self.in_header(method_name):
             return self.header(method_name)
         else:
-            raise AttributeError, method_name
+            raise AttributeError(method_name)
 
 class MesaProfileIndex:
     '''Structure containing data from the profile index from MESA output.
-    
+
     Reads in data from profile index file from MESA, allowing a mapping from
-    profile number to model number and vice versa. Mostly accessed via the 
+    profile number to model number and vice versa. Mostly accessed via the
     MesaLogDir class.
-    
+
     Parameters
     ----------
     file_name : string, optional
@@ -423,7 +423,7 @@ class MesaProfileIndex:
                 'LOGS/profiles.index', which should work when the working
                 directory is a standard work directory and the logs directory is
                 of the default name.
-                
+
     Attributes
     ----------
     file_name             : string
@@ -442,7 +442,7 @@ class MesaProfileIndex:
     model_numbers         : numpy_array
                             Sorted list of all available model numbers.
     '''
-    index_reader = ascii.get_reader(Reader=ascii.NoHeader)
+    index_reader = io_ascii.get_reader(Reader=io_ascii.NoHeader)
     index_reader.data.splitter.delimiter = ' '
     index_reader.data.start_line = 1
     index_reader.data.end_line = None
@@ -497,7 +497,7 @@ class MesaProfileIndex:
         if method_name in self.index_data.colnames:
             return self.data(method_name)
         else:
-            raise AttributeError, method_name
+            raise AttributeError(method_name)
 
 class MesaLogDir:
     '''Structure providing access to both history and profile output from MESA
