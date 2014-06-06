@@ -500,6 +500,28 @@ class MesaProfileIndex:
             raise AttributeError, method_name
 
 class MesaLogDir:
+    '''Structure providing access to both history and profile output from MESA
+    
+    Provides access for accessing the history and profile data of a MESA run
+    by linking profiles to the history through model numbers.
+    
+    Parameters
+    ==========
+    log_path       : string, optional
+                     Path to the logs directory, default is 'LOGS'
+    profile_prefix : string, optional
+                     Prefix before profile number in profile file names, default
+                     is 'profile'
+    profile_suffix : string, optional
+                     Suffix after profile number and period for profile file
+                     names, default is 'data'
+    history_file   : string, optional
+                     Name of the history file in the logs directory, default
+                     is 'history.data'
+    index_file     : string, optional
+                     Name of the profiles index file in the logs directory,
+                     default is 'profiles.index'    
+    '''
 
     def __init__(self, log_path = 'LOGS', profile_prefix = 'profile',
                  profile_suffix = 'data', history_file = 'history.data',

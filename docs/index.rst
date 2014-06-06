@@ -12,6 +12,8 @@ Contents:
    :maxdepth: 2
    
    MesaData.rst
+   MesaProfileIndex.rst
+   MesaLogDir.rst
 
 Indices and tables
 ==================
