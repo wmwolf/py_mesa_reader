@@ -1,0 +1,342 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>MesaProfileIndex &mdash; PyMesaReader 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="PyMesaReader 0.1.0 documentation" href="index.html" />
+    <link rel="next" title="MesaLogDir" href="MesaLogDir.html" />
+    <link rel="prev" title="MesaData" href="MesaData.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="MesaLogDir.html" title="MesaLogDir"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="MesaData.html" title="MesaData"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PyMesaReader 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="MesaData.html"
+                        title="previous chapter">MesaData</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="MesaLogDir.html"
+                        title="next chapter">MesaLogDir</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/MesaProfileIndex.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="mesaprofileindex">
+<h1>MesaProfileIndex<a class="headerlink" href="#mesaprofileindex" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-mesa_reader"></span><dl class="class">
+<dt id="mesa_reader.MesaProfileIndex">
+<em class="property">class </em><tt class="descclassname">mesa_reader.</tt><tt class="descname">MesaProfileIndex</tt><big>(</big><em>file_name='./LOGS/profiles.index'</em><big>)</big><a class="reference internal" href="_modules/mesa_reader.html#MesaProfileIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaProfileIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure containing data from the profile index from MESA output.</p>
+<p>Reads in data from profile index file from MESA, allowing a mapping from
+profile number to model number and vice versa. Mostly accessed via the
+MesaLogDir class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>file_name</strong> : string, optional</p>
+<blockquote class="last">
+<div><p>Path to the profile index file to be read in. Default is
+&#8216;LOGS/profiles.index&#8217;, which should work when the working
+directory is a standard work directory and the logs directory is
+of the default name.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="21%" />
+<col width="57%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>file_name</td>
+<td>string</td>
+<td>path to the profile index file</td>
+</tr>
+<tr class="row-even"><td>index_data</td>
+<td>astropy.table.Table</td>
+<td>Astropy table containing all index data.</td>
+</tr>
+<tr class="row-odd"><td>model_number_string</td>
+<td>string</td>
+<td>header name of the model number column in
+<cite>file_name</cite></td>
+</tr>
+<tr class="row-even"><td>profile_number_string</td>
+<td>string</td>
+<td>header name of the profile number column in
+<cite>file_name</cite></td>
+</tr>
+<tr class="row-odd"><td>profile_numbers</td>
+<td>numpy_array</td>
+<td>List of all available profile numbers in order of
+their corresponding model numbers (i.e. time-order).</td>
+</tr>
+<tr class="row-even"><td>model_numbers</td>
+<td>numpy_array</td>
+<td>Sorted list of all available model numbers.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<dl class="method">
+<dt id="mesa_reader.MesaProfileIndex.data">
+<tt class="descname">data</tt><big>(</big><em>key</em><big>)</big><a class="reference internal" href="_modules/mesa_reader.html#MesaProfileIndex.data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaProfileIndex.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Access index data and return array of column corresponding to <cite>key</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>key</strong> : string</p>
+<blockquote>
+<div><p>Name of column to be returned. Likely choices are &#8216;model_numbers&#8217;,
+&#8216;profile_numbers&#8217;, or &#8216;priorities&#8217;.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>numpy_array</strong> :</p>
+<blockquote>
+<div><p>Array containing the data requested.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>KeyError</strong> :</p>
+<blockquote class="last">
+<div><p>If input key is not a valid column header name.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mesa_reader.MesaProfileIndex.have_profile_with_model_number">
+<tt class="descname">have_profile_with_model_number</tt><big>(</big><em>model_number</em><big>)</big><a class="reference internal" href="_modules/mesa_reader.html#MesaProfileIndex.have_profile_with_model_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaProfileIndex.have_profile_with_model_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines if given <cite>model_number</cite> has a matching profile number.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>bool</strong> :</p>
+<blockquote class="last">
+<div><p>True if <cite>model_number</cite> has a corresponding profile number. False
+otherwise.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="4%" />
+<col width="79%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>model_number</td>
+<td>int</td>
+<td>model number to be checked for available profile number</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mesa_reader.MesaProfileIndex.have_profile_with_profile_number">
+<tt class="descname">have_profile_with_profile_number</tt><big>(</big><em>profile_number</em><big>)</big><a class="reference internal" href="_modules/mesa_reader.html#MesaProfileIndex.have_profile_with_profile_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaProfileIndex.have_profile_with_profile_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines if given <cite>profile_number</cite> is a valid profile number.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>bool</strong> :</p>
+<blockquote class="last">
+<div><p>True if <cite>profile_number</cite> has a corresponding entry in the index. 
+False otherwise.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="7%" />
+<col width="63%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>profile_number</td>
+<td>int</td>
+<td>profile number to be verified</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mesa_reader.MesaProfileIndex.profile_with_model_number">
+<tt class="descname">profile_with_model_number</tt><big>(</big><em>model_number</em><big>)</big><a class="reference internal" href="_modules/mesa_reader.html#MesaProfileIndex.profile_with_model_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaProfileIndex.profile_with_model_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a model number to a profile number if possible.</p>
+<p>If <cite>model_number</cite> has a corresponding profile number in the index,
+returns it. Otherwise throws an error.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>int</strong> :</p>
+<blockquote>
+<div><p>profile number corresponding to <cite>model_number</cite></p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ProfileError</strong> :</p>
+<blockquote class="last">
+<div><p>If no profile number can be found that corresponds to <cite>model_number</cite></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="5%" />
+<col width="77%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>model_number</td>
+<td>int</td>
+<td>model number to be converted into a profile number</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mesa_reader.MesaProfileIndex.read_index">
+<tt class="descname">read_index</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/mesa_reader.html#MesaProfileIndex.read_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaProfileIndex.read_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read (or re-read) data from <cite>self.file_name</cite>.</p>
+<p>Read the file into an astropy table, sorting the table in order of
+increasing model numbers and establishes the <cite>profile_numbers</cite> and
+<cite>model_numbers</cite> attributes. Called automatically at instantiation, but
+may be called again to refresh data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>None</strong> :</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>None</strong> :</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="MesaLogDir.html" title="MesaLogDir"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="MesaData.html" title="MesaData"
+             >previous</a> |</li>
+        <li><a href="index.html">PyMesaReader 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Bill Wolf.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
