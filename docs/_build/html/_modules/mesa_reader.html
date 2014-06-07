@@ -536,33 +536,110 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">file_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">read_index</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">read_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MesaProfileIndex.read_index"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaProfileIndex.read_index">[docs]</a>    <span class="k">def</span> <span class="nf">read_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Read (or re-read) data from `self.file_name`.</span>
+<span class="sd">        </span>
+<span class="sd">        Read the file into an astropy table, sorting the table in order of</span>
+<span class="sd">        increasing model numbers and establishes the `profile_numbers` and</span>
+<span class="sd">        `model_numbers` attributes. Called automatically at instantiation, but</span>
+<span class="sd">        may be called again to refresh data.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        None</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None&#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">index_data</span> <span class="o">=</span> <span class="n">MesaProfileIndex</span><span class="o">.</span><span class="n">index_reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_number_string</span> <span class="o">=</span> <span class="n">MesaProfileIndex</span><span class="o">.</span><span class="n">index_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">profile_number_string</span> <span class="o">=</span> <span class="n">MesaProfileIndex</span><span class="o">.</span><span class="n">index_names</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">index_data</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_number_string</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">profile_numbers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">profile_number_string</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_numbers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_number_string</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+</div>
+<div class="viewcode-block" id="MesaProfileIndex.data"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaProfileIndex.data">[docs]</a>    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Access index data and return array of column corresponding to `key`.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key : string</span>
+<span class="sd">              Name of column to be returned. Likely choices are &#39;model_numbers&#39;,</span>
+<span class="sd">              &#39;profile_numbers&#39;, or &#39;priorities&#39;. </span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy_array</span>
+<span class="sd">            Array containing the data requested.</span>
+<span class="sd">            </span>
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        KeyError</span>
+<span class="sd">            If input key is not a valid column header name.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        
         <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_names</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&#39; is not a column in &quot;</span> <span class="o">+</span>
                            <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index_data</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-
-    <span class="k">def</span> <span class="nf">have_profile_with_model_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_number</span><span class="p">):</span>
+</div>
+<div class="viewcode-block" id="MesaProfileIndex.have_profile_with_model_number"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaProfileIndex.have_profile_with_model_number">[docs]</a>    <span class="k">def</span> <span class="nf">have_profile_with_model_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_number</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Determines if given `model_number` has a matching profile number.</span>
+<span class="sd">        </span>
+<span class="sd">        Attributes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        model_number : int</span>
+<span class="sd">                       model number to be checked for available profile number</span>
+<span class="sd">                       </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if `model_number` has a corresponding profile number. False</span>
+<span class="sd">            otherwise.&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">model_number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_number_string</span><span class="p">))</span>
-
-    <span class="k">def</span> <span class="nf">have_profile_with_profile_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile_number</span><span class="p">):</span>
+</div>
+<div class="viewcode-block" id="MesaProfileIndex.have_profile_with_profile_number"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaProfileIndex.have_profile_with_profile_number">[docs]</a>    <span class="k">def</span> <span class="nf">have_profile_with_profile_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile_number</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Determines if given `profile_number` is a valid profile number.</span>
+<span class="sd">        </span>
+<span class="sd">        Attributes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        profile_number : int</span>
+<span class="sd">                         profile number to be verified</span>
+<span class="sd">                         </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if `profile_number` has a corresponding entry in the index. </span>
+<span class="sd">            False otherwise.&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">profile_number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">profile_number_string</span><span class="p">))</span>
-
-    <span class="k">def</span> <span class="nf">profile_with_model_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_number</span><span class="p">):</span>
+</div>
+<div class="viewcode-block" id="MesaProfileIndex.profile_with_model_number"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaProfileIndex.profile_with_model_number">[docs]</a>    <span class="k">def</span> <span class="nf">profile_with_model_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_number</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Converts a model number to a profile number if possible.</span>
+<span class="sd">        </span>
+<span class="sd">        If `model_number` has a corresponding profile number in the index,</span>
+<span class="sd">        returns it. Otherwise throws an error.</span>
+<span class="sd">        </span>
+<span class="sd">        Attributes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        model_number : int</span>
+<span class="sd">                       model number to be converted into a profile number</span>
+<span class="sd">                       </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            profile number corresponding to `model_number`</span>
+<span class="sd">            </span>
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ProfileError</span>
+<span class="sd">            If no profile number can be found that corresponds to `model_number`</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">have_profile_with_model_number</span><span class="p">(</span><span class="n">model_number</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="n">ProfileError</span><span class="p">(</span><span class="s">&quot;No profile with model number &quot;</span> <span class="o">+</span>
                                <span class="nb">str</span><span class="p">(</span><span class="n">model_number</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;.&quot;</span><span class="p">)</span>
         <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_number_string</span><span class="p">)</span> <span class="o">==</span> <span class="n">model_number</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">profile_number_string</span><span class="p">),</span> <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
-
+</div>
     <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method_name</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">method_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_data</span><span class="o">.</span><span class="n">colnames</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">method_name</span><span class="p">)</span>
@@ -839,13 +916,18 @@
 <span class="sd">        the age is greater than a billion years and the luminosity is greater</span>
 <span class="sd">        than 1000 Lsun, provided that &#39;star_age&#39; and &#39;log_L&#39; are in</span>
 <span class="sd">        `self.history.bulk_names`.&#39;&#39;&#39;</span>
+        
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">in_data</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&#39; is not a valid data type.&quot;</span><span class="p">)</span>
-        <span class="n">p_indices</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">index_of_model_number</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_numbers</span><span class="p">]</span>
-        <span class="n">arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">p_indices</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_numbers</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">))[</span><span class="mi">0</span><span class="p">])</span></div></div>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">m_num</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_numbers</span><span class="p">:</span>
+            <span class="n">this_input</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                <span class="n">this_input</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">data_at_model_number</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">m_num</span><span class="p">))</span>
+            <span class="n">inputs</span><span class="p">[</span><span class="n">m_num</span><span class="p">]</span> <span class="o">=</span> <span class="n">this_input</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">inputs</span><span class="p">[</span><span class="n">m_num</span><span class="p">])</span> <span class="k">for</span> <span class="n">m_num</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_numbers</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_numbers</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span></div></div>
 </pre></div>
 
           </div>

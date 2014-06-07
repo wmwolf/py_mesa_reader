@@ -467,6 +467,20 @@ class MesaProfileIndex:
         self.read_index()
 
     def read_index(self):
+        '''Read (or re-read) data from `self.file_name`.
+        
+        Read the file into an astropy table, sorting the table in order of
+        increasing model numbers and establishes the `profile_numbers` and
+        `model_numbers` attributes. Called automatically at instantiation, but
+        may be called again to refresh data.
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        None'''
         self.index_data = MesaProfileIndex.index_reader.read(self.file_name)
         self.model_number_string = MesaProfileIndex.index_names[0]
         self.profile_number_string = MesaProfileIndex.index_names[-1]
@@ -475,18 +489,81 @@ class MesaProfileIndex:
         self.model_numbers = self.data(self.model_number_string)
 
     def data(self, key):
+        '''Access index data and return array of column corresponding to `key`.
+        
+        Parameters
+        ----------
+        key : string
+              Name of column to be returned. Likely choices are 'model_numbers',
+              'profile_numbers', or 'priorities'. 
+        
+        Returns
+        -------
+        numpy_array
+            Array containing the data requested.
+            
+        Raises
+        ------
+        KeyError
+            If input key is not a valid column header name.
+        '''
+        
         if not key in self.index_names:
             raise KeyError("'" + str(key) + "' is not a column in " +
                            self.file_name)
         return np.array(self.index_data[key])
 
     def have_profile_with_model_number(self, model_number):
+        '''Determines if given `model_number` has a matching profile number.
+        
+        Attributes
+        ----------
+        model_number : int
+                       model number to be checked for available profile number
+                       
+        Returns
+        -------
+        bool
+            True if `model_number` has a corresponding profile number. False
+            otherwise.'''
         return (model_number in self.data(self.model_number_string))
 
     def have_profile_with_profile_number(self, profile_number):
+        '''Determines if given `profile_number` is a valid profile number.
+        
+        Attributes
+        ----------
+        profile_number : int
+                         profile number to be verified
+                         
+        Returns
+        -------
+        bool
+            True if `profile_number` has a corresponding entry in the index. 
+            False otherwise.'''
         return (profile_number in self.data(self.profile_number_string))
 
     def profile_with_model_number(self, model_number):
+        '''Converts a model number to a profile number if possible.
+        
+        If `model_number` has a corresponding profile number in the index,
+        returns it. Otherwise throws an error.
+        
+        Attributes
+        ----------
+        model_number : int
+                       model number to be converted into a profile number
+                       
+        Returns
+        -------
+        int
+            profile number corresponding to `model_number`
+            
+        Raises
+        ------
+        ProfileError
+            If no profile number can be found that corresponds to `model_number`
+        '''
         if not (self.have_profile_with_model_number(model_number)):
             raise ProfileError("No profile with model number " +
                                str(model_number) + ".")
@@ -739,9 +816,9 @@ class MesaLogDir:
         Parameters
         ----------
         f    : function
-               A function of the same number of variable as strings given for
-               `keys` that returns a boolean. Should evaluate to `True` when
-               condition is met and `False` otherwise.
+               A function of the same number of parameters as strings given
+               for `keys` that returns a boolean. Should evaluate to `True`
+               when condition is met and `False` otherwise.
         keys : strings
                Name of data categories from `self.history.bulk_names` whose 
                values are to be used in the arguments to `f`, in the same order
@@ -751,7 +828,7 @@ class MesaLogDir:
         -------
         numpy_array 
                     Array of model numbers that have corresponding profiles
-                    where the condition given by `f` is True.
+                    where the condition given by `f` is `True`.
                     
         Raises
         ------
