@@ -90,7 +90,7 @@
 <dt id="mesa_reader.MesaData">
 <em class="property">class </em><tt class="descclassname">mesa_reader.</tt><tt class="descname">MesaData</tt><big>(</big><em>file_name='./LOGS/history.data'</em><big>)</big><a class="reference internal" href="_modules/mesa_reader.html#MesaData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Structure containing data from a Mesa output file.</p>
-<p>Reads a profile or history output file from mesa. Assumes a file with 
+<p>Reads a profile or history output file from mesa. Assumes a file with
 the following structure:</p>
 <p>line 1: header names</p>
 <p>line 2: header data</p>
@@ -106,7 +106,7 @@ MesaData.set_header_rows and MesaData.set_data_rows.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>file_name</strong> : string, optional</p>
 <blockquote class="last">
 <div><p>File name to be read in. Default is &#8216;LOGS/history.data&#8217;,
-which works for scripts in a standard work directory with a 
+which works for scripts in a standard work directory with a
 standard logs directory for accessing the history data.</p>
 </div></blockquote>
 </td>
@@ -156,7 +156,7 @@ inputs for <cite>header</cite>. Essentially the column names in line
 <dd><p>Accesses the data and returns a numpy array with the appropriate data</p>
 <p>Accepts a string key, like star_age (for history files) or logRho (for
 profile files) and returns the corresponding numpy array of data for
-that data type. Can also just use the shorthand methods that have the 
+that data type. Can also just use the shorthand methods that have the
 same name of the key.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -277,11 +277,11 @@ treating <cite>key</cite> as an attribute.</p>
 MesaData.version_number will first see if it can call
 MesaData.data(&#8216;version_number&#8217;). Then, realizing that this doesn&#8217;t make
 sense, it will instead call MesaData.header(&#8216;version_number&#8217;)</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">MesaData</span><span class="p">()</span>        
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">MesaData</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="s">&#39;version_number&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">version_number</span>        
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">version_number</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">==</span> <span class="n">y</span>
-<span class="go">True        </span>
+<span class="go">True</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -434,7 +434,7 @@ have been used to alter how the data have been read in.</p>
 <dt id="mesa_reader.MesaData.remove_backups">
 <tt class="descname">remove_backups</tt><big>(</big><em>dbg=False</em><big>)</big><a class="reference internal" href="_modules/mesa_reader.html#MesaData.remove_backups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.remove_backups" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cleases a history file of backups and restarts</p>
-<p>If the file is a history file, goes through and ensure that the 
+<p>If the file is a history file, goes through and ensure that the
 model_number data are monotonically increasing. It removes rows of data
 from all categories if there are earlier ones later in the file.</p>
 <table class="docutils field-list" frame="void" rules="none">
