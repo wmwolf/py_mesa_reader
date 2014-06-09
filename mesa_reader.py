@@ -1,6 +1,8 @@
+import os
+
 import numpy as np
-from os import path
 from astropy.io import ascii as io_ascii
+
 
 class KeyError(Exception):
     def __init__(self, msg):
@@ -468,16 +470,16 @@ class MesaProfileIndex:
 
     def read_index(self):
         '''Read (or re-read) data from `self.file_name`.
-        
+
         Read the file into an astropy table, sorting the table in order of
         increasing model numbers and establishes the `profile_numbers` and
         `model_numbers` attributes. Called automatically at instantiation, but
         may be called again to refresh data.
-        
+
         Parameters
         ----------
         None
-        
+
         Returns
         -------
         None'''
@@ -490,24 +492,24 @@ class MesaProfileIndex:
 
     def data(self, key):
         '''Access index data and return array of column corresponding to `key`.
-        
+
         Parameters
         ----------
         key : string
               Name of column to be returned. Likely choices are 'model_numbers',
-              'profile_numbers', or 'priorities'. 
-        
+              'profile_numbers', or 'priorities'.
+
         Returns
         -------
         numpy_array
             Array containing the data requested.
-            
+
         Raises
         ------
         KeyError
             If input key is not a valid column header name.
         '''
-        
+
         if not key in self.index_names:
             raise KeyError("'" + str(key) + "' is not a column in " +
                            self.file_name)
@@ -515,12 +517,12 @@ class MesaProfileIndex:
 
     def have_profile_with_model_number(self, model_number):
         '''Determines if given `model_number` has a matching profile number.
-        
+
         Attributes
         ----------
         model_number : int
                        model number to be checked for available profile number
-                       
+
         Returns
         -------
         bool
@@ -530,35 +532,35 @@ class MesaProfileIndex:
 
     def have_profile_with_profile_number(self, profile_number):
         '''Determines if given `profile_number` is a valid profile number.
-        
+
         Attributes
         ----------
         profile_number : int
                          profile number to be verified
-                         
+
         Returns
         -------
         bool
-            True if `profile_number` has a corresponding entry in the index. 
+            True if `profile_number` has a corresponding entry in the index.
             False otherwise.'''
         return (profile_number in self.data(self.profile_number_string))
 
     def profile_with_model_number(self, model_number):
         '''Converts a model number to a profile number if possible.
-        
+
         If `model_number` has a corresponding profile number in the index,
         returns it. Otherwise throws an error.
-        
+
         Attributes
         ----------
         model_number : int
                        model number to be converted into a profile number
-                       
+
         Returns
         -------
         int
             profile number corresponding to `model_number`
-            
+
         Raises
         ------
         ProfileError
@@ -578,10 +580,10 @@ class MesaProfileIndex:
 
 class MesaLogDir:
     '''Structure providing access to both history and profile output from MESA
-    
+
     Provides access for accessing the history and profile data of a MESA run
     by linking profiles to the history through model numbers.
-    
+
     Parameters
     ----------
     log_path         : string, optional
@@ -597,15 +599,15 @@ class MesaLogDir:
                        is 'history.data'
     index_file       : string, optional
                        Name of the profiles index file in the logs directory,
-                       default is 'profiles.index' 
+                       default is 'profiles.index'
     memoize_profiles : bool, optional
                        Determines whether or not profiles will be "memo-ized",
                        default is True. If memoized, once a profile is called
                        into existence, it is saved so that it need not be read
-                       in again. Good for quick, clean, repeated access of a 
+                       in again. Good for quick, clean, repeated access of a
                        profile, but bad for reading in many profiles for
                        one-time uses as it will hog memory.
-                       
+
     Attributes
     -----------
     log_path         : string
@@ -629,7 +631,7 @@ class MesaLogDir:
                        with `self.read_logs()`
     history_path     : string
                        Path to the history data file
-    index_path       : string 
+    index_path       : string
                        Path to the profile index file
     history          : MesaData
                        MesaData object containing history information from
@@ -640,20 +642,20 @@ class MesaLogDir:
                        MesaProfileIndex from profiles in `self.index_path`
     profile_numbers  : numpy_array
                        Result of calling `self.profiles.profile_numbers`. Just
-                       the profile numbers of the simulation in order of 
+                       the profile numbers of the simulation in order of
                        corresponding model numbers.
     model_numbers    : numpy_array
-                       Result of calling `self.profiles.model_numbers`. Just 
-                       the model numbers of the simulations that have 
+                       Result of calling `self.profiles.model_numbers`. Just
+                       the model numbers of the simulations that have
                        corresponding profiles in ascending order.
-    
+
     profile_dict     : dictionary
-                       Stores MesaData objects from profiles. Keys to this 
+                       Stores MesaData objects from profiles. Keys to this
                        dictionary are profile numbers, so presumably
                        `self.profile_dict(5)` would yield the MesaData object
                        obtained from the file `profile5.data` (assuming
                        reasonable defaults) if such a profile was ever accessed.
-                       Will remain empty if memoization is shut off.         
+                       Will remain empty if memoization is shut off.
     '''
 
     def __init__(self, log_path = 'LOGS', profile_prefix = 'profile',
@@ -666,92 +668,94 @@ class MesaLogDir:
         self.index_file = index_file
 
         # Check if log_path and files are dir/files.
-        if not path.isdir(self.log_path):
+        if not os.path.isdir(self.log_path):
             raise BadPathError(self.log_path + ' is not a valid directory.')
-        if not path.isfile(self.log_path + '/' + self.history_file):
+
+        self.history_path = os.path.join(self.log_path, self.history_file)
+        if not os.path.isfile(self.history_path):
             raise BadPathError(self.history_file + ' not found in ' +
                                self.log_path + '.')
-        if not path.isfile(self.log_path + '/' + self.index_file):
+
+        self.index_path = os.path.join(self.log_path, self.index_file)
+        if not os.path.isfile(self.index_path):
             raise BadPathError(self.index_file + ' not found in ' +
                                self.log_path + '.')
 
-        self.history_path = self.log_path + '/' + self.history_file
-        self.index_path = self.log_path + '/' + self.index_file
         self.memoize_profiles = memoize_profiles
         self.read_logs()
 
     def read_logs(self):
         '''Read (or re-read) data from the history and profile index.
-        
+
         Reads in `self.history_path` and `self.index_file` for use in getting
         history data and profile information. This is automatically called at
         instantiation, but can be recalled by the user if for some reason the
         data needs to be refreshed (for instance, after changing some of the
         reader methods to read in specially-formatted output.)
-        
+
         Parameters
         ----------
         None
-        
+
         Returns
         -------
         None
-        
+
         Note
         ----
-        This, if called after initialization, will empty `self.profile_dict`, 
+        This, if called after initialization, will empty `self.profile_dict`,
         erasing all memo-ized profiles.
         '''
-        
+
         self.history = MesaData(self.history_path)
         self.history_data = self.history
         self.profiles = MesaProfileIndex(self.index_path)
         self.profile_numbers = self.profiles.profile_numbers
         self.model_numbers = self.profiles.model_numbers
         self.profile_dict = dict()
-        
+
 
     def have_profile_with_model_number(self, m_num):
         '''Checks to see if a model number has a corresponding profile number.
-        
+
         Parameters
         ----------
         m_num : int
                 model number to be checked
-        
+
         Returns
         -------
         bool
             True if the model number is in `self.model_numbers`, otherwise
             False.
-        
+
         '''
         return self.profiles.have_profile_with_model_number(m_num)
 
     def have_profile_with_profile_number(self, p_num):
         '''Checks to see if a given number is a valid profile number.
-        
+
         Parameters
         ----------
         p_num : int
                 profile number to be checked
-                
+
         Returns
         -------
         bool
             True if profile number is in `self.profile_numbers`, otherwise
             False.'''
         return self.profiles.have_profile_with_profile_number(p_num)
-        
+
 
     def profile_with_model_number(self, m_num):
         '''Converts a model number to a corresponding profile number
-        
+
         Parameters
         ----------
         m_num : int
                 model number to be converted
-        
+
         Returns
         -------
         int
@@ -761,25 +765,25 @@ class MesaLogDir:
 
     def profile_data(self, model_number = -1, profile_number = -1):
         '''Generate or retrieve MesaData from a model or profile number.
-        
+
         If both a model number and a profile number is given, the model number
         takes precedence. If neither are given, the default is to return a
         MesaData object of the last profile (biggest model number). In either
         case, this generates (if it doesn't already exist) or retrieves (if it
         has already been generated and memoized) a MesaData object from the
         corresponding profile data.
-        
+
         Parameters
         ----------
         model_number   : int, optional
-                         model number for the profile MesaData object desired. 
+                         model number for the profile MesaData object desired.
                          Default is -1, corresponding to the last model number.
         profile_number : int, optional
                          profile number for the profile MesaData object desired.
                          Default is -1, corresponding to the last model number.
                          If both `model_number` and `profile_number` are given,
                          `profile_number` is ignored.
-                         
+
         Returns
         -------
         MesaData
@@ -797,8 +801,9 @@ class MesaLogDir:
         if to_use in self.profile_dict:
             return self.profile_dict[to_use]
 
-        file_name = (self.log_path + '/' + self.profile_prefix
-                     + str(to_use) + '.' + self.profile_suffix)
+        file_name = os.path.join(self.log_path,
+                                 (self.profile_prefix +
+                                  str(to_use) + '.' + self.profile_suffix))
         p = MesaData(file_name)
         if self.memoize_profiles:
             self.profile_dict[to_use] = p
@@ -807,12 +812,12 @@ class MesaLogDir:
 
     def select_models(self, f, *keys):
         '''Yields model numbers for profiles that satisfy a given criteria.
-        
+
         Given a function `f` of various time-domain (history) variables,
         `*keys` (i.e., categories in `self.history.bulk_names`), filters
         `self.model_numbers` and returns all model numbers that satisfy the
         criteria.
-        
+
         Parameters
         ----------
         f    : function
@@ -820,33 +825,33 @@ class MesaLogDir:
                for `keys` that returns a boolean. Should evaluate to `True`
                when condition is met and `False` otherwise.
         keys : strings
-               Name of data categories from `self.history.bulk_names` whose 
+               Name of data categories from `self.history.bulk_names` whose
                values are to be used in the arguments to `f`, in the same order
                that they appear as arguments in `f`.
-               
+
         Returns
         -------
-        numpy_array 
+        numpy_array
                     Array of model numbers that have corresponding profiles
                     where the condition given by `f` is `True`.
-                    
+
         Raises
         ------
         KeyError
             If any of the `keys` are invalid history keys.
-                    
+
         Examples
         --------
         >>> l = MesaLogDir()
         >>> def is_old_and_bright(age, log_lum):
         >>>     return age > 1e9 and log_lum > 3
         >>> m_nums = l.select_models(is_old_and_bright, 'star_age', 'log_L' )
-        
+
         Here, `m_nums` will contain all model numbers that have profiles where
         the age is greater than a billion years and the luminosity is greater
         than 1000 Lsun, provided that 'star_age' and 'log_L' are in
         `self.history.bulk_names`.'''
-        
+
         for key in keys:
             if not self.history.in_data(key):
                 raise KeyError("'" + str(key) + "' is not a valid data type.")
