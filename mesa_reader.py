@@ -5,26 +5,37 @@ from astropy.io import ascii as io_ascii
 
 
 class KeyError(Exception):
+
     def __init__(self, msg):
         Exception.__init__(self, msg)
+
 
 class ProfileError(Exception):
+
     def __init__(self, msg):
         Exception.__init__(self, msg)
+
 
 class HistoryError(Exception):
+
     def __init__(self, msg):
         Exception.__init__(self, msg)
+
 
 class ModelNumberError(Exception):
+
     def __init__(self, msg):
         Exception.__init__(self, msg)
+
 
 class BadPathError(Exception):
+
     def __init__(self, msg):
         Exception.__init__(self, msg)
 
+
 class MesaData:
+
     '''Structure containing data from a Mesa output file.
 
     Reads a profile or history output file from mesa. Assumes a file with
@@ -90,18 +101,18 @@ class MesaData:
     hdr_reader.data.comment = r'\s*#'
 
     @classmethod
-    def set_header_rows(klass, name_start = 1, data_start = 2, data_end = 3):
+    def set_header_rows(klass, name_start=1, data_start=2, data_end=3):
         klass.hdr_reader.header.start_line = name_start
         klass.hdr_reader.data.start_line = data_start
         klass.hdr_reader.data.end_line = data_end
 
     @classmethod
-    def set_data_rows(klass, name_start = 4, data_start = 5, data_end = None):
+    def set_data_rows(klass, name_start=4, data_start=5, data_end=None):
         klass.data_reader.header.start_line = name_start
         klass.data_reader.data.start_line = data_start
         klass.data_reader.data.end_line = data_end
 
-    def __init__(self, file_name = './LOGS/history.data'):
+    def __init__(self, file_name='./LOGS/history.data'):
         '''Make a MesaData object from a Mesa output file.
 
         Reads a profile or history output file from mesa. Assumes a file with
@@ -363,14 +374,14 @@ class MesaData:
         if len(index) > 1:
             raise ModelNumberError("Found more than one entry where model " +
                                    "number is " + str(m_num) + " in " +
-                                    self.file_name + ". Report this.")
+                                   self.file_name + ". Report this.")
         elif len(index) == 0:
             raise ModelNumberError("Couldn't find any entries with model " +
                                    "number " + str(m_num) + ".")
         elif len(index) == 1:
             return index[0]
 
-    def remove_backups(self, dbg = False):
+    def remove_backups(self, dbg=False):
         '''Cleases a history file of backups and restarts
 
         If the file is a history file, goes through and ensure that the
@@ -391,8 +402,8 @@ class MesaData:
         if dbg:
             print("Scrubbing history...")
         to_remove = []
-        for i in range(len(self.data('model_number'))-1):
-            smallest_future = np.min(self.data('model_number')[i+1:])
+        for i in range(len(self.data('model_number')) - 1):
+            smallest_future = np.min(self.data('model_number')[i + 1:])
             if self.data('model_number')[i] >= smallest_future:
                 to_remove.append(i)
         if len(to_remove) == 0:
@@ -411,7 +422,9 @@ class MesaData:
         else:
             raise AttributeError(method_name)
 
+
 class MesaProfileIndex:
+
     '''Structure containing data from the profile index from MESA output.
 
     Reads in data from profile index file from MESA, allowing a mapping from
@@ -453,7 +466,7 @@ class MesaProfileIndex:
     index_reader.names = index_names
 
     @classmethod
-    def set_index_rows(klass, index_start = 1, index_end = None):
+    def set_index_rows(klass, index_start=1, index_end=None):
         klass.index_reader.data.start_line = index_start
         klass.index_reader.data.end_line = index_end
         return index_start, index_end
@@ -464,7 +477,7 @@ class MesaProfileIndex:
         klass.index_reader.names = klass.index_names
         return name_arr
 
-    def __init__(self, file_name = './LOGS/profiles.index'):
+    def __init__(self, file_name='./LOGS/profiles.index'):
         self.file_name = file_name
         self.read_index()
 
@@ -578,7 +591,9 @@ class MesaProfileIndex:
         else:
             raise AttributeError(method_name)
 
+
 class MesaLogDir:
+
     '''Structure providing access to both history and profile output from MESA
 
     Provides access for accessing the history and profile data of a MESA run
@@ -658,9 +673,9 @@ class MesaLogDir:
                        Will remain empty if memoization is shut off.
     '''
 
-    def __init__(self, log_path = 'LOGS', profile_prefix = 'profile',
-                 profile_suffix = 'data', history_file = 'history.data',
-                 index_file = 'profiles.index', memoize_profiles = True):
+    def __init__(self, log_path='LOGS', profile_prefix='profile',
+                 profile_suffix='data', history_file='history.data',
+                 index_file='profiles.index', memoize_profiles=True):
         self.log_path = log_path
         self.profile_prefix = profile_prefix
         self.profile_suffix = profile_suffix
@@ -714,7 +729,6 @@ class MesaLogDir:
         self.model_numbers = self.profiles.model_numbers
         self.profile_dict = dict()
 
-
     def have_profile_with_model_number(self, m_num):
         '''Checks to see if a model number has a corresponding profile number.
 
@@ -747,7 +761,6 @@ class MesaLogDir:
             False.'''
         return self.profiles.have_profile_with_profile_number(p_num)
 
-
     def profile_with_model_number(self, m_num):
         '''Converts a model number to a corresponding profile number
 
@@ -763,7 +776,7 @@ class MesaLogDir:
         '''
         return self.profiles.profile_with_model_number(m_num)
 
-    def profile_data(self, model_number = -1, profile_number = -1):
+    def profile_data(self, model_number=-1, profile_number=-1):
         '''Generate or retrieve MesaData from a model or profile number.
 
         If both a model number and a profile number is given, the model number
@@ -808,7 +821,6 @@ class MesaLogDir:
         if self.memoize_profiles:
             self.profile_dict[to_use] = p
         return p
-
 
     def select_models(self, f, *keys):
         '''Yields model numbers for profiles that satisfy a given criteria.
@@ -859,7 +871,8 @@ class MesaLogDir:
         for m_num in self.model_numbers:
             this_input = []
             for key in keys:
-                this_input.append(self.history.data_at_model_number(key, m_num))
+                this_input.append(
+                    self.history.data_at_model_number(key, m_num))
             inputs[m_num] = this_input
         mask = np.array([f(*inputs[m_num]) for m_num in self.model_numbers])
         return self.model_numbers[mask]
