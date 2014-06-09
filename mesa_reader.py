@@ -1,6 +1,8 @@
+import os
+
 import numpy as np
-from os import path
 from astropy.io import ascii as io_ascii
+
 
 class KeyError(Exception):
     def __init__(self, msg):
@@ -666,17 +668,19 @@ class MesaLogDir:
         self.index_file = index_file
 
         # Check if log_path and files are dir/files.
-        if not path.isdir(self.log_path):
+        if not os.path.isdir(self.log_path):
             raise BadPathError(self.log_path + ' is not a valid directory.')
-        if not path.isfile(self.log_path + '/' + self.history_file):
+
+        self.history_path = os.path.join(self.log_path, self.history_file)
+        if not os.path.isfile(self.history_path):
             raise BadPathError(self.history_file + ' not found in ' +
                                self.log_path + '.')
-        if not path.isfile(self.log_path + '/' + self.index_file):
+
+        self.index_path = os.path.join(self.log_path, self.index_file)
+        if not os.path.isfile(self.index_path):
             raise BadPathError(self.index_file + ' not found in ' +
                                self.log_path + '.')
 
-        self.history_path = self.log_path + '/' + self.history_file
-        self.index_path = self.log_path + '/' + self.index_file
         self.memoize_profiles = memoize_profiles
         self.read_logs()
 
@@ -797,8 +801,9 @@ class MesaLogDir:
         if to_use in self.profile_dict:
             return self.profile_dict[to_use]
 
-        file_name = (self.log_path + '/' + self.profile_prefix
-                     + str(to_use) + '.' + self.profile_suffix)
+        file_name = os.path.join(self.log_path,
+                                 (self.profile_prefix +
+                                  str(to_use) + '.' + self.profile_suffix))
         p = MesaData(file_name)
         if self.memoize_profiles:
             self.profile_dict[to_use] = p
