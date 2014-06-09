@@ -523,7 +523,7 @@ class MesaProfileIndex:
             If input key is not a valid column header name.
         '''
 
-        if not key in self.index_names:
+        if key not in self.index_names:
             raise KeyError("'" + str(key) + "' is not a column in " +
                            self.file_name)
         return np.array(self.index_data[key])
