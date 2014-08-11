@@ -5,6 +5,11 @@
 
 Welcome to PyMesaReader's documentation!
 ========================================
+Here you will find some [limited] documentation of the three main classes in
+PyMesaReader: MesaData, MesaProfileIndex, and MesaLogDir. This documentation is 
+automatically generated from docstrings in each class, so the appropriate
+documentation is always built in to whatever version of PyMesaReader you are
+using.
 
 Contents:
 

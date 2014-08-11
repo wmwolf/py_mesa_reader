@@ -77,9 +77,9 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="mesalogdir">
-<h1>MesaLogDir<a class="headerlink" href="#mesalogdir" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-mesa_reader"></span><dl class="class">
+  <div class="section" id="module-mesa_reader">
+<span id="mesalogdir"></span><h1>MesaLogDir<a class="headerlink" href="#module-mesa_reader" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
 <dt id="mesa_reader.MesaLogDir">
 <em class="property">class </em><tt class="descclassname">mesa_reader.</tt><tt class="descname">MesaLogDir</tt><big>(</big><em>log_path='LOGS'</em>, <em>profile_prefix='profile'</em>, <em>profile_suffix='data'</em>, <em>history_file='history.data'</em>, <em>index_file='profiles.index'</em>, <em>memoize_profiles=True</em><big>)</big><a class="reference internal" href="_modules/mesa_reader.html#MesaLogDir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaLogDir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Structure providing access to both history and profile output from MESA</p>
@@ -357,9 +357,9 @@ criteria.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>f</strong> : function</p>
 <blockquote>
-<div><p>A function of the same number of variable as strings given for
-<cite>keys</cite> that returns a boolean. Should evaluate to <cite>True</cite> when
-condition is met and <cite>False</cite> otherwise.</p>
+<div><p>A function of the same number of parameters as strings given
+for <cite>keys</cite> that returns a boolean. Should evaluate to <cite>True</cite>
+when condition is met and <cite>False</cite> otherwise.</p>
 </div></blockquote>
 <p><strong>keys</strong> : strings</p>
 <blockquote>
@@ -372,7 +372,7 @@ that they appear as arguments in <cite>f</cite>.</p>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>numpy_array</strong> :</p>
 <blockquote>
 <div><p>Array of model numbers that have corresponding profiles
-where the condition given by <cite>f</cite> is True.</p>
+where the condition given by <cite>f</cite> is <cite>True</cite>.</p>
 </div></blockquote>
 </td>
 </tr>

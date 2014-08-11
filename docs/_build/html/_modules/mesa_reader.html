@@ -886,9 +886,9 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        f    : function</span>
-<span class="sd">               A function of the same number of variable as strings given for</span>
-<span class="sd">               `keys` that returns a boolean. Should evaluate to `True` when</span>
-<span class="sd">               condition is met and `False` otherwise.</span>
+<span class="sd">               A function of the same number of parameters as strings given</span>
+<span class="sd">               for `keys` that returns a boolean. Should evaluate to `True`</span>
+<span class="sd">               when condition is met and `False` otherwise.</span>
 <span class="sd">        keys : strings</span>
 <span class="sd">               Name of data categories from `self.history.bulk_names` whose </span>
 <span class="sd">               values are to be used in the arguments to `f`, in the same order</span>
@@ -898,7 +898,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        numpy_array </span>
 <span class="sd">                    Array of model numbers that have corresponding profiles</span>
-<span class="sd">                    where the condition given by `f` is True.</span>
+<span class="sd">                    where the condition given by `f` is `True`.</span>
 <span class="sd">                    </span>
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
