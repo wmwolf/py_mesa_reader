@@ -68,49 +68,61 @@
           <div class="body">
             
   <h1>Source code for mesa_reader</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">os</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span>
-<span class="kn">from</span> <span class="nn">astropy.io</span> <span class="kn">import</span> <span class="n">ascii</span> <span class="k">as</span> <span class="n">io_ascii</span>
+
 
 <span class="k">class</span> <span class="nc">KeyError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="ne">Exception</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+
 
 <span class="k">class</span> <span class="nc">ProfileError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="ne">Exception</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+
 
 <span class="k">class</span> <span class="nc">HistoryError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="ne">Exception</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+
 
 <span class="k">class</span> <span class="nc">ModelNumberError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="ne">Exception</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+
 
 <span class="k">class</span> <span class="nc">BadPathError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="ne">Exception</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MesaData"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData">[docs]</a><span class="k">class</span> <span class="nc">MesaData</span><span class="p">:</span>
-    <span class="sd">&#39;&#39;&#39;Structure containing data from a Mesa output file.</span>
 
+<div class="viewcode-block" id="MesaData"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData">[docs]</a><span class="k">class</span> <span class="nc">MesaData</span><span class="p">:</span>
+    
+    <span class="sd">&#39;&#39;&#39;Structure containing data from a Mesa output file.</span>
+<span class="sd">    </span>
 <span class="sd">    Reads a profile or history output file from mesa. Assumes a file with</span>
 <span class="sd">    the following structure:</span>
-
+<span class="sd">    </span>
 <span class="sd">    line 1: header names</span>
-
+<span class="sd">    </span>
 <span class="sd">    line 2: header data</span>
-
+<span class="sd">    </span>
 <span class="sd">    line 3: blank</span>
-
+<span class="sd">    </span>
 <span class="sd">    line 4: main data names</span>
-
+<span class="sd">    </span>
 <span class="sd">    line 5: main data values</span>
-
+<span class="sd">    </span>
 <span class="sd">    This structure can be altered by using the class methods</span>
 <span class="sd">    MesaData.set_header_rows and MesaData.set_data_rows.</span>
-
+<span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    file_name : string, optional</span>
@@ -118,76 +130,57 @@
 <span class="sd">                which works for scripts in a standard work directory with a</span>
 <span class="sd">                standard logs directory for accessing the history data.</span>
 
-
+<span class="sd">    </span>
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    file_name    : string</span>
 <span class="sd">                   Path to file from which the data is read.</span>
-<span class="sd">    bulk_data    : astropy.table.Table</span>
-<span class="sd">                   The main data (line 6 and below) in astropy table format.</span>
+<span class="sd">    bulk_data    : numpy recarray</span>
+<span class="sd">                   The main data (line 6 and below) in record array format.</span>
 <span class="sd">                   Primarily accessed via the `data` method.</span>
 <span class="sd">    bulk_names   : list</span>
 <span class="sd">                   List of all available data column names that are valid</span>
 <span class="sd">                   inputs for `data`. Essentially the column names in line</span>
 <span class="sd">                   4 of `file_name`.</span>
-<span class="sd">    header_data  : astroy.table.Table</span>
-<span class="sd">                   Header data (line 2 of `file_name`) in astropy table</span>
-<span class="sd">                   format.</span>
+<span class="sd">    header_data  : dict</span>
+<span class="sd">                   Header data (line 2 of `file_name`) in dict format</span>
 <span class="sd">    header_names : list</span>
 <span class="sd">                   List of all available header dolumn names that are valid</span>
 <span class="sd">                   inputs for `header`. Essentially the column names in line</span>
 <span class="sd">                   1 of `file_name`.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-
-    <span class="n">data_reader</span> <span class="o">=</span> <span class="n">io_ascii</span><span class="o">.</span><span class="n">get_reader</span><span class="p">(</span><span class="n">Reader</span><span class="o">=</span><span class="n">io_ascii</span><span class="o">.</span><span class="n">Basic</span><span class="p">)</span>
-    <span class="n">data_reader</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">splitter</span><span class="o">.</span><span class="n">delimiter</span> <span class="o">=</span> <span class="s">&#39; &#39;</span>
-    <span class="n">data_reader</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">splitter</span><span class="o">.</span><span class="n">delimiter</span> <span class="o">=</span> <span class="s">&#39; &#39;</span>
-    <span class="n">data_reader</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">start_line</span> <span class="o">=</span> <span class="mi">4</span>
-    <span class="n">data_reader</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">start_line</span> <span class="o">=</span> <span class="mi">5</span>
-    <span class="n">data_reader</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">end_line</span> <span class="o">=</span> <span class="bp">None</span>
-    <span class="n">data_reader</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">comment</span> <span class="o">=</span> <span class="s">r&#39;\s*#&#39;</span>
-    <span class="n">data_reader</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">comment</span> <span class="o">=</span> <span class="s">r&#39;\s*#&#39;</span>
-
-    <span class="n">hdr_reader</span> <span class="o">=</span> <span class="n">io_ascii</span><span class="o">.</span><span class="n">get_reader</span><span class="p">(</span><span class="n">Reader</span><span class="o">=</span><span class="n">io_ascii</span><span class="o">.</span><span class="n">Basic</span><span class="p">)</span>
-    <span class="n">hdr_reader</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">splitter</span><span class="o">.</span><span class="n">delimiter</span> <span class="o">=</span> <span class="s">&#39; &#39;</span>
-    <span class="n">hdr_reader</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">splitter</span><span class="o">.</span><span class="n">delimiter</span> <span class="o">=</span> <span class="s">&#39; &#39;</span>
-    <span class="n">hdr_reader</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">start_line</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">hdr_reader</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">start_line</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">hdr_reader</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">end_line</span> <span class="o">=</span> <span class="mi">3</span>
-    <span class="n">hdr_reader</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">comment</span> <span class="o">=</span> <span class="s">r&#39;\s*#&#39;</span>
-    <span class="n">hdr_reader</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">comment</span> <span class="o">=</span> <span class="s">r&#39;\s*#&#39;</span>
-
+    
+    
+    <span class="n">header_names_line</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">bulk_names_line</span> <span class="o">=</span> <span class="mi">6</span>
+    
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">set_header_rows</span><span class="p">(</span><span class="n">klass</span><span class="p">,</span> <span class="n">name_start</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">data_start</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">data_end</span> <span class="o">=</span> <span class="mi">3</span><span class="p">):</span>
-        <span class="n">klass</span><span class="o">.</span><span class="n">hdr_reader</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">start_line</span> <span class="o">=</span> <span class="n">name_start</span>
-        <span class="n">klass</span><span class="o">.</span><span class="n">hdr_reader</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">start_line</span> <span class="o">=</span> <span class="n">data_start</span>
-        <span class="n">klass</span><span class="o">.</span><span class="n">hdr_reader</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">end_line</span> <span class="o">=</span> <span class="n">data_end</span>
-
+    <span class="k">def</span> <span class="nf">set_header_name_line</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="n">name_line</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="n">class_</span><span class="o">.</span><span class="n">header_names_line</span> <span class="o">=</span> <span class="n">name_line</span>
+        
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">set_data_rows</span><span class="p">(</span><span class="n">klass</span><span class="p">,</span> <span class="n">name_start</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">data_start</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">data_end</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
-        <span class="n">klass</span><span class="o">.</span><span class="n">data_reader</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">start_line</span> <span class="o">=</span> <span class="n">name_start</span>
-        <span class="n">klass</span><span class="o">.</span><span class="n">data_reader</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">start_line</span> <span class="o">=</span> <span class="n">data_start</span>
-        <span class="n">klass</span><span class="o">.</span><span class="n">data_reader</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">end_line</span> <span class="o">=</span> <span class="n">data_end</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span> <span class="o">=</span> <span class="s">&#39;./LOGS/history.data&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">set_data_rows</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="n">name_line</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
+        <span class="n">class_</span><span class="o">.</span><span class="n">bulk_names_line</span> <span class="o">=</span> <span class="n">name_line</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s">&#39;./LOGS/history.data&#39;</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Make a MesaData object from a Mesa output file.</span>
-
+<span class="sd">        </span>
 <span class="sd">        Reads a profile or history output file from mesa. Assumes a file with</span>
 <span class="sd">        the following structure:</span>
-
+<span class="sd">        </span>
 <span class="sd">        line 1: header names</span>
-
+<span class="sd">        </span>
 <span class="sd">        line 2: header data</span>
-
+<span class="sd">        </span>
 <span class="sd">        line 3: blank</span>
-
+<span class="sd">        </span>
 <span class="sd">        line 4: main data names</span>
-
+<span class="sd">        </span>
 <span class="sd">        line 5: main data values</span>
-
+<span class="sd">        </span>
 <span class="sd">        This structure can be altered by using the class methods</span>
 <span class="sd">        MesaData.set_header_rows and MesaData.set_data_rows.</span>
-
+<span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        file_name : string, optional</span>
@@ -196,230 +189,238 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">file_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">read_data</span><span class="p">()</span>
-
+    
 <div class="viewcode-block" id="MesaData.read_data"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.read_data">[docs]</a>    <span class="k">def</span> <span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Update data by re-reading from the original file name.</span>
-
+<span class="sd">        </span>
 <span class="sd">        This re-reads the data from the originally-provided file name. Mostly</span>
 <span class="sd">        useful if the data file has been changed since it was first read in or</span>
 <span class="sd">        if the class methods MesaData.set_header_rows or MesaData.set_data_rows</span>
 <span class="sd">        have been used to alter how the data have been read in.</span>
-
+<span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        None</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bulk_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="o">.</span><span class="n">colnames</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">header_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hdr_reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">header_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header_data</span><span class="o">.</span><span class="n">colnames</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">,</span>
+            <span class="n">skip_header</span><span class="o">=</span><span class="n">MesaData</span><span class="o">.</span><span class="n">bulk_names_line</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bulk_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">names</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">MesaData</span><span class="o">.</span><span class="n">header_names_line</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">header_names</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="n">i</span> <span class="o">==</span> <span class="n">MesaData</span><span class="o">.</span><span class="n">header_names_line</span><span class="p">:</span>
+                    <span class="n">header_data</span> <span class="o">=</span> <span class="p">[</span><span class="nb">eval</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span> <span class="k">for</span> <span class="n">datum</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
+                <span class="k">elif</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="n">MesaData</span><span class="o">.</span><span class="n">header_names_line</span><span class="p">:</span>
+                    <span class="k">break</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header_names</span><span class="p">,</span> <span class="n">header_data</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">remove_backups</span><span class="p">()</span>
-</div>
+    </div>
 <div class="viewcode-block" id="MesaData.data"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.data">[docs]</a>    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Accesses the data and returns a numpy array with the appropriate data</span>
-
+<span class="sd">        </span>
 <span class="sd">        Accepts a string key, like star_age (for history files) or logRho (for</span>
 <span class="sd">        profile files) and returns the corresponding numpy array of data for</span>
 <span class="sd">        that data type. Can also just use the shorthand methods that have the</span>
 <span class="sd">        same name of the key.</span>
-
+<span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        key : string</span>
 <span class="sd">              Name of data. Must match a main data title in the source file.</span>
-
+<span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        numpy.array</span>
 <span class="sd">            Array of values for data corresponding to key at various time steps</span>
 <span class="sd">            (history) or grid points (profile).</span>
-
+<span class="sd">        </span>
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        KeyError</span>
 <span class="sd">            If `key` is an invalid key (i.e. not in `self.bulk_names`)</span>
-
+<span class="sd">        </span>
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        You can either call `data` explicitly with `key` as an argument, or get</span>
 <span class="sd">        the same result by calling it implicitly by treating `key` as an</span>
 <span class="sd">        attribute.</span>
-
+<span class="sd">        </span>
 <span class="sd">        &gt;&gt;&gt; m = MesaData()</span>
 <span class="sd">        &gt;&gt;&gt; x = m.data(&#39;star_age&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; y = m.star_age</span>
 <span class="sd">        &gt;&gt;&gt; x == y</span>
 <span class="sd">        True</span>
-
+<span class="sd">        </span>
 <span class="sd">        In this case, x and y are the same because the non-existent method</span>
 <span class="sd">        MesaData.star_age will direct to to the corresponding MesaData.data</span>
 <span class="sd">        call.</span>
-
+<span class="sd">        </span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_data</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&#39; is not a valid data type.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-</div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    </div>
 <div class="viewcode-block" id="MesaData.header"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.header">[docs]</a>    <span class="k">def</span> <span class="nf">header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Accesses the header, returning a scalar the appropriate data</span>
-
+<span class="sd">        </span>
 <span class="sd">        Accepts a string key, like version_number and returns the corresponding</span>
 <span class="sd">        datum for that key. Can also just use the shorthand</span>
 <span class="sd">        methods that have the same name of the key.</span>
-
+<span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        key : string</span>
 <span class="sd">              Name of data. Must match a main data title in the source file.</span>
-
+<span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        int/string/float</span>
 <span class="sd">            Returns whatever value is below the corresponding key in the header</span>
 <span class="sd">            lines of the source file.</span>
-
+<span class="sd">        </span>
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        KeyError</span>
 <span class="sd">            If `key` is an invalid key (i.e. not in `self.header_names`)</span>
-
+<span class="sd">        </span>
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        Can call `header` explicitly with `key` as argument or implicitly,</span>
 <span class="sd">        treating `key` as an attribute.</span>
-
+<span class="sd">        </span>
 <span class="sd">        In this case, x and y are the same because the non-existent method</span>
 <span class="sd">        MesaData.version_number will first see if it can call</span>
 <span class="sd">        MesaData.data(&#39;version_number&#39;). Then, realizing that this doesn&#39;t make</span>
 <span class="sd">        sense, it will instead call MesaData.header(&#39;version_number&#39;)</span>
-
+<span class="sd">        </span>
 <span class="sd">        &gt;&gt;&gt; m = MesaData()</span>
 <span class="sd">        &gt;&gt;&gt; x = m.data(&#39;version_number&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; y = m.version_number</span>
 <span class="sd">        &gt;&gt;&gt; x == y</span>
 <span class="sd">        True</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-
+        
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_header</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&#39; is not a valid header name.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">header_data</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-</div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">header_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    </div>
 <div class="viewcode-block" id="MesaData.is_history"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.is_history">[docs]</a>    <span class="k">def</span> <span class="nf">is_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Determine if the source file is a history file</span>
-
+<span class="sd">        </span>
 <span class="sd">        Checks if &#39;model_number&#39; is a valid key for self.data. If it is, return</span>
 <span class="sd">        True. Otherwise return False. This is used in determining whether or not</span>
 <span class="sd">        to cleanse the file of backups and restarts in the MesaData.read_data.</span>
-
+<span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        None</span>
-
+<span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        bool</span>
 <span class="sd">            True if file is a history file, otherwise False</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="p">(</span><span class="s">&#39;model_number&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_names</span><span class="p">)</span>
-</div>
+    </div>
 <div class="viewcode-block" id="MesaData.in_header"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.in_header">[docs]</a>    <span class="k">def</span> <span class="nf">in_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Determine if `key` is an available header data category.</span>
-
+<span class="sd">        </span>
 <span class="sd">        Checks if string `key` is a valid argument of MesaData.header. Returns</span>
 <span class="sd">        True if it is, otherwise False</span>
-
+<span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        key : string</span>
 <span class="sd">              Candidate string for accessing header data. This is what you want</span>
 <span class="sd">              to be able to use as an argument of MesaData.header.</span>
-
+<span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        bool</span>
 <span class="sd">            True if `key` is a valid input to MesaData.header, otherwise False.</span>
-
+<span class="sd">        </span>
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        This is automatically called by MesaData.header, so the average user</span>
 <span class="sd">        shouldn&#39;t need to call it.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">header_names</span>
-</div>
+    </div>
 <div class="viewcode-block" id="MesaData.in_data"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.in_data">[docs]</a>    <span class="k">def</span> <span class="nf">in_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Determine if `key` is an available main data category.</span>
-
+<span class="sd">        </span>
 <span class="sd">        Checks if string `key` is a valid argument of MesaData.data. Returns</span>
 <span class="sd">        True if it is, otherwise False</span>
-
+<span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        key : string</span>
 <span class="sd">              Candidate string for accessing main data. This is what you want</span>
 <span class="sd">              to be able to use as an argument of MesaData.data.</span>
-
+<span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        bool</span>
 <span class="sd">            True if `key` is a valid input to MesaData.data, otherwise False.</span>
-
+<span class="sd">        </span>
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        This is automatically called by MesaData.data, so the average user</span>
 <span class="sd">        shouldn&#39;t need to call it.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_names</span>
-</div>
+    </div>
 <div class="viewcode-block" id="MesaData.data_at_model_number"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.data_at_model_number">[docs]</a>    <span class="k">def</span> <span class="nf">data_at_model_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">m_num</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Return main data at a specific model number (for history files).</span>
-
+<span class="sd">        </span>
 <span class="sd">        Finds the index i where MesaData.data(&#39;model_number&#39;)[i] == m_num. Then</span>
 <span class="sd">        returns MesaData.data(key)[i]. Essentially lets you use model numbers</span>
 <span class="sd">        to index data.</span>
-
+<span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        key : string</span>
 <span class="sd">              Name of data. Must match a main data title in the source file.</span>
-
+<span class="sd">        </span>
 <span class="sd">        m_num : int</span>
 <span class="sd">                Model number where you want to sample the data</span>
-
+<span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        float/int</span>
 <span class="sd">            Value of MesaData.data(`key`) at the same index where</span>
 <span class="sd">            MesaData.data(&#39;model_number&#39;) == `m_num`</span>
-
+<span class="sd">        </span>
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        index_of_model_number : returns the index for sampling, not the value</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">key</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">index_of_model_number</span><span class="p">(</span><span class="n">m_num</span><span class="p">)]</span>
-</div>
+    </div>
 <div class="viewcode-block" id="MesaData.index_of_model_number"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.index_of_model_number">[docs]</a>    <span class="k">def</span> <span class="nf">index_of_model_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m_num</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Return index where MesaData.data(&#39;model_number&#39;) is `m_num`.</span>
-
+<span class="sd">        </span>
 <span class="sd">        Returns the index i where MesaData.data(&#39;model_number&#39;)[i] == m_num.</span>
-
+<span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        m_num : int</span>
 <span class="sd">                Model number where you want to sample data</span>
-
+<span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        int</span>
 <span class="sd">            The index where MesaData.data(&#39;model_number&#39;) == `m_num`</span>
-
+<span class="sd">        </span>
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        HistoryError</span>
 <span class="sd">            If trying to access a non-history file</span>
-
+<span class="sd">        </span>
 <span class="sd">        ModelNumberError</span>
 <span class="sd">            If zero or more than one model numbers matching `m_num` are found.</span>
-
+<span class="sd">        </span>
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        data_at_model_number : returns the datum of a specific key a model no.</span>
@@ -431,25 +432,25 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ModelNumberError</span><span class="p">(</span><span class="s">&quot;Found more than one entry where model &quot;</span> <span class="o">+</span>
                                    <span class="s">&quot;number is &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">m_num</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; in &quot;</span> <span class="o">+</span>
-                                    <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span> <span class="o">+</span> <span class="s">&quot;. Report this.&quot;</span><span class="p">)</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span> <span class="o">+</span> <span class="s">&quot;. Report this.&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ModelNumberError</span><span class="p">(</span><span class="s">&quot;Couldn&#39;t find any entries with model &quot;</span> <span class="o">+</span>
                                    <span class="s">&quot;number &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">m_num</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;.&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</div>
-<div class="viewcode-block" id="MesaData.remove_backups"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.remove_backups">[docs]</a>    <span class="k">def</span> <span class="nf">remove_backups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbg</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
+    </div>
+<div class="viewcode-block" id="MesaData.remove_backups"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.remove_backups">[docs]</a>    <span class="k">def</span> <span class="nf">remove_backups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbg</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Cleases a history file of backups and restarts</span>
-
+<span class="sd">        </span>
 <span class="sd">        If the file is a history file, goes through and ensure that the</span>
 <span class="sd">        model_number data are monotonically increasing. It removes rows of data</span>
 <span class="sd">        from all categories if there are earlier ones later in the file.</span>
-
+<span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dbg : bool, optional</span>
 <span class="sd">              If True, will output how many lines are cleansed. Default is False</span>
-
+<span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
@@ -459,8 +460,8 @@
         <span class="k">if</span> <span class="n">dbg</span><span class="p">:</span>
             <span class="k">print</span><span class="p">(</span><span class="s">&quot;Scrubbing history...&quot;</span><span class="p">)</span>
         <span class="n">to_remove</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="s">&#39;model_number&#39;</span><span class="p">))</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-            <span class="n">smallest_future</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="s">&#39;model_number&#39;</span><span class="p">)[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="s">&#39;model_number&#39;</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">smallest_future</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="s">&#39;model_number&#39;</span><span class="p">)[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:])</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="s">&#39;model_number&#39;</span><span class="p">)[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">smallest_future</span><span class="p">:</span>
                 <span class="n">to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">to_remove</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -469,8 +470,8 @@
             <span class="k">return</span> <span class="bp">None</span>
         <span class="k">if</span> <span class="n">dbg</span><span class="p">:</span>
             <span class="k">print</span><span class="p">(</span><span class="s">&quot;Removing {} lines.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">to_remove</span><span class="p">)))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="o">.</span><span class="n">remove_rows</span><span class="p">(</span><span class="n">to_remove</span><span class="p">)</span>
-</div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">,</span> <span class="n">to_remove</span><span class="p">)</span>
+    </div>
     <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method_name</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_data</span><span class="p">(</span><span class="n">method_name</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">method_name</span><span class="p">)</span>
@@ -478,14 +479,22 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">(</span><span class="n">method_name</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">method_name</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_file_len</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+                <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+
 </div>
 <div class="viewcode-block" id="MesaProfileIndex"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaProfileIndex">[docs]</a><span class="k">class</span> <span class="nc">MesaProfileIndex</span><span class="p">:</span>
+    
     <span class="sd">&#39;&#39;&#39;Structure containing data from the profile index from MESA output.</span>
-
+<span class="sd">    </span>
 <span class="sd">    Reads in data from profile index file from MESA, allowing a mapping from</span>
 <span class="sd">    profile number to model number and vice versa. Mostly accessed via the</span>
 <span class="sd">    MesaLogDir class.</span>
-
+<span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    file_name : string, optional</span>
@@ -493,13 +502,14 @@
 <span class="sd">                &#39;LOGS/profiles.index&#39;, which should work when the working</span>
 <span class="sd">                directory is a standard work directory and the logs directory is</span>
 <span class="sd">                of the default name.</span>
-
+<span class="sd">    </span>
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    file_name             : string</span>
 <span class="sd">                            path to the profile index file</span>
-<span class="sd">    index_data            : astropy.table.Table</span>
-<span class="sd">                            Astropy table containing all index data.</span>
+<span class="sd">    index_data            : dict</span>
+<span class="sd">                            dictionary containing all index data in numpy</span>
+<span class="sd">                            arrays.</span>
 <span class="sd">    model_number_string   : string</span>
 <span class="sd">                            header name of the model number column in</span>
 <span class="sd">                            `file_name`</span>
@@ -512,37 +522,34 @@
 <span class="sd">    model_numbers         : numpy_array</span>
 <span class="sd">                            Sorted list of all available model numbers.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">index_reader</span> <span class="o">=</span> <span class="n">io_ascii</span><span class="o">.</span><span class="n">get_reader</span><span class="p">(</span><span class="n">Reader</span><span class="o">=</span><span class="n">io_ascii</span><span class="o">.</span><span class="n">NoHeader</span><span class="p">)</span>
-    <span class="n">index_reader</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">splitter</span><span class="o">.</span><span class="n">delimiter</span> <span class="o">=</span> <span class="s">&#39; &#39;</span>
-    <span class="n">index_reader</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">start_line</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">index_reader</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">end_line</span> <span class="o">=</span> <span class="bp">None</span>
-    <span class="n">index_reader</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">comment</span> <span class="o">=</span> <span class="s">r&#39;\s*#&#39;</span>
+    
+    <span class="n">index_start_line</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">index_end</span> <span class="o">=</span> <span class="bp">None</span>
     <span class="n">index_names</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;model_numbers&#39;</span><span class="p">,</span> <span class="s">&#39;priorities&#39;</span><span class="p">,</span> <span class="s">&#39;profile_numbers&#39;</span><span class="p">]</span>
-    <span class="n">index_reader</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="n">index_names</span>
-
+    
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">set_index_rows</span><span class="p">(</span><span class="n">klass</span><span class="p">,</span> <span class="n">index_start</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">index_end</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
-        <span class="n">klass</span><span class="o">.</span><span class="n">index_reader</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">start_line</span> <span class="o">=</span> <span class="n">index_start</span>
-        <span class="n">klass</span><span class="o">.</span><span class="n">index_reader</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">end_line</span> <span class="o">=</span> <span class="n">index_end</span>
+    <span class="k">def</span> <span class="nf">set_index_rows</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="n">index_start</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">index_end</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">class_</span><span class="o">.</span><span class="n">index_start_line</span> <span class="o">=</span> <span class="n">index_start</span>
+        <span class="n">class_</span><span class="o">.</span><span class="n">index_end_line</span> <span class="o">=</span> <span class="n">index_end</span>
         <span class="k">return</span> <span class="n">index_start</span><span class="p">,</span> <span class="n">index_end</span>
-
+    
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">set_index_names</span><span class="p">(</span><span class="n">klass</span><span class="p">,</span> <span class="n">name_arr</span><span class="p">):</span>
-        <span class="n">klass</span><span class="o">.</span><span class="n">index_names</span> <span class="o">=</span> <span class="n">name_arr</span>
-        <span class="n">klass</span><span class="o">.</span><span class="n">index_reader</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="n">klass</span><span class="o">.</span><span class="n">index_names</span>
+    <span class="k">def</span> <span class="nf">set_index_names</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="n">name_arr</span><span class="p">):</span>
+        <span class="n">class_</span><span class="o">.</span><span class="n">index_names</span> <span class="o">=</span> <span class="n">name_arr</span>
         <span class="k">return</span> <span class="n">name_arr</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span> <span class="o">=</span> <span class="s">&#39;./LOGS/profiles.index&#39;</span><span class="p">):</span>
+        
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s">&#39;./LOGS/profiles.index&#39;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">file_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">read_index</span><span class="p">()</span>
-
+    
 <div class="viewcode-block" id="MesaProfileIndex.read_index"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaProfileIndex.read_index">[docs]</a>    <span class="k">def</span> <span class="nf">read_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Read (or re-read) data from `self.file_name`.</span>
 <span class="sd">        </span>
-<span class="sd">        Read the file into an astropy table, sorting the table in order of</span>
+<span class="sd">        Read the file into an numpy array, sorting the table in order of</span>
 <span class="sd">        increasing model numbers and establishes the `profile_numbers` and</span>
-<span class="sd">        `model_numbers` attributes. Called automatically at instantiation, but</span>
-<span class="sd">        may be called again to refresh data.</span>
+<span class="sd">        `model_numbers` attributes. Converts data and names into a dictionary.</span>
+<span class="sd">        Called automatically at instantiation, but may be called again to</span>
+<span class="sd">        refresh data.</span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -551,13 +558,15 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        None&#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">index_data</span> <span class="o">=</span> <span class="n">MesaProfileIndex</span><span class="o">.</span><span class="n">index_reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">,</span>
+            <span class="n">skip_header</span><span class="o">=</span><span class="n">MesaProfileIndex</span><span class="o">.</span><span class="n">index_start_line</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_number_string</span> <span class="o">=</span> <span class="n">MesaProfileIndex</span><span class="o">.</span><span class="n">index_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">profile_number_string</span> <span class="o">=</span> <span class="n">MesaProfileIndex</span><span class="o">.</span><span class="n">index_names</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">index_data</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_number_string</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_data</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index_data</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">MesaProfileIndex</span><span class="o">.</span><span class="n">index_names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_data</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">profile_numbers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">profile_number_string</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_numbers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_number_string</span><span class="p">)</span>
-</div>
+    </div>
 <div class="viewcode-block" id="MesaProfileIndex.data"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaProfileIndex.data">[docs]</a>    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Access index data and return array of column corresponding to `key`.</span>
 <span class="sd">        </span>
@@ -565,24 +574,24 @@
 <span class="sd">        ----------</span>
 <span class="sd">        key : string</span>
 <span class="sd">              Name of column to be returned. Likely choices are &#39;model_numbers&#39;,</span>
-<span class="sd">              &#39;profile_numbers&#39;, or &#39;priorities&#39;. </span>
+<span class="sd">              &#39;profile_numbers&#39;, or &#39;priorities&#39;.</span>
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        numpy_array</span>
 <span class="sd">            Array containing the data requested.</span>
-<span class="sd">            </span>
+<span class="sd">        </span>
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        KeyError</span>
 <span class="sd">            If input key is not a valid column header name.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_names</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_names</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&#39; is not a column in &quot;</span> <span class="o">+</span>
                            <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index_data</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-</div>
+    </div>
 <div class="viewcode-block" id="MesaProfileIndex.have_profile_with_model_number"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaProfileIndex.have_profile_with_model_number">[docs]</a>    <span class="k">def</span> <span class="nf">have_profile_with_model_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_number</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Determines if given `model_number` has a matching profile number.</span>
 <span class="sd">        </span>
@@ -590,14 +599,14 @@
 <span class="sd">        ----------</span>
 <span class="sd">        model_number : int</span>
 <span class="sd">                       model number to be checked for available profile number</span>
-<span class="sd">                       </span>
+<span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        bool</span>
 <span class="sd">            True if `model_number` has a corresponding profile number. False</span>
 <span class="sd">            otherwise.&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">model_number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_number_string</span><span class="p">))</span>
-</div>
+    </div>
 <div class="viewcode-block" id="MesaProfileIndex.have_profile_with_profile_number"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaProfileIndex.have_profile_with_profile_number">[docs]</a>    <span class="k">def</span> <span class="nf">have_profile_with_profile_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile_number</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Determines if given `profile_number` is a valid profile number.</span>
 <span class="sd">        </span>
@@ -605,14 +614,14 @@
 <span class="sd">        ----------</span>
 <span class="sd">        profile_number : int</span>
 <span class="sd">                         profile number to be verified</span>
-<span class="sd">                         </span>
+<span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        bool</span>
-<span class="sd">            True if `profile_number` has a corresponding entry in the index. </span>
+<span class="sd">            True if `profile_number` has a corresponding entry in the index.</span>
 <span class="sd">            False otherwise.&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">profile_number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">profile_number_string</span><span class="p">))</span>
-</div>
+    </div>
 <div class="viewcode-block" id="MesaProfileIndex.profile_with_model_number"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaProfileIndex.profile_with_model_number">[docs]</a>    <span class="k">def</span> <span class="nf">profile_with_model_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_number</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Converts a model number to a profile number if possible.</span>
 <span class="sd">        </span>
@@ -623,12 +632,12 @@
 <span class="sd">        ----------</span>
 <span class="sd">        model_number : int</span>
 <span class="sd">                       model number to be converted into a profile number</span>
-<span class="sd">                       </span>
+<span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        int</span>
 <span class="sd">            profile number corresponding to `model_number`</span>
-<span class="sd">            </span>
+<span class="sd">        </span>
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        ProfileError</span>
@@ -639,14 +648,16 @@
                                <span class="nb">str</span><span class="p">(</span><span class="n">model_number</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;.&quot;</span><span class="p">)</span>
         <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_number_string</span><span class="p">)</span> <span class="o">==</span> <span class="n">model_number</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">profile_number_string</span><span class="p">),</span> <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
-</div>
+    </div>
     <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method_name</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">method_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_data</span><span class="o">.</span><span class="n">colnames</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">method_name</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">method_name</span><span class="p">)</span>
+
 </div>
 <div class="viewcode-block" id="MesaLogDir"><a class="viewcode-back" href="../MesaLogDir.html#mesa_reader.MesaLogDir">[docs]</a><span class="k">class</span> <span class="nc">MesaLogDir</span><span class="p">:</span>
+    
     <span class="sd">&#39;&#39;&#39;Structure providing access to both history and profile output from MESA</span>
 <span class="sd">    </span>
 <span class="sd">    Provides access for accessing the history and profile data of a MESA run</span>
@@ -667,15 +678,15 @@
 <span class="sd">                       is &#39;history.data&#39;</span>
 <span class="sd">    index_file       : string, optional</span>
 <span class="sd">                       Name of the profiles index file in the logs directory,</span>
-<span class="sd">                       default is &#39;profiles.index&#39; </span>
+<span class="sd">                       default is &#39;profiles.index&#39;</span>
 <span class="sd">    memoize_profiles : bool, optional</span>
 <span class="sd">                       Determines whether or not profiles will be &quot;memo-ized&quot;,</span>
 <span class="sd">                       default is True. If memoized, once a profile is called</span>
 <span class="sd">                       into existence, it is saved so that it need not be read</span>
-<span class="sd">                       in again. Good for quick, clean, repeated access of a </span>
+<span class="sd">                       in again. Good for quick, clean, repeated access of a</span>
 <span class="sd">                       profile, but bad for reading in many profiles for</span>
 <span class="sd">                       one-time uses as it will hog memory.</span>
-<span class="sd">                       </span>
+<span class="sd">    </span>
 <span class="sd">    Attributes</span>
 <span class="sd">    -----------</span>
 <span class="sd">    log_path         : string</span>
@@ -699,7 +710,7 @@
 <span class="sd">                       with `self.read_logs()`</span>
 <span class="sd">    history_path     : string</span>
 <span class="sd">                       Path to the history data file</span>
-<span class="sd">    index_path       : string </span>
+<span class="sd">    index_path       : string</span>
 <span class="sd">                       Path to the profile index file</span>
 <span class="sd">    history          : MesaData</span>
 <span class="sd">                       MesaData object containing history information from</span>
@@ -710,46 +721,48 @@
 <span class="sd">                       MesaProfileIndex from profiles in `self.index_path`</span>
 <span class="sd">    profile_numbers  : numpy_array</span>
 <span class="sd">                       Result of calling `self.profiles.profile_numbers`. Just</span>
-<span class="sd">                       the profile numbers of the simulation in order of </span>
+<span class="sd">                       the profile numbers of the simulation in order of</span>
 <span class="sd">                       corresponding model numbers.</span>
 <span class="sd">    model_numbers    : numpy_array</span>
-<span class="sd">                       Result of calling `self.profiles.model_numbers`. Just </span>
-<span class="sd">                       the model numbers of the simulations that have </span>
+<span class="sd">                       Result of calling `self.profiles.model_numbers`. Just</span>
+<span class="sd">                       the model numbers of the simulations that have</span>
 <span class="sd">                       corresponding profiles in ascending order.</span>
 <span class="sd">    </span>
 <span class="sd">    profile_dict     : dictionary</span>
-<span class="sd">                       Stores MesaData objects from profiles. Keys to this </span>
+<span class="sd">                       Stores MesaData objects from profiles. Keys to this</span>
 <span class="sd">                       dictionary are profile numbers, so presumably</span>
 <span class="sd">                       `self.profile_dict(5)` would yield the MesaData object</span>
 <span class="sd">                       obtained from the file `profile5.data` (assuming</span>
 <span class="sd">                       reasonable defaults) if such a profile was ever accessed.</span>
-<span class="sd">                       Will remain empty if memoization is shut off.         </span>
+<span class="sd">                       Will remain empty if memoization is shut off.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_path</span> <span class="o">=</span> <span class="s">&#39;LOGS&#39;</span><span class="p">,</span> <span class="n">profile_prefix</span> <span class="o">=</span> <span class="s">&#39;profile&#39;</span><span class="p">,</span>
-                 <span class="n">profile_suffix</span> <span class="o">=</span> <span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="n">history_file</span> <span class="o">=</span> <span class="s">&#39;history.data&#39;</span><span class="p">,</span>
-                 <span class="n">index_file</span> <span class="o">=</span> <span class="s">&#39;profiles.index&#39;</span><span class="p">,</span> <span class="n">memoize_profiles</span> <span class="o">=</span> <span class="bp">True</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_path</span><span class="o">=</span><span class="s">&#39;LOGS&#39;</span><span class="p">,</span> <span class="n">profile_prefix</span><span class="o">=</span><span class="s">&#39;profile&#39;</span><span class="p">,</span>
+                 <span class="n">profile_suffix</span><span class="o">=</span><span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="n">history_file</span><span class="o">=</span><span class="s">&#39;history.data&#39;</span><span class="p">,</span>
+                 <span class="n">index_file</span><span class="o">=</span><span class="s">&#39;profiles.index&#39;</span><span class="p">,</span> <span class="n">memoize_profiles</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span> <span class="o">=</span> <span class="n">log_path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">profile_prefix</span> <span class="o">=</span> <span class="n">profile_prefix</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">profile_suffix</span> <span class="o">=</span> <span class="n">profile_suffix</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">history_file</span> <span class="o">=</span> <span class="n">history_file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">index_file</span> <span class="o">=</span> <span class="n">index_file</span>
-
+        
         <span class="c"># Check if log_path and files are dir/files.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">BadPathError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span> <span class="o">+</span> <span class="s">&#39; is not a valid directory.&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_file</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_file</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history_path</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">BadPathError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history_file</span> <span class="o">+</span> <span class="s">&#39; not found in &#39;</span> <span class="o">+</span>
                                <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span> <span class="o">+</span> <span class="s">&#39;.&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_file</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">index_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_file</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index_path</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">BadPathError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index_file</span> <span class="o">+</span> <span class="s">&#39; not found in &#39;</span> <span class="o">+</span>
                                <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span> <span class="o">+</span> <span class="s">&#39;.&#39;</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">history_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_file</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">index_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_file</span>
+        
         <span class="bp">self</span><span class="o">.</span><span class="n">memoize_profiles</span> <span class="o">=</span> <span class="n">memoize_profiles</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">read_logs</span><span class="p">()</span>
-
+    
 <div class="viewcode-block" id="MesaLogDir.read_logs"><a class="viewcode-back" href="../MesaLogDir.html#mesa_reader.MesaLogDir.read_logs">[docs]</a>    <span class="k">def</span> <span class="nf">read_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Read (or re-read) data from the history and profile index.</span>
 <span class="sd">        </span>
@@ -769,7 +782,7 @@
 <span class="sd">        </span>
 <span class="sd">        Note</span>
 <span class="sd">        ----</span>
-<span class="sd">        This, if called after initialization, will empty `self.profile_dict`, </span>
+<span class="sd">        This, if called after initialization, will empty `self.profile_dict`,</span>
 <span class="sd">        erasing all memo-ized profiles.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         
@@ -779,8 +792,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">profile_numbers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profiles</span><span class="o">.</span><span class="n">profile_numbers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_numbers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profiles</span><span class="o">.</span><span class="n">model_numbers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">profile_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        
-</div>
+    </div>
 <div class="viewcode-block" id="MesaLogDir.have_profile_with_model_number"><a class="viewcode-back" href="../MesaLogDir.html#mesa_reader.MesaLogDir.have_profile_with_model_number">[docs]</a>    <span class="k">def</span> <span class="nf">have_profile_with_model_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m_num</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Checks to see if a model number has a corresponding profile number.</span>
 <span class="sd">        </span>
@@ -797,7 +809,7 @@
 <span class="sd">        </span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">profiles</span><span class="o">.</span><span class="n">have_profile_with_model_number</span><span class="p">(</span><span class="n">m_num</span><span class="p">)</span>
-</div>
+    </div>
 <div class="viewcode-block" id="MesaLogDir.have_profile_with_profile_number"><a class="viewcode-back" href="../MesaLogDir.html#mesa_reader.MesaLogDir.have_profile_with_profile_number">[docs]</a>    <span class="k">def</span> <span class="nf">have_profile_with_profile_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_num</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Checks to see if a given number is a valid profile number.</span>
 <span class="sd">        </span>
@@ -805,15 +817,14 @@
 <span class="sd">        ----------</span>
 <span class="sd">        p_num : int</span>
 <span class="sd">                profile number to be checked</span>
-<span class="sd">                </span>
+<span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        bool</span>
 <span class="sd">            True if profile number is in `self.profile_numbers`, otherwise</span>
 <span class="sd">            False.&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">profiles</span><span class="o">.</span><span class="n">have_profile_with_profile_number</span><span class="p">(</span><span class="n">p_num</span><span class="p">)</span>
-        
-</div>
+    </div>
 <div class="viewcode-block" id="MesaLogDir.profile_with_model_number"><a class="viewcode-back" href="../MesaLogDir.html#mesa_reader.MesaLogDir.profile_with_model_number">[docs]</a>    <span class="k">def</span> <span class="nf">profile_with_model_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m_num</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Converts a model number to a corresponding profile number</span>
 <span class="sd">        </span>
@@ -828,8 +839,8 @@
 <span class="sd">            profile number that corresponds to `m_num`.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">profiles</span><span class="o">.</span><span class="n">profile_with_model_number</span><span class="p">(</span><span class="n">m_num</span><span class="p">)</span>
-</div>
-<div class="viewcode-block" id="MesaLogDir.profile_data"><a class="viewcode-back" href="../MesaLogDir.html#mesa_reader.MesaLogDir.profile_data">[docs]</a>    <span class="k">def</span> <span class="nf">profile_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_number</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">profile_number</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+    </div>
+<div class="viewcode-block" id="MesaLogDir.profile_data"><a class="viewcode-back" href="../MesaLogDir.html#mesa_reader.MesaLogDir.profile_data">[docs]</a>    <span class="k">def</span> <span class="nf">profile_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_number</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">profile_number</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Generate or retrieve MesaData from a model or profile number.</span>
 <span class="sd">        </span>
 <span class="sd">        If both a model number and a profile number is given, the model number</span>
@@ -842,14 +853,14 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        model_number   : int, optional</span>
-<span class="sd">                         model number for the profile MesaData object desired. </span>
+<span class="sd">                         model number for the profile MesaData object desired.</span>
 <span class="sd">                         Default is -1, corresponding to the last model number.</span>
 <span class="sd">        profile_number : int, optional</span>
 <span class="sd">                         profile number for the profile MesaData object desired.</span>
 <span class="sd">                         Default is -1, corresponding to the last model number.</span>
 <span class="sd">                         If both `model_number` and `profile_number` are given,</span>
 <span class="sd">                         `profile_number` is ignored.</span>
-<span class="sd">                         </span>
+<span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        MesaData</span>
@@ -863,18 +874,18 @@
                 <span class="n">to_use</span> <span class="o">=</span> <span class="n">profile_number</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">to_use</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profile_with_model_number</span><span class="p">(</span><span class="n">model_number</span><span class="p">)</span>
-
+        
         <span class="k">if</span> <span class="n">to_use</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">profile_dict</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">profile_dict</span><span class="p">[</span><span class="n">to_use</span><span class="p">]</span>
-
-        <span class="n">file_name</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">profile_prefix</span>
-                     <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">to_use</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">profile_suffix</span><span class="p">)</span>
+        
+        <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">,</span>
+                                 <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">profile_prefix</span> <span class="o">+</span>
+                                  <span class="nb">str</span><span class="p">(</span><span class="n">to_use</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">profile_suffix</span><span class="p">))</span>
         <span class="n">p</span> <span class="o">=</span> <span class="n">MesaData</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">memoize_profiles</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">profile_dict</span><span class="p">[</span><span class="n">to_use</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span>
         <span class="k">return</span> <span class="n">p</span>
-
-</div>
+    </div>
 <div class="viewcode-block" id="MesaLogDir.select_models"><a class="viewcode-back" href="../MesaLogDir.html#mesa_reader.MesaLogDir.select_models">[docs]</a>    <span class="k">def</span> <span class="nf">select_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">keys</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Yields model numbers for profiles that satisfy a given criteria.</span>
 <span class="sd">        </span>
@@ -890,21 +901,21 @@
 <span class="sd">               for `keys` that returns a boolean. Should evaluate to `True`</span>
 <span class="sd">               when condition is met and `False` otherwise.</span>
 <span class="sd">        keys : strings</span>
-<span class="sd">               Name of data categories from `self.history.bulk_names` whose </span>
+<span class="sd">               Name of data categories from `self.history.bulk_names` whose</span>
 <span class="sd">               values are to be used in the arguments to `f`, in the same order</span>
 <span class="sd">               that they appear as arguments in `f`.</span>
-<span class="sd">               </span>
+<span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        numpy_array </span>
+<span class="sd">        numpy_array</span>
 <span class="sd">                    Array of model numbers that have corresponding profiles</span>
 <span class="sd">                    where the condition given by `f` is `True`.</span>
-<span class="sd">                    </span>
+<span class="sd">        </span>
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        KeyError</span>
 <span class="sd">            If any of the `keys` are invalid history keys.</span>
-<span class="sd">                    </span>
+<span class="sd">        </span>
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; l = MesaLogDir()</span>
@@ -924,7 +935,8 @@
         <span class="k">for</span> <span class="n">m_num</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_numbers</span><span class="p">:</span>
             <span class="n">this_input</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
-                <span class="n">this_input</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">data_at_model_number</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">m_num</span><span class="p">))</span>
+                <span class="n">this_input</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">data_at_model_number</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">m_num</span><span class="p">))</span>
             <span class="n">inputs</span><span class="p">[</span><span class="n">m_num</span><span class="p">]</span> <span class="o">=</span> <span class="n">this_input</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">inputs</span><span class="p">[</span><span class="n">m_num</span><span class="p">])</span> <span class="k">for</span> <span class="n">m_num</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_numbers</span><span class="p">])</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_numbers</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span></div></div>

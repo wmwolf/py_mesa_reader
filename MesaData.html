@@ -117,8 +117,8 @@ standard logs directory for accessing the history data.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="14%" />
-<col width="22%" />
-<col width="65%" />
+<col width="17%" />
+<col width="69%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td>file_name</td>
@@ -126,8 +126,8 @@ standard logs directory for accessing the history data.</p>
 <td>Path to file from which the data is read.</td>
 </tr>
 <tr class="row-even"><td>bulk_data</td>
-<td>astropy.table.Table</td>
-<td>The main data (line 6 and below) in astropy table format.
+<td>numpy recarray</td>
+<td>The main data (line 6 and below) in record array format.
 Primarily accessed via the <cite>data</cite> method.</td>
 </tr>
 <tr class="row-odd"><td>bulk_names</td>
@@ -137,9 +137,8 @@ inputs for <cite>data</cite>. Essentially the column names in line
 4 of <cite>file_name</cite>.</td>
 </tr>
 <tr class="row-even"><td>header_data</td>
-<td>astroy.table.Table</td>
-<td>Header data (line 2 of <cite>file_name</cite>) in astropy table
-format.</td>
+<td>dict</td>
+<td>Header data (line 2 of <cite>file_name</cite>) in dict format</td>
 </tr>
 <tr class="row-odd"><td>header_names</td>
 <td>list</td>

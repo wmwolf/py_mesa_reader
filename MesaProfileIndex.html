@@ -111,9 +111,9 @@ of the default name.</p>
 <p class="rubric">Attributes</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="23%" />
-<col width="21%" />
-<col width="57%" />
+<col width="25%" />
+<col width="13%" />
+<col width="62%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td>file_name</td>
@@ -121,8 +121,9 @@ of the default name.</p>
 <td>path to the profile index file</td>
 </tr>
 <tr class="row-even"><td>index_data</td>
-<td>astropy.table.Table</td>
-<td>Astropy table containing all index data.</td>
+<td>dict</td>
+<td>dictionary containing all index data in numpy
+arrays.</td>
 </tr>
 <tr class="row-odd"><td>model_number_string</td>
 <td>string</td>
@@ -220,7 +221,7 @@ otherwise.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>bool</strong> :</p>
 <blockquote class="last">
-<div><p>True if <cite>profile_number</cite> has a corresponding entry in the index. 
+<div><p>True if <cite>profile_number</cite> has a corresponding entry in the index.
 False otherwise.</p>
 </div></blockquote>
 </td>
@@ -287,10 +288,11 @@ returns it. Otherwise throws an error.</p>
 <dt id="mesa_reader.MesaProfileIndex.read_index">
 <tt class="descname">read_index</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/mesa_reader.html#MesaProfileIndex.read_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaProfileIndex.read_index" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read (or re-read) data from <cite>self.file_name</cite>.</p>
-<p>Read the file into an astropy table, sorting the table in order of
+<p>Read the file into an numpy array, sorting the table in order of
 increasing model numbers and establishes the <cite>profile_numbers</cite> and
-<cite>model_numbers</cite> attributes. Called automatically at instantiation, but
-may be called again to refresh data.</p>
+<cite>model_numbers</cite> attributes. Converts data and names into a dictionary.
+Called automatically at instantiation, but may be called again to
+refresh data.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
