@@ -1,7 +1,6 @@
 import os
 
 import numpy as np
-from astropy.io import ascii as io_ascii
 
 
 class KeyError(Exception):
@@ -66,51 +65,32 @@ class MesaData:
     ----------
     file_name    : string
                    Path to file from which the data is read.
-    bulk_data    : astropy.table.Table
-                   The main data (line 6 and below) in astropy table format.
+    bulk_data    : numpy recarray
+                   The main data (line 6 and below) in record array format.
                    Primarily accessed via the `data` method.
     bulk_names   : list
                    List of all available data column names that are valid
                    inputs for `data`. Essentially the column names in line
                    4 of `file_name`.
-    header_data  : astroy.table.Table
-                   Header data (line 2 of `file_name`) in astropy table
-                   format.
+    header_data  : dict
+                   Header data (line 2 of `file_name`) in dict format
     header_names : list
                    List of all available header dolumn names that are valid
                    inputs for `header`. Essentially the column names in line
                    1 of `file_name`.
     '''
     
-    data_reader = io_ascii.get_reader(Reader=io_ascii.Basic)
-    data_reader.header.splitter.delimiter = ' '
-    data_reader.data.splitter.delimiter = ' '
-    data_reader.header.start_line = 4
-    data_reader.data.start_line = 5
-    data_reader.data.end_line = None
-    data_reader.header.comment = r'\s*#'
-    data_reader.data.comment = r'\s*#'
     
-    hdr_reader = io_ascii.get_reader(Reader=io_ascii.Basic)
-    hdr_reader.header.splitter.delimiter = ' '
-    hdr_reader.data.splitter.delimiter = ' '
-    hdr_reader.header.start_line = 1
-    hdr_reader.data.start_line = 2
-    hdr_reader.data.end_line = 3
-    hdr_reader.header.comment = r'\s*#'
-    hdr_reader.data.comment = r'\s*#'
+    header_names_line = 2
+    bulk_names_line = 6
     
     @classmethod
-    def set_header_rows(class_, name_start=1, data_start=2, data_end=3):
-        class_.hdr_reader.header.start_line = name_start
-        class_.hdr_reader.data.start_line = data_start
-        class_.hdr_reader.data.end_line = data_end
-    
+    def set_header_name_line(class_, name_line=2):
+        class_.header_names_line = name_line
+        
     @classmethod
-    def set_data_rows(class_, name_start=4, data_start=5, data_end=None):
-        class_.data_reader.header.start_line = name_start
-        class_.data_reader.data.start_line = data_start
-        class_.data_reader.data.end_line = data_end
+    def set_data_rows(class_, name_line=6):
+        class_.bulk_names_line = name_line
     
     def __init__(self, file_name='./LOGS/history.data'):
         '''Make a MesaData object from a Mesa output file.
@@ -152,10 +132,18 @@ class MesaData:
         ----------
         None
         '''
-        self.bulk_data = self.data_reader.read(self.file_name)
-        self.bulk_names = self.bulk_data.colnames
-        self.header_data = self.hdr_reader.read(self.file_name)
-        self.header_names = self.header_data.colnames
+        self.bulk_data = np.genfromtxt(self.file_name,
+            skip_header=MesaData.bulk_names_line - 1, names=True, dtype=None)
+        self.bulk_names = self.bulk_data.dtype.names
+        with open(self.file_name) as f:
+            for i, line in enumerate(f):
+                if i == MesaData.header_names_line - 1:
+                    self.header_names = line.split()
+                elif i == MesaData.header_names_line:
+                    header_data = [eval(datum) for datum in line.split()]
+                elif i > MesaData.header_names_line:
+                    break
+        self.header_data = dict(zip(self.header_names, header_data))
         self.remove_backups()
     
     def data(self, key):
@@ -201,7 +189,7 @@ class MesaData:
         '''
         if not self.in_data(key):
             raise KeyError("'" + str(key) + "' is not a valid data type.")
-        return np.array(self.bulk_data[key])
+        return self.bulk_data[key]
     
     def header(self, key):
         '''Accesses the header, returning a scalar the appropriate data
@@ -245,7 +233,7 @@ class MesaData:
         
         if not self.in_header(key):
             raise KeyError("'" + str(key) + "' is not a valid header name.")
-        return self.header_data[key][0]
+        return self.header_data[key]
     
     def is_history(self):
         '''Determine if the source file is a history file
@@ -412,7 +400,7 @@ class MesaData:
             return None
         if dbg:
             print("Removing {} lines.".format(len(to_remove)))
-        self.bulk_data.remove_rows(to_remove)
+        self.bulk_data = np.delete(self.bulk_data, to_remove)
     
     def __getattr__(self, method_name):
         if self.in_data(method_name):
@@ -421,6 +409,12 @@ class MesaData:
             return self.header(method_name)
         else:
             raise AttributeError(method_name)
+    
+    def _file_len(fname):
+        with open(fname) as f:
+            for i, l in enumerate(f):
+                pass
+        return i + 1
 
 
 class MesaProfileIndex:
@@ -443,8 +437,9 @@ class MesaProfileIndex:
     ----------
     file_name             : string
                             path to the profile index file
-    index_data            : astropy.table.Table
-                            Astropy table containing all index data.
+    index_data            : dict
+                            dictionary containing all index data in numpy
+                            arrays.
     model_number_string   : string
                             header name of the model number column in
                             `file_name`
@@ -457,26 +452,22 @@ class MesaProfileIndex:
     model_numbers         : numpy_array
                             Sorted list of all available model numbers.
     '''
-    index_reader = io_ascii.get_reader(Reader=io_ascii.NoHeader)
-    index_reader.data.splitter.delimiter = ' '
-    index_reader.data.start_line = 1
-    index_reader.data.end_line = None
-    index_reader.data.comment = r'\s*#'
+    
+    index_start_line = 2
+    index_end = None
     index_names = ['model_numbers', 'priorities', 'profile_numbers']
-    index_reader.names = index_names
     
     @classmethod
-    def set_index_rows(class_, index_start=1, index_end=None):
-        class_.index_reader.data.start_line = index_start
-        class_.index_reader.data.end_line = index_end
+    def set_index_rows(class_, index_start=2, index_end=None):
+        class_.index_start_line = index_start
+        class_.index_end_line = index_end
         return index_start, index_end
     
     @classmethod
     def set_index_names(class_, name_arr):
         class_.index_names = name_arr
-        class_.index_reader.names = class_.index_names
         return name_arr
-    
+        
     def __init__(self, file_name='./LOGS/profiles.index'):
         self.file_name = file_name
         self.read_index()
@@ -484,10 +475,11 @@ class MesaProfileIndex:
     def read_index(self):
         '''Read (or re-read) data from `self.file_name`.
         
-        Read the file into an astropy table, sorting the table in order of
+        Read the file into an numpy array, sorting the table in order of
         increasing model numbers and establishes the `profile_numbers` and
-        `model_numbers` attributes. Called automatically at instantiation, but
-        may be called again to refresh data.
+        `model_numbers` attributes. Converts data and names into a dictionary.
+        Called automatically at instantiation, but may be called again to
+        refresh data.
         
         Parameters
         ----------
@@ -496,10 +488,12 @@ class MesaProfileIndex:
         Returns
         -------
         None'''
-        self.index_data = MesaProfileIndex.index_reader.read(self.file_name)
+        self.index_data = np.genfromtxt(self.file_name,
+            skip_header=MesaProfileIndex.index_start_line - 1, dtype=None)
         self.model_number_string = MesaProfileIndex.index_names[0]
         self.profile_number_string = MesaProfileIndex.index_names[-1]
-        self.index_data.sort(self.model_number_string)
+        self.index_data = self.index_data[np.argsort(self.index_data[:,0])]
+        self.index_data = dict(zip(MesaProfileIndex.index_names, self.index_data.T))
         self.profile_numbers = self.data(self.profile_number_string)
         self.model_numbers = self.data(self.model_number_string)
     
@@ -586,7 +580,7 @@ class MesaProfileIndex:
         return np.take(self.data(self.profile_number_string), indices[0])[0]
     
     def __getattr__(self, method_name):
-        if method_name in self.index_data.colnames:
+        if method_name in self.index_data.keys():
             return self.data(method_name)
         else:
             raise AttributeError(method_name)
