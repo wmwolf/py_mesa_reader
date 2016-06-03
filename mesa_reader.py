@@ -85,12 +85,12 @@ class MesaData:
     bulk_names_line = 6
 
     @classmethod
-    def set_header_name_line(class_, name_line=2):
-        class_.header_names_line = name_line
+    def set_header_name_line(cls, name_line=2):
+        cls.header_names_line = name_line
 
     @classmethod
-    def set_data_rows(class_, name_line=6):
-        class_.bulk_names_line = name_line
+    def set_data_rows(cls, name_line=6):
+        cls.bulk_names_line = name_line
 
     def __init__(self, file_name='./LOGS/history.data'):
         '''Make a MesaData object from a Mesa output file.
@@ -458,14 +458,14 @@ class MesaProfileIndex:
     index_names = ['model_numbers', 'priorities', 'profile_numbers']
 
     @classmethod
-    def set_index_rows(class_, index_start=2, index_end=None):
-        class_.index_start_line = index_start
-        class_.index_end_line = index_end
+    def set_index_rows(cls, index_start=2, index_end=None):
+        cls.index_start_line = index_start
+        cls.index_end_line = index_end
         return index_start, index_end
 
     @classmethod
-    def set_index_names(class_, name_arr):
-        class_.index_names = name_arr
+    def set_index_names(cls, name_arr):
+        cls.index_names = name_arr
         return name_arr
 
     def __init__(self, file_name='./LOGS/profiles.index'):
