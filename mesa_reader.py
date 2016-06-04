@@ -75,7 +75,7 @@ class MesaData:
     header_data  : dict
                    Header data (line 2 of `file_name`) in dict format
     header_names : list
-                   List of all available header dolumn names that are valid
+                   List of all available header column names that are valid
                    inputs for `header`. Essentially the column names in line
                    1 of `file_name`.
     '''
@@ -370,7 +370,7 @@ class MesaData:
             return index[0]
 
     def remove_backups(self, dbg=False):
-        '''Cleases a history file of backups and restarts
+        '''Cleanses a history file of backups and restarts
 
         If the file is a history file, goes through and ensure that the
         model_number data are monotonically increasing. It removes rows of data
@@ -409,12 +409,6 @@ class MesaData:
             return self.header(method_name)
         else:
             raise AttributeError(method_name)
-
-    def _file_len(fname):
-        with open(fname) as f:
-            for i, l in enumerate(f):
-                pass
-        return i + 1
 
 
 class MesaProfileIndex:
