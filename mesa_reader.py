@@ -410,12 +410,6 @@ class MesaData:
         else:
             raise AttributeError(method_name)
 
-    def _file_len(fname):
-        with open(fname) as f:
-            for i, l in enumerate(f):
-                pass
-        return i + 1
-
 
 class MesaProfileIndex:
 
