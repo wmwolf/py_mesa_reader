@@ -67,7 +67,6 @@ class MesaData:
         `header`. Essentially the column names in line 1 of `file_name`.
     """
 
-
     header_names_line = 2
     bulk_names_line = 6
 
@@ -100,6 +99,10 @@ class MesaData:
             File name to be read in. Default is 'LOGS/history.data'
         """
         self.file_name = file_name
+        self.bulk_data = np.ndarray()
+        self.bulk_names = ()
+        self.header_data = dict()
+        self.header_names = []
         self.read_data()
 
     def read_data(self):
@@ -109,10 +112,6 @@ class MesaData:
         useful if the data file has been changed since it was first read in or
         if the class methods MesaData.set_header_rows or MesaData.set_data_rows
         have been used to alter how the data have been read in.
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------
@@ -227,16 +226,12 @@ class MesaData:
         True. Otherwise return False. This is used in determining whether or not
         to cleanse the file of backups and restarts in the MesaData.read_data.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         bool
             True if file is a history file, otherwise False
         """
-        return ('model_number' in self.bulk_names)
+        return 'model_number' in self.bulk_names
 
     def in_header(self, key):
         """Determine if `key` is an available header data category.
@@ -446,6 +441,11 @@ class MesaProfileIndex:
 
     def __init__(self, file_name='./LOGS/profiles.index'):
         self.file_name = file_name
+        self.index_data = None
+        self.model_number_string = ''
+        self.profile_number_string = ''
+        self.profile_numbers = None
+        self.model_numbers = None
         self.read_index()
 
     def read_index(self):
@@ -457,20 +457,17 @@ class MesaProfileIndex:
         Called automatically at instantiation, but may be called again to
         refresh data.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         None
         """
-        self.index_data = np.genfromtxt(self.file_name,
+        temp_index_data = np.genfromtxt(self.file_name,
             skip_header=MesaProfileIndex.index_start_line - 1, dtype=None)
         self.model_number_string = MesaProfileIndex.index_names[0]
         self.profile_number_string = MesaProfileIndex.index_names[-1]
-        self.index_data = self.index_data[np.argsort(self.index_data[:,0])]
-        self.index_data = dict(zip(MesaProfileIndex.index_names, self.index_data.T))
+        self.index_data = self.index_data[np.argsort(self.index_data[:, 0])]
+        self.index_data = dict(zip(MesaProfileIndex.index_names,
+                                   temp_index_data.T))
         self.profile_numbers = self.data(self.profile_number_string)
         self.model_numbers = self.data(self.model_number_string)
 
@@ -512,7 +509,7 @@ class MesaProfileIndex:
             True if `model_number` has a corresponding profile number. False
             otherwise.
         """
-        return (model_number in self.data(self.model_number_string))
+        return model_number in self.data(self.model_number_string)
 
     def have_profile_with_profile_number(self, profile_number):
         """Determines if given `profile_number` is a valid profile number.
@@ -528,7 +525,7 @@ class MesaProfileIndex:
             True if `profile_number` has a corresponding entry in the index.
             False otherwise.
         """
-        return (profile_number in self.data(self.profile_number_string))
+        return profile_number in self.data(self.profile_number_string)
 
     def profile_with_model_number(self, model_number):
         """Converts a model number to a profile number if possible.
@@ -659,6 +656,13 @@ class MesaLogDir:
                                self.log_path + '.')
 
         self.memoize_profiles = memoize_profiles
+
+        self.history = None
+        self.history_data = None
+        self.profiles = None
+        self.profile_numbers = None
+        self.model_numbers = None
+        self.profile_dict = None
         self.read_logs()
 
     def read_logs(self):
@@ -669,10 +673,6 @@ class MesaLogDir:
         instantiation, but can be recalled by the user if for some reason the
         data needs to be refreshed (for instance, after changing some of the
         reader methods to read in specially-formatted output.)
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------
@@ -763,7 +763,6 @@ class MesaLogDir:
         mesa_reader.MesaData
             Data for profile with desired model/profile number.
         """
-        to_use = -1
         if model_number == -1:
             if profile_number == -1:
                 to_use = self.profile_numbers[-1]
