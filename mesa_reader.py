@@ -3,12 +3,6 @@ import os
 import numpy as np
 
 
-class KeyError(Exception):
-
-    def __init__(self, msg):
-        Exception.__init__(self, msg)
-
-
 class ProfileError(Exception):
 
     def __init__(self, msg):
@@ -413,7 +407,7 @@ class MesaProfileIndex:
     Parameters
     ----------
     file_name : str, optional
-        Path to the profile index file to be read in. Default is 
+        Path to the profile index file to be read in. Default is
         'LOGS/profiles.index', which should work when the working directory is
         a standard work directory and the logs directory is of the default
         name.
@@ -582,19 +576,19 @@ class MesaLogDir:
     log_path : str, optional
         Path to the logs directory, default is 'LOGS'
     profile_prefix : str, optional
-        Prefix before profile number in profile file names, default is 
+        Prefix before profile number in profile file names, default is
         'profile'
     profile_suffix : str, optional
         Suffix after profile number and period for profile file names, default
         is 'data'
     history_file : str, optional
-        Name of the history file in the logs directory, default is 
+        Name of the history file in the logs directory, default is
         'history.data'
     index_file : str, optional
         Name of the profiles index file in the logs directory, default is
         'profiles.index'
     memoize_profiles : bool, optional
-        Determines whether or not profiles will be "memo-ized", default is 
+        Determines whether or not profiles will be "memo-ized", default is
         True. If memoized, once a profile is called into existence, it is saved
         so that it need not be read in again. Good for quick, clean, repeated
         access of a profile, but bad for reading in many profiles for one-time
@@ -636,7 +630,7 @@ class MesaLogDir:
     profile_dict : dict
         Stores MesaData objects from profiles. Keys to this dictionary are
         profile numbers, so presumably `self.profile_dict(5)` would yield the
-        MesaData object obtained from the file `profile5.data` (assuming 
+        MesaData object obtained from the file `profile5.data` (assuming
         reasonable defaults) if such a profile was ever accessed. Will remain
         empty if memoization is shut off.
     """
