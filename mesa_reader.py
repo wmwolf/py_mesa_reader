@@ -99,10 +99,10 @@ class MesaData:
             File name to be read in. Default is 'LOGS/history.data'
         """
         self.file_name = file_name
-        self.bulk_data = np.ndarray()
-        self.bulk_names = ()
-        self.header_data = dict()
-        self.header_names = []
+        self.bulk_data = None
+        self.bulk_names = None
+        self.header_data = None
+        self.header_names = None
         self.read_data()
 
     def read_data(self):
@@ -465,7 +465,7 @@ class MesaProfileIndex:
             skip_header=MesaProfileIndex.index_start_line - 1, dtype=None)
         self.model_number_string = MesaProfileIndex.index_names[0]
         self.profile_number_string = MesaProfileIndex.index_names[-1]
-        self.index_data = self.index_data[np.argsort(self.index_data[:, 0])]
+        self.index_data = temp_index_data[np.argsort(temp_index_data[:, 0])]
         self.index_data = dict(zip(MesaProfileIndex.index_names,
                                    temp_index_data.T))
         self.profile_numbers = self.data(self.profile_number_string)
