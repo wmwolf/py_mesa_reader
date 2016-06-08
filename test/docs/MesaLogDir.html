@@ -1,0 +1,381 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>MesaLogDir &mdash; PyMesaReader 0.2.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="PyMesaReader 0.2.0 documentation" href="../index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> PyMesaReader
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="simple">
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">PyMesaReader</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>MesaLogDir</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/docs/MesaLogDir.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="mesalogdir">
+<h1>MesaLogDir<a class="headerlink" href="#mesalogdir" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-mesa_reader"></span><dl class="class">
+<dt id="mesa_reader.MesaLogDir">
+<em class="property">class </em><code class="descclassname">mesa_reader.</code><code class="descname">MesaLogDir</code><span class="sig-paren">(</span><em>log_path='LOGS'</em>, <em>profile_prefix='profile'</em>, <em>profile_suffix='data'</em>, <em>history_file='history.data'</em>, <em>index_file='profiles.index'</em>, <em>memoize_profiles=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mesa_reader.html#MesaLogDir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaLogDir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure providing access to both history and profile output from MESA</p>
+<p>Provides access for accessing the history and profile data of a MESA run
+by linking profiles to the history through model numbers.</p>
+<dl class="docutils">
+<dt>log_path <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd>Path to the logs directory, default is &#8216;LOGS&#8217;</dd>
+<dt>profile_prefix <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd>Prefix before profile number in profile file names, default is
+&#8216;profile&#8217;</dd>
+<dt>profile_suffix <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd>Suffix after profile number and period for profile file names, default
+is &#8216;data&#8217;</dd>
+<dt>history_file <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd>Name of the history file in the logs directory, default is
+&#8216;history.data&#8217;</dd>
+<dt>index_file <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd>Name of the profiles index file in the logs directory, default is
+&#8216;profiles.index&#8217;</dd>
+<dt>memoize_profiles <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd>Determines whether or not profiles will be &#8220;memo-ized&#8221;, default is
+True. If memoized, once a profile is called into existence, it is saved
+so that it need not be read in again. Good for quick, clean, repeated
+access of a profile, but bad for reading in many profiles for one-time
+uses as it will hog memory.</dd>
+</dl>
+<dl class="docutils">
+<dt>log_path <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Path to the logs directory; used (re-)reading data in</dd>
+<dt>profile_prefix <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Prefix before profile number in profile file names</dd>
+<dt>profile_suffix <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Suffix after profile number and period for profile file names</dd>
+<dt>history_file <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Base name (not path) of the history file in the logs directory</dd>
+<dt>index_file <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Base name (not path) of the profiles index file in the logs directory</dd>
+<dt>memoize_profiles <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>Determines whether or not profiles will be &#8220;memo-ized&#8221;. Setting this
+after initialization will not delete profiles from memory. It will
+simply start/stop memoizing them. To clear out memoized profiles,
+re-read the data with <cite>self.read_logs()</cite></dd>
+<dt>history_path <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Path to the history data file</dd>
+<dt>index_path <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Path to the profile index file</dd>
+<dt>history <span class="classifier-delimiter">:</span> <span class="classifier">mesa_reader.MesaData</span></dt>
+<dd>MesaData object containing history information from <cite>self.history_path</cite></dd>
+<dt>history_data <span class="classifier-delimiter">:</span> <span class="classifier">mesa_reader.MesaData</span></dt>
+<dd>Alias for <cite>self.history</cite></dd>
+<dt>profiles <span class="classifier-delimiter">:</span> <span class="classifier">mesa_reader.MesaProfileIndex</span></dt>
+<dd>MesaProfileIndex from profiles in <cite>self.index_path</cite></dd>
+<dt>profile_numbers <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd>Result of calling <cite>self.profiles.profile_numbers</cite>. Just the profile
+numbers of the simulation in order of corresponding model numbers.</dd>
+<dt>model_numbers <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd>Result of calling <cite>self.profiles.model_numbers</cite>. Just the model numbers
+of the simulations that have corresponding profiles in ascending order.</dd>
+<dt>profile_dict <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd>Stores MesaData objects from profiles. Keys to this dictionary are
+profile numbers, so presumably <cite>self.profile_dict(5)</cite> would yield the
+MesaData object obtained from the file <cite>profile5.data</cite> (assuming
+reasonable defaults) if such a profile was ever accessed. Will remain
+empty if memoization is shut off.</dd>
+</dl>
+<dl class="method">
+<dt id="mesa_reader.MesaLogDir.have_profile_with_model_number">
+<code class="descname">have_profile_with_model_number</code><span class="sig-paren">(</span><em>m_num</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mesa_reader.html#MesaLogDir.have_profile_with_model_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaLogDir.have_profile_with_model_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks to see if a model number has a corresponding profile number.</p>
+<dl class="docutils">
+<dt>m_num <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>model number to be checked</dd>
+</dl>
+<dl class="docutils">
+<dt>bool</dt>
+<dd>True if the model number is in <cite>self.model_numbers</cite>, otherwise
+False.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="mesa_reader.MesaLogDir.have_profile_with_profile_number">
+<code class="descname">have_profile_with_profile_number</code><span class="sig-paren">(</span><em>p_num</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mesa_reader.html#MesaLogDir.have_profile_with_profile_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaLogDir.have_profile_with_profile_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks to see if a given number is a valid profile number.</p>
+<dl class="docutils">
+<dt>p_num <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>profile number to be checked</dd>
+</dl>
+<dl class="docutils">
+<dt>bool</dt>
+<dd>True if profile number is in <cite>self.profile_numbers</cite>, otherwise
+False.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="mesa_reader.MesaLogDir.profile_data">
+<code class="descname">profile_data</code><span class="sig-paren">(</span><em>model_number=-1</em>, <em>profile_number=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mesa_reader.html#MesaLogDir.profile_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaLogDir.profile_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate or retrieve MesaData from a model or profile number.</p>
+<p>If both a model number and a profile number is given, the model number
+takes precedence. If neither are given, the default is to return a
+MesaData object of the last profile (biggest model number). In either
+case, this generates (if it doesn&#8217;t already exist) or retrieves (if it
+has already been generated and memoized) a MesaData object from the
+corresponding profile data.</p>
+<dl class="docutils">
+<dt>model_number <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd>model number for the profile MesaData object desired. Default is
+-1, corresponding to the last model number.</dd>
+<dt>profile_number <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd>profile number for the profile MesaData object desired. Default is
+-1, corresponding to the last model number. If both <cite>model_number</cite>
+and <cite>profile_number</cite> are given, <cite>profile_number</cite> is ignored.</dd>
+</dl>
+<dl class="docutils">
+<dt>mesa_reader.MesaData</dt>
+<dd>Data for profile with desired model/profile number.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="mesa_reader.MesaLogDir.profile_with_model_number">
+<code class="descname">profile_with_model_number</code><span class="sig-paren">(</span><em>m_num</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mesa_reader.html#MesaLogDir.profile_with_model_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaLogDir.profile_with_model_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a model number to a corresponding profile number</p>
+<dl class="docutils">
+<dt>m_num <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>model number to be converted</dd>
+</dl>
+<dl class="docutils">
+<dt>int</dt>
+<dd>profile number that corresponds to <cite>m_num</cite>.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="mesa_reader.MesaLogDir.read_logs">
+<code class="descname">read_logs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mesa_reader.html#MesaLogDir.read_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaLogDir.read_logs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read (or re-read) data from the history and profile index.</p>
+<p>Reads in <cite>self.history_path</cite> and <cite>self.index_file</cite> for use in getting
+history data and profile information. This is automatically called at
+instantiation, but can be recalled by the user if for some reason the
+data needs to be refreshed (for instance, after changing some of the
+reader methods to read in specially-formatted output.)</p>
+<p>None</p>
+<p>This, if called after initialization, will empty <cite>self.profile_dict</cite>,
+erasing all memo-ized profiles.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mesa_reader.MesaLogDir.select_models">
+<code class="descname">select_models</code><span class="sig-paren">(</span><em>f</em>, <em>*keys</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mesa_reader.html#MesaLogDir.select_models"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaLogDir.select_models" title="Permalink to this definition">¶</a></dt>
+<dd><p>Yields model numbers for profiles that satisfy a given criteria.</p>
+<p>Given a function <cite>f</cite> of various time-domain (history) variables,
+<cite>*keys</cite> (i.e., categories in <cite>self.history.bulk_names</cite>), filters
+<cite>self.model_numbers</cite> and returns all model numbers that satisfy the
+criteria.</p>
+<dl class="docutils">
+<dt>f <span class="classifier-delimiter">:</span> <span class="classifier">function</span></dt>
+<dd>A function of the same number of parameters as strings given for
+<cite>keys</cite> that returns a boolean. Should evaluate to <cite>True</cite> when
+condition is met and <cite>False</cite> otherwise.</dd>
+<dt>keys <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Name of data categories from <cite>self.history.bulk_names</cite> whose values
+are to be used in the arguments to <cite>f</cite>, in the same order that they
+appear as arguments in <cite>f</cite>.</dd>
+</dl>
+<dl class="docutils">
+<dt>numpy.ndarray</dt>
+<dd>Array of model numbers that have corresponding profiles where the
+condition given by <cite>f</cite> is <cite>True</cite>.</dd>
+</dl>
+<dl class="docutils">
+<dt>KeyError</dt>
+<dd>If any of the <cite>keys</cite> are invalid history keys.</dd>
+</dl>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">l</span> <span class="o">=</span> <span class="n">MesaLogDir</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">is_old_and_bright</span><span class="p">(</span><span class="n">age</span><span class="p">,</span> <span class="n">log_lum</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">return</span> <span class="n">age</span> <span class="o">&gt;</span> <span class="mf">1e9</span> <span class="ow">and</span> <span class="n">log_lum</span> <span class="o">&gt;</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m_nums</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">select_models</span><span class="p">(</span><span class="n">is_old_and_bright</span><span class="p">,</span> <span class="s1">&#39;star_age&#39;</span><span class="p">,</span> <span class="s1">&#39;log_L&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here, <cite>m_nums</cite> will contain all model numbers that have profiles where
+the age is greater than a billion years and the luminosity is greater
+than 1000 Lsun, provided that &#8216;star_age&#8217; and &#8216;log_L&#8217; are in
+<cite>self.history.bulk_names</cite>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Bill Wolf and Josiah Schwab.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

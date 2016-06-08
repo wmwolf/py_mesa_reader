@@ -35,9 +35,13 @@ class MesaData:
     the following structure:
 
     line 1: header names
+
     line 2: header data
+
     line 3: blank
+
     line 4: main data names
+
     line 5: main data values
 
     This structure can be altered by using the class methods
@@ -85,11 +89,15 @@ class MesaData:
         the following structure:
 
         line 1: header names
-        line 2: header data
-        line 3: blank
-        line 4: main data names
-        line 5: main data values
 
+        line 2: header data
+
+        line 3: blank
+
+        line 4: main data names
+
+        line 5: main data values
+        
         This structure can be altered by using the class methods
         `MesaData.set_header_rows` and `MesaData.set_data_rows`.
 

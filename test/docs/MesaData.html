@@ -1,0 +1,416 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>MesaData &mdash; PyMesaReader 0.2.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="PyMesaReader 0.2.0 documentation" href="../index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> PyMesaReader
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="simple">
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">PyMesaReader</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>MesaData</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/docs/MesaData.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-mesa_reader">
+<span id="mesadata"></span><h1>MesaData<a class="headerlink" href="#module-mesa_reader" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="mesa_reader.MesaData">
+<em class="property">class </em><code class="descclassname">mesa_reader.</code><code class="descname">MesaData</code><span class="sig-paren">(</span><em>file_name='./LOGS/history.data'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mesa_reader.html#MesaData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure containing data from a Mesa output file.</p>
+<p>Reads a profile or history output file from mesa. Assumes a file with
+the following structure:</p>
+<p>line 1: header names
+line 2: header data
+line 3: blank
+line 4: main data names
+line 5: main data values</p>
+<p>This structure can be altered by using the class methods
+MesaData.set_header_rows and MesaData.set_data_rows.</p>
+<dl class="docutils">
+<dt>file_name <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd>File name to be read in. Default is &#8216;LOGS/history.data&#8217;, which works
+for scripts in a standard work directory with a standard logs directory
+for accessing the history data.</dd>
+</dl>
+<dl class="docutils">
+<dt>file_name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Path to file from which the data is read.</dd>
+<dt>bulk_data <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd>The main data (line 6 and below) in record array format. Primarily
+accessed via the <cite>data</cite> method.</dd>
+<dt>bulk_names <span class="classifier-delimiter">:</span> <span class="classifier">tuple of str</span></dt>
+<dd>Tuple of all available data column names that are valid inputs for
+<cite>data</cite>. Essentially the column names in line 4 of <cite>file_name</cite>.</dd>
+<dt>header_data <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd>Header data (line 2 of <cite>file_name</cite>) in dict format</dd>
+<dt>header_names <span class="classifier-delimiter">:</span> <span class="classifier">list of str</span></dt>
+<dd>List of all available header column names that are valid inputs for
+<cite>header</cite>. Essentially the column names in line 1 of <cite>file_name</cite>.</dd>
+</dl>
+<dl class="method">
+<dt id="mesa_reader.MesaData.data">
+<code class="descname">data</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mesa_reader.html#MesaData.data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accesses the data and returns a numpy array with the appropriate data</p>
+<p>Accepts a string key, like star_age (for history files) or logRho (for
+profile files) and returns the corresponding numpy array of data for
+that data type. Can also just use the shorthand methods that have the
+same name of the key.</p>
+<dl class="docutils">
+<dt>key <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Name of data. Must match a main data title in the source file.</dd>
+</dl>
+<dl class="docutils">
+<dt>numpy.ndarray</dt>
+<dd>Array of values for data corresponding to key at various time steps
+(history) or grid points (profile).</dd>
+</dl>
+<dl class="docutils">
+<dt>KeyError</dt>
+<dd>If <cite>key</cite> is an invalid key (i.e. not in <cite>self.bulk_names</cite>)</dd>
+</dl>
+<p>You can either call <cite>data</cite> explicitly with <cite>key</cite> as an argument, or get
+the same result by calling it implicitly by treating <cite>key</cite> as an
+attribute.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">MesaData</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="s1">&#39;star_age&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">star_age</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">==</span> <span class="n">y</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>In this case, x and y are the same because the non-existent method
+MesaData.star_age will direct to to the corresponding MesaData.data
+call.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mesa_reader.MesaData.data_at_model_number">
+<code class="descname">data_at_model_number</code><span class="sig-paren">(</span><em>key</em>, <em>m_num</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mesa_reader.html#MesaData.data_at_model_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.data_at_model_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return main data at a specific model number (for history files).</p>
+<p>Finds the index i where MesaData.data(&#8216;model_number&#8217;)[i] == m_num. Then
+returns MesaData.data(key)[i]. Essentially lets you use model numbers
+to index data.</p>
+<dl class="docutils">
+<dt>key <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Name of data. Must match a main data title in the source file.</dd>
+<dt>m_num <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Model number where you want to sample the data</dd>
+</dl>
+<dl class="docutils">
+<dt>float or int</dt>
+<dd>Value of MesaData.data(<cite>key</cite>) at the same index where
+MesaData.data(&#8216;model_number&#8217;) == <cite>m_num</cite></dd>
+</dl>
+<p>index_of_model_number : returns the index for sampling, not the value</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mesa_reader.MesaData.header">
+<code class="descname">header</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mesa_reader.html#MesaData.header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accesses the header, returning a scalar the appropriate data</p>
+<p>Accepts a string key, like version_number and returns the corresponding
+datum for that key. Can also just use the shorthand
+methods that have the same name of the key.</p>
+<dl class="docutils">
+<dt>key <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Name of data. Must match a main data title in the source file.</dd>
+</dl>
+<dl class="docutils">
+<dt>int or str or float</dt>
+<dd>Returns whatever value is below the corresponding key in the header
+lines of the source file.</dd>
+</dl>
+<dl class="docutils">
+<dt>KeyError</dt>
+<dd>If <cite>key</cite> is an invalid key (i.e. not in <cite>self.header_names</cite>)</dd>
+</dl>
+<p>Can call <cite>header</cite> explicitly with <cite>key</cite> as argument or implicitly,
+treating <cite>key</cite> as an attribute.</p>
+<p>In this case, x and y are the same because the non-existent method
+MesaData.version_number will first see if it can call
+MesaData.data(&#8216;version_number&#8217;). Then, realizing that this doesn&#8217;t make
+sense, it will instead call MesaData.header(&#8216;version_number&#8217;)</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">MesaData</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="s1">&#39;version_number&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">version_number</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">==</span> <span class="n">y</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="mesa_reader.MesaData.in_data">
+<code class="descname">in_data</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mesa_reader.html#MesaData.in_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.in_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if <cite>key</cite> is an available main data category.</p>
+<p>Checks if string <cite>key</cite> is a valid argument of MesaData.data. Returns
+True if it is, otherwise False</p>
+<dl class="docutils">
+<dt>key <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Candidate string for accessing main data. This is what you want
+to be able to use as an argument of MesaData.data.</dd>
+</dl>
+<dl class="docutils">
+<dt>bool</dt>
+<dd>True if <cite>key</cite> is a valid input to MesaData.data, otherwise False.</dd>
+</dl>
+<p>This is automatically called by MesaData.data, so the average user
+shouldn&#8217;t need to call it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mesa_reader.MesaData.in_header">
+<code class="descname">in_header</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mesa_reader.html#MesaData.in_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.in_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if <cite>key</cite> is an available header data category.</p>
+<p>Checks if string <cite>key</cite> is a valid argument of MesaData.header. Returns
+True if it is, otherwise False</p>
+<dl class="docutils">
+<dt>key <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Candidate string for accessing header data. This is what you want
+to be able to use as an argument of <cite>MesaData.header</cite>.</dd>
+</dl>
+<dl class="docutils">
+<dt>bool</dt>
+<dd>True if <cite>key</cite> is a valid input to MesaData.header, otherwise False.</dd>
+</dl>
+<p>This is automatically called by MesaData.header, so the average user
+shouldn&#8217;t need to call it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mesa_reader.MesaData.index_of_model_number">
+<code class="descname">index_of_model_number</code><span class="sig-paren">(</span><em>m_num</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mesa_reader.html#MesaData.index_of_model_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.index_of_model_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return index where MesaData.data(&#8216;model_number&#8217;) is <cite>m_num</cite>.</p>
+<p>Returns the index i where MesaData.data(&#8216;model_number&#8217;)[i] == m_num.</p>
+<dl class="docutils">
+<dt>m_num <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Model number where you want to sample data</dd>
+</dl>
+<dl class="docutils">
+<dt>int</dt>
+<dd>The index where MesaData.data(&#8216;model_number&#8217;) == <cite>m_num</cite></dd>
+</dl>
+<dl class="docutils">
+<dt>HistoryError</dt>
+<dd>If trying to access a non-history file</dd>
+<dt>ModelNumberError</dt>
+<dd>If zero or more than one model numbers matching <cite>m_num</cite> are found.</dd>
+</dl>
+<p>data_at_model_number : returns the datum of a specific key a model no.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mesa_reader.MesaData.is_history">
+<code class="descname">is_history</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mesa_reader.html#MesaData.is_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.is_history" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if the source file is a history file</p>
+<p>Checks if &#8216;model_number&#8217; is a valid key for self.data. If it is, return
+True. Otherwise return False. This is used in determining whether or not
+to cleanse the file of backups and restarts in the MesaData.read_data.</p>
+<dl class="docutils">
+<dt>bool</dt>
+<dd>True if file is a history file, otherwise False</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="mesa_reader.MesaData.read_data">
+<code class="descname">read_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mesa_reader.html#MesaData.read_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.read_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update data by re-reading from the original file name.</p>
+<p>This re-reads the data from the originally-provided file name. Mostly
+useful if the data file has been changed since it was first read in or
+if the class methods MesaData.set_header_rows or MesaData.set_data_rows
+have been used to alter how the data have been read in.</p>
+<p>None</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mesa_reader.MesaData.remove_backups">
+<code class="descname">remove_backups</code><span class="sig-paren">(</span><em>dbg=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mesa_reader.html#MesaData.remove_backups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.remove_backups" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cleanses a history file of backups and restarts</p>
+<p>If the file is a history file, goes through and ensure that the
+model_number data are monotonically increasing. It removes rows of data
+from all categories if there are earlier ones later in the file.</p>
+<dl class="docutils">
+<dt>dbg <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd>If True, will output how many lines are cleansed. Default is False</dd>
+</dl>
+<p>None</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Bill Wolf and Josiah Schwab.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
