@@ -1,7 +1,0 @@
-MesaLogDir
-========
-
-.. automodule:: mesa_reader
-
-.. autoclass:: MesaLogDir
-   :members:

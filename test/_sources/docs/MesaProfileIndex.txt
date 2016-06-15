@@ -1,7 +1,0 @@
-MesaProfileIndex
-========
-
-.. automodule:: mesa_reader
-
-.. autoclass:: MesaProfileIndex
-   :members:
