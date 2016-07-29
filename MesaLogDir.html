@@ -84,7 +84,7 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="MesaData.html">MesaData</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">MesaLogDir</a><ul class="simple">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">MesaLogDir</a><ul class="simple">
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="MesaProfileIndex.html">MesaProfileIndex</a></li>
@@ -112,7 +112,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -412,9 +412,9 @@ condition given by <cite>f</cite> is <cite>True</cite>.</p>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">l</span> <span class="o">=</span> <span class="n">MesaLogDir</span><span class="p">()</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">l</span> <span class="o">=</span> <span class="n">MesaLogDir</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">is_old_and_bright</span><span class="p">(</span><span class="n">age</span><span class="p">,</span> <span class="n">log_lum</span><span class="p">):</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="k">return</span> <span class="n">age</span> <span class="o">&gt;</span> <span class="mf">1e9</span> <span class="ow">and</span> <span class="n">log_lum</span> <span class="o">&gt;</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">return</span> <span class="n">age</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="n">e9</span> <span class="ow">and</span> <span class="n">log_lum</span> <span class="o">&gt;</span> <span class="mi">3</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">m_nums</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">select_models</span><span class="p">(</span><span class="n">is_old_and_bright</span><span class="p">,</span> <span class="s1">&#39;star_age&#39;</span><span class="p">,</span> <span class="s1">&#39;log_L&#39;</span><span class="p">)</span>
 </pre></div>
 </div>

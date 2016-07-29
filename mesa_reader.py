@@ -1,4 +1,5 @@
 import os
+import re
 
 import numpy as np
 
@@ -171,9 +172,18 @@ class MesaData:
         MesaData.star_age will direct to to the corresponding MesaData.data
         call.
         """
-        if not self.in_data(key):
+        if self.in_data(key):
+            return self.bulk_data[key]
+        elif self.log_version(key):
+            return 10**self.bulk_data[self.log_version(key)]
+        elif self.ln_version(key):
+            return np.exp(self.bulk_data[self.ln_version(key)])
+        elif self.exp10_version(key):
+            return np.log10(self.bulk_data[self.exp10_version(key)])
+        elif self.exp_version(key):
+            return np.log(self.bulk_data[self.exp_version(key)])
+        else:
             raise KeyError("'" + str(key) + "' is not a valid data type.")
-        return self.bulk_data[key]
 
     def header(self, key):
         """Accesses the header, returning a scalar the appropriate data
@@ -281,6 +291,120 @@ class MesaData:
         """
         return key in self.bulk_names
 
+    def log_version(self, key):
+        """Determine if the log of the desired value is available and return it.
+
+        If a log_10 version of the value desired is found in the data columns,
+        the "logified" name will be returned. Otherwise it will return `None`.
+
+        Parameters
+        ----------
+        key : str
+            Candidate string for accessing main data. This is what you want
+            to be able to use as an argument of MesaData.data.
+
+        Returns
+        -------
+        str or `None`
+            The "logified" version of the key, if available. If unavailable, 
+            `None`.
+        """
+        log_prefixes = ['log_', 'log', 'lg_', 'lg']
+        for prefix in log_prefixes:
+            if self.in_data(prefix + key):
+                return prefix + key
+
+    def ln_version(self, key):
+        """Determine if the ln of the desired value is available and return it.
+
+        If a log_e version of the value desired is found in the data columns,
+        the "ln-ified" name will be returned. Otherwise it will return `None`.
+
+        Parameters
+        ----------
+        key : str
+            Candidate string for accessing main data. This is what you want
+            to be able to use as an argument of MesaData.data.
+
+        Returns
+        -------
+        str or `None`
+            The "ln-ified" version of the key, if available. If unavailable, 
+            `None`.
+        """
+        log_prefixes = ['ln_', 'ln']
+        for prefix in log_prefixes:
+            if self.in_data(prefix + key):
+                return prefix + key
+
+    def exp10_version(self, key):
+        """Find if the non-log version of a value is available and return it
+
+        If a non-log version of the value desired is found in the data columns,
+        the linear name will be returned. Otherwise it will return `None`.
+
+        Parameters
+        ----------
+        key : str
+            Candidate string for accessing main data. This is what you want
+            to be able to use as an argument of MesaData.data.
+
+        Returns
+        -------
+        str or `None`
+            The linear version of the key, if available. If unavailable, `None`.
+        """
+        log_matcher = re.compile('^lo?g_?(.+)')
+        matches = log_matcher.match(key)
+        if matches is not None:
+            groups = log_matcher.match(key).groups()
+            if self.in_data(groups[0]):
+                return groups[0]
+
+    def exp_version(self, key):
+        """Find if the non-ln version of a value is available and return it
+
+        If a non-ln version of the value desired is found in the data columns,
+        the linear name will be returned. Otherwise it will return `None`.
+
+        Parameters
+        ----------
+        key : str
+            Candidate string for accessing main data. This is what you want
+            to be able to use as an argument of MesaData.data.
+
+        Returns
+        -------
+        str or `None`
+            The linear version of the key, if available. If unavailable, `None`.
+        """
+        log_matcher = re.compile('^ln_?(.+)')
+        matches = log_matcher.match(key)
+        if matches is not None:
+            groups = log_matcher.match(key)
+            if self.in_data(groups[0]):
+                return groups[0]
+
+    def any_version(self, key):
+        """Determine if `key` can point to a valid data category
+
+        Parameters
+        ----------
+        key : str
+            Candidate string for accessing main data. This is what you want
+            to be able to use as an argument of MesaData.data.
+
+        Returns
+        -------
+        bool
+            True if `key` can be mapped to a data type either directly or by
+            exponentiating/taking logarithms of existing data types            
+        """
+        return bool(self.in_data(key) or self.log_version(key) or 
+            self.ln_version(key) or self.exp_version(key) or
+            self.exp10_version(key))
+
+
     def data_at_model_number(self, key, m_num):
         """Return main data at a specific model number (for history files).
 
@@ -383,7 +507,7 @@ class MesaData:
         self.bulk_data = np.delete(self.bulk_data, to_remove)
 
     def __getattr__(self, method_name):
-        if self.in_data(method_name):
+        if self.any_version(method_name):
             return self.data(method_name)
         elif self.in_header(method_name):
             return self.header(method_name)

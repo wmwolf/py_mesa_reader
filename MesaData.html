@@ -83,7 +83,7 @@
             
             
                 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="">MesaData</a><ul class="simple">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">MesaData</a><ul class="simple">
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="MesaLogDir.html">MesaLogDir</a></li>
@@ -112,7 +112,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -195,6 +195,32 @@ for accessing the history data.</p>
 </table>
 <p class="rubric">Methods</p>
 <dl class="method">
+<dt id="mesa_reader.MesaData.any_version">
+<code class="descname">any_version</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.any_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.any_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if <cite>key</cite> can point to a valid data category</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>key</strong> : str</p>
+<blockquote>
+<div><p>Candidate string for accessing main data. This is what you want
+to be able to use as an argument of MesaData.data.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">bool</p>
+<blockquote class="last">
+<div><p>True if <cite>key</cite> can be mapped to a data type either directly or by
+exponentiating/taking logarithms of existing data types</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="mesa_reader.MesaData.data">
 <code class="descname">data</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accesses the data and returns a numpy array with the appropriate data</p>
@@ -231,7 +257,7 @@ same name of the key.</p>
 <p>You can either call <cite>data</cite> explicitly with <cite>key</cite> as an argument, or get
 the same result by calling it implicitly by treating <cite>key</cite> as an
 attribute.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">MesaData</span><span class="p">()</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">MesaData</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="s1">&#39;star_age&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">star_age</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">==</span> <span class="n">y</span>
@@ -283,6 +309,60 @@ MesaData.data(&#8216;model_number&#8217;) == <cite>m_num</cite></p>
 </dd></dl>
 
 <dl class="method">
+<dt id="mesa_reader.MesaData.exp10_version">
+<code class="descname">exp10_version</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.exp10_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.exp10_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find if the non-log version of a value is available and return it</p>
+<p>If a non-log version of the value desired is found in the data columns,
+the linear name will be returned. Otherwise it will return <cite>None</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>key</strong> : str</p>
+<blockquote>
+<div><p>Candidate string for accessing main data. This is what you want
+to be able to use as an argument of MesaData.data.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">str or <cite>None</cite></p>
+<blockquote class="last">
+<div><p>The linear version of the key, if available. If unavailable, <cite>None</cite>.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mesa_reader.MesaData.exp_version">
+<code class="descname">exp_version</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.exp_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.exp_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find if the non-ln version of a value is available and return it</p>
+<p>If a non-ln version of the value desired is found in the data columns,
+the linear name will be returned. Otherwise it will return <cite>None</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>key</strong> : str</p>
+<blockquote>
+<div><p>Candidate string for accessing main data. This is what you want
+to be able to use as an argument of MesaData.data.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">str or <cite>None</cite></p>
+<blockquote class="last">
+<div><p>The linear version of the key, if available. If unavailable, <cite>None</cite>.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="mesa_reader.MesaData.header">
 <code class="descname">header</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.header" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accesses the header, returning a scalar the appropriate data</p>
@@ -321,7 +401,7 @@ treating <cite>key</cite> as an attribute.</p>
 MesaData.version_number will first see if it can call
 MesaData.data(&#8216;version_number&#8217;). Then, realizing that this doesn&#8217;t make
 sense, it will instead call MesaData.header(&#8216;version_number&#8217;)</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">MesaData</span><span class="p">()</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">MesaData</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="s1">&#39;version_number&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">version_number</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">==</span> <span class="n">y</span>
@@ -446,6 +526,62 @@ to cleanse the file of backups and restarts in the MesaData.read_data.</p>
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">bool</p>
 <blockquote class="last">
 <div><p>True if file is a history file, otherwise False</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mesa_reader.MesaData.ln_version">
+<code class="descname">ln_version</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.ln_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.ln_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if the ln of the desired value is available and return it.</p>
+<p>If a log_e version of the value desired is found in the data columns,
+the &#8220;ln-ified&#8221; name will be returned. Otherwise it will return <cite>None</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>key</strong> : str</p>
+<blockquote>
+<div><p>Candidate string for accessing main data. This is what you want
+to be able to use as an argument of MesaData.data.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">str or <cite>None</cite></p>
+<blockquote class="last">
+<div><p>The &#8220;ln-ified&#8221; version of the key, if available. If unavailable, 
+<cite>None</cite>.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mesa_reader.MesaData.log_version">
+<code class="descname">log_version</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.log_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.log_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if the log of the desired value is available and return it.</p>
+<p>If a log_10 version of the value desired is found in the data columns,
+the &#8220;logified&#8221; name will be returned. Otherwise it will return <cite>None</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>key</strong> : str</p>
+<blockquote>
+<div><p>Candidate string for accessing main data. This is what you want
+to be able to use as an argument of MesaData.data.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">str or <cite>None</cite></p>
+<blockquote class="last">
+<div><p>The &#8220;logified&#8221; version of the key, if available. If unavailable, 
+<cite>None</cite>.</p>
 </div></blockquote>
 </td>
 </tr>
