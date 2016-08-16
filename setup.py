@@ -6,6 +6,7 @@ setup(name='mesa_reader',
     author='William M. Wolf',
     author_email='wolfey6@gmail.com',
     license='MIT',
+    packages=['mesa_reader'],
     install_requires=['numpy'],
     include_package_data=False,
     zip_safe=False)

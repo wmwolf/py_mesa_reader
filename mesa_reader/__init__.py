@@ -85,7 +85,8 @@ class MesaData:
     def set_data_rows(cls, name_line=6):
         cls.bulk_names_line = name_line
 
-    def __init__(self, file_name='./LOGS/history.data'):
+    def __init__(self, file_name=os.path.join(os.getcwd(), 'LOGS',
+                                              'history.data')):
         """Make a MesaData object from a Mesa output file.
 
         Reads a profile or history output file from mesa. Assumes a file with
@@ -129,9 +130,9 @@ class MesaData:
         """
         model_matcher = re.compile(".+\.mod")
         log_matcher = re.compile(".+\.(log)|(data)")
-        if model_matcher.match(self.file_name) is not None:
+        if model_matcher.search(self.file_name) is not None:
             self.read_model_data()
-        elif log_matcher.match(self.file_name) is not None:
+        elif log_matcher.search(self.file_name) is not None:
             self.read_log_data()
         else:
             raise UnknownFileTypeError("Unknown file type for file {}".format(
