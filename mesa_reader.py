@@ -284,14 +284,14 @@ class MesaData:
         """
         if self.in_data(key):
             return self.bulk_data[key]
-        elif self.log_version(key) is not None:
-            return 10**self.bulk_data[self.log_version(key)]
-        elif self.ln_version(key) is not None:
-            return np.exp(self.bulk_data[self.ln_version(key)])
-        elif self.exp10_version(key) is not None:
-            return np.log10(self.bulk_data[self.exp10_version(key)])
-        elif self.exp_version(key) is not None:
-            return np.log(self.bulk_data[self.exp_version(key)])
+        elif self._log_version(key) is not None:
+            return 10**self.bulk_data[self._log_version(key)]
+        elif self._ln_version(key) is not None:
+            return np.exp(self.bulk_data[self._ln_version(key)])
+        elif self._exp10_version(key) is not None:
+            return np.log10(self.bulk_data[self._exp10_version(key)])
+        elif self._exp_version(key) is not None:
+            return np.log(self.bulk_data[self._exp_version(key)])
         else:
             raise KeyError("'" + str(key) + "' is not a valid data type.")
 
@@ -401,7 +401,7 @@ class MesaData:
         """
         return key in self.bulk_names
 
-    def log_version(self, key):
+    def _log_version(self, key):
         """Determine if the log of the desired value is available and return it.
 
         If a log_10 version of the value desired is found in the data columns,
@@ -424,7 +424,7 @@ class MesaData:
             if self.in_data(prefix + key):
                 return prefix + key
 
-    def ln_version(self, key):
+    def _ln_version(self, key):
         """Determine if the ln of the desired value is available and return it.
 
         If a log_e version of the value desired is found in the data columns,
@@ -447,7 +447,7 @@ class MesaData:
             if self.in_data(prefix + key):
                 return prefix + key
 
-    def exp10_version(self, key):
+    def _exp10_version(self, key):
         """Find if the non-log version of a value is available and return it
 
         If a non-log version of the value desired is found in the data columns,
@@ -471,7 +471,7 @@ class MesaData:
             if self.in_data(groups[0]):
                 return groups[0]
 
-    def exp_version(self, key):
+    def _exp_version(self, key):
         """Find if the non-ln version of a value is available and return it
 
         If a non-ln version of the value desired is found in the data columns,
@@ -495,7 +495,7 @@ class MesaData:
             if self.in_data(groups[0]):
                 return groups[0]
 
-    def any_version(self, key):
+    def _any_version(self, key):
         """Determine if `key` can point to a valid data category
 
         Parameters
@@ -510,9 +510,9 @@ class MesaData:
             True if `key` can be mapped to a data type either directly or by
             exponentiating/taking logarithms of existing data types            
         """
-        return bool(self.in_data(key) or self.log_version(key) or 
-                    self.ln_version(key) or self.exp_version(key) or
-                    self.exp10_version(key))
+        return bool(self.in_data(key) or self._log_version(key) or
+                    self._ln_version(key) or self._exp_version(key) or
+                    self._exp10_version(key))
 
     def data_at_model_number(self, key, m_num):
         """Return main data at a specific model number (for history files).
@@ -616,7 +616,7 @@ class MesaData:
         self.bulk_data = np.delete(self.bulk_data, to_remove)
 
     def __getattr__(self, method_name):
-        if self.any_version(method_name):
+        if self._any_version(method_name):
             return self.data(method_name)
         elif self.in_header(method_name):
             return self.header(method_name)
