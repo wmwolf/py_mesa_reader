@@ -302,13 +302,14 @@
         <span class="sd">&quot;&quot;&quot;Read in or updates data from the original model (.mod) file.</span>
 
 <span class="sd">        Models are assumed to have the following structure:</span>
-
 <span class="sd">        - lines of comments and otherwise [considered] useless information</span>
 <span class="sd">        - one or more blank line</span>
-<span class="sd">        - Header information (names and values separated by one or more space, one per line)</span>
+<span class="sd">        - Header information (names and values separated by one or more space,</span>
+<span class="sd">                              one per line)</span>
 <span class="sd">        - one or more blank lines</span>
 <span class="sd">        - ONE line of column names (strings separated by one or more spaces)</span>
-<span class="sd">        - many lines of bulk data (integer followed by many doubles, separated by one or more spaces)</span>
+<span class="sd">        - many lines of bulk data (integer followed by many doubles, separated</span>
+<span class="sd">                                   by one or more spaces)</span>
 <span class="sd">        - a blank line</span>
 <span class="sd">        - everything else is ignored</span>
 
@@ -344,8 +345,8 @@
         <span class="c1"># now on blank line 1, advance through one or more lines to get to</span>
         <span class="c1"># header data</span>
         <span class="k">while</span> <span class="n">found_blank_line</span><span class="p">:</span>
-            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span> 
-            <span class="n">found_blank_line</span> <span class="o">=</span> <span class="p">(</span><span class="n">blank_line_matcher</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span>            
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">found_blank_line</span> <span class="o">=</span> <span class="p">(</span><span class="n">blank_line_matcher</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span>
         <span class="c1"># now done with blank lines and on to header data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">header_names</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">header_data</span> <span class="o">=</span> <span class="p">{}</span>
@@ -357,8 +358,8 @@
             <span class="n">found_blank_line</span> <span class="o">=</span> <span class="p">(</span><span class="n">blank_line_matcher</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span>
         <span class="c1"># now on blank line 2, advance until we get to column names</span>
         <span class="k">while</span> <span class="n">found_blank_line</span><span class="p">:</span>
-            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span> 
-            <span class="n">found_blank_line</span> <span class="o">=</span> <span class="p">(</span><span class="n">blank_line_matcher</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span>            
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">found_blank_line</span> <span class="o">=</span> <span class="p">(</span><span class="n">blank_line_matcher</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bulk_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;zone&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bulk_names</span> <span class="o">+=</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
         <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -417,14 +418,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_data</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="mi">10</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">log_version</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ln_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ln_version</span><span class="p">(</span><span class="n">key</span><span class="p">)])</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp10_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">exp10_version</span><span class="p">(</span><span class="n">key</span><span class="p">)])</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_version</span><span class="p">(</span><span class="n">key</span><span class="p">)])</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">10</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_version</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ln_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_ln_version</span><span class="p">(</span><span class="n">key</span><span class="p">)])</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exp10_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_exp10_version</span><span class="p">(</span><span class="n">key</span><span class="p">)])</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exp_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_exp_version</span><span class="p">(</span><span class="n">key</span><span class="p">)])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;&#39; is not a valid data type.&quot;</span><span class="p">)</span></div>
 
@@ -534,7 +535,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_names</span></div>
 
-<div class="viewcode-block" id="MesaData.log_version"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.log_version">[docs]</a>    <span class="k">def</span> <span class="nf">log_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_log_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Determine if the log of the desired value is available and return it.</span>
 
 <span class="sd">        If a log_10 version of the value desired is found in the data columns,</span>
@@ -549,15 +550,15 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str or `None`</span>
-<span class="sd">            The &quot;logified&quot; version of the key, if available. If unavailable, </span>
+<span class="sd">            The &quot;logified&quot; version of the key, if available. If unavailable,</span>
 <span class="sd">            `None`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">log_prefixes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;log_&#39;</span><span class="p">,</span> <span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="s1">&#39;lg_&#39;</span><span class="p">,</span> <span class="s1">&#39;lg&#39;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">log_prefixes</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_data</span><span class="p">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">key</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">key</span></div>
+                <span class="k">return</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">key</span>
 
-<div class="viewcode-block" id="MesaData.ln_version"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.ln_version">[docs]</a>    <span class="k">def</span> <span class="nf">ln_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_ln_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Determine if the ln of the desired value is available and return it.</span>
 
 <span class="sd">        If a log_e version of the value desired is found in the data columns,</span>
@@ -572,15 +573,15 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str or `None`</span>
-<span class="sd">            The &quot;ln-ified&quot; version of the key, if available. If unavailable, </span>
+<span class="sd">            The &quot;ln-ified&quot; version of the key, if available. If unavailable,</span>
 <span class="sd">            `None`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">log_prefixes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ln_&#39;</span><span class="p">,</span> <span class="s1">&#39;ln&#39;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">log_prefixes</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_data</span><span class="p">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">key</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">key</span></div>
+                <span class="k">return</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">key</span>
 
-<div class="viewcode-block" id="MesaData.exp10_version"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.exp10_version">[docs]</a>    <span class="k">def</span> <span class="nf">exp10_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_exp10_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Find if the non-log version of a value is available and return it</span>
 
 <span class="sd">        If a non-log version of the value desired is found in the data columns,</span>
@@ -602,9 +603,9 @@
         <span class="k">if</span> <span class="n">matches</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">groups</span> <span class="o">=</span> <span class="n">matches</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_data</span><span class="p">(</span><span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-                <span class="k">return</span> <span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+                <span class="k">return</span> <span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-<div class="viewcode-block" id="MesaData.exp_version"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.exp_version">[docs]</a>    <span class="k">def</span> <span class="nf">exp_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_exp_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Find if the non-ln version of a value is available and return it</span>
 
 <span class="sd">        If a non-ln version of the value desired is found in the data columns,</span>
@@ -626,9 +627,9 @@
         <span class="k">if</span> <span class="n">matches</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">groups</span> <span class="o">=</span> <span class="n">matches</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_data</span><span class="p">(</span><span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-                <span class="k">return</span> <span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+                <span class="k">return</span> <span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-<div class="viewcode-block" id="MesaData.any_version"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.any_version">[docs]</a>    <span class="k">def</span> <span class="nf">any_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_any_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Determine if `key` can point to a valid data category</span>
 
 <span class="sd">        Parameters</span>
@@ -641,11 +642,11 @@
 <span class="sd">        -------</span>
 <span class="sd">        bool</span>
 <span class="sd">            True if `key` can be mapped to a data type either directly or by</span>
-<span class="sd">            exponentiating/taking logarithms of existing data types            </span>
+<span class="sd">            exponentiating/taking logarithms of existing data types</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_data</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">or</span> 
-                    <span class="bp">self</span><span class="o">.</span><span class="n">ln_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">or</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">exp10_version</span><span class="p">(</span><span class="n">key</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_data</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">or</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_ln_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exp_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">or</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_exp10_version</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
 
 <div class="viewcode-block" id="MesaData.data_at_model_number"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.data_at_model_number">[docs]</a>    <span class="k">def</span> <span class="nf">data_at_model_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">m_num</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return main data at a specific model number (for history files).</span>
@@ -749,7 +750,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">,</span> <span class="n">to_remove</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method_name</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">any_version</span><span class="p">(</span><span class="n">method_name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_any_version</span><span class="p">(</span><span class="n">method_name</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">method_name</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_header</span><span class="p">(</span><span class="n">method_name</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">(</span><span class="n">method_name</span><span class="p">)</span>

@@ -195,32 +195,6 @@ for accessing the history data.</p>
 </table>
 <p class="rubric">Methods</p>
 <dl class="method">
-<dt id="mesa_reader.MesaData.any_version">
-<code class="descname">any_version</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.any_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.any_version" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determine if <cite>key</cite> can point to a valid data category</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>key</strong> : str</p>
-<blockquote>
-<div><p>Candidate string for accessing main data. This is what you want
-to be able to use as an argument of MesaData.data.</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">bool</p>
-<blockquote class="last">
-<div><p>True if <cite>key</cite> can be mapped to a data type either directly or by
-exponentiating/taking logarithms of existing data types</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="mesa_reader.MesaData.data">
 <code class="descname">data</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accesses the data and returns a numpy array with the appropriate data</p>
@@ -306,60 +280,6 @@ MesaData.data(&#8216;model_number&#8217;) == <cite>m_num</cite></p>
 <dd>returns the index for sampling, not the value</dd>
 </dl>
 </div>
-</dd></dl>
-
-<dl class="method">
-<dt id="mesa_reader.MesaData.exp10_version">
-<code class="descname">exp10_version</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.exp10_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.exp10_version" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find if the non-log version of a value is available and return it</p>
-<p>If a non-log version of the value desired is found in the data columns,
-the linear name will be returned. Otherwise it will return <cite>None</cite>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>key</strong> : str</p>
-<blockquote>
-<div><p>Candidate string for accessing main data. This is what you want
-to be able to use as an argument of MesaData.data.</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">str or <cite>None</cite></p>
-<blockquote class="last">
-<div><p>The linear version of the key, if available. If unavailable, <cite>None</cite>.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="mesa_reader.MesaData.exp_version">
-<code class="descname">exp_version</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.exp_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.exp_version" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find if the non-ln version of a value is available and return it</p>
-<p>If a non-ln version of the value desired is found in the data columns,
-the linear name will be returned. Otherwise it will return <cite>None</cite>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>key</strong> : str</p>
-<blockquote>
-<div><p>Candidate string for accessing main data. This is what you want
-to be able to use as an argument of MesaData.data.</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">str or <cite>None</cite></p>
-<blockquote class="last">
-<div><p>The linear version of the key, if available. If unavailable, <cite>None</cite>.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="method">
@@ -534,62 +454,6 @@ to cleanse the file of backups and restarts in the MesaData.read_data.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="mesa_reader.MesaData.ln_version">
-<code class="descname">ln_version</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.ln_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.ln_version" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determine if the ln of the desired value is available and return it.</p>
-<p>If a log_e version of the value desired is found in the data columns,
-the &#8220;ln-ified&#8221; name will be returned. Otherwise it will return <cite>None</cite>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>key</strong> : str</p>
-<blockquote>
-<div><p>Candidate string for accessing main data. This is what you want
-to be able to use as an argument of MesaData.data.</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">str or <cite>None</cite></p>
-<blockquote class="last">
-<div><p>The &#8220;ln-ified&#8221; version of the key, if available. If unavailable, 
-<cite>None</cite>.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="mesa_reader.MesaData.log_version">
-<code class="descname">log_version</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.log_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.log_version" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determine if the log of the desired value is available and return it.</p>
-<p>If a log_10 version of the value desired is found in the data columns,
-the &#8220;logified&#8221; name will be returned. Otherwise it will return <cite>None</cite>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>key</strong> : str</p>
-<blockquote>
-<div><p>Candidate string for accessing main data. This is what you want
-to be able to use as an argument of MesaData.data.</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">str or <cite>None</cite></p>
-<blockquote class="last">
-<div><p>The &#8220;logified&#8221; version of the key, if available. If unavailable, 
-<cite>None</cite>.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="mesa_reader.MesaData.read_data">
 <code class="descname">read_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.read_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.read_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decide if data file is log output or a model, then load the data</p>
@@ -630,16 +494,27 @@ have been used to alter how the data have been read in.</p>
 <dt id="mesa_reader.MesaData.read_model_data">
 <code class="descname">read_model_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.read_model_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.read_model_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read in or updates data from the original model (.mod) file.</p>
-<p>Models are assumed to have the following structure:</p>
-<ul class="simple">
-<li>lines of comments and otherwise [considered] useless information</li>
-<li>one or more blank line</li>
-<li>Header information (names and values separated by one or more space, one per line)</li>
-<li>one or more blank lines</li>
-<li>ONE line of column names (strings separated by one or more spaces)</li>
-<li>many lines of bulk data (integer followed by many doubles, separated by one or more spaces)</li>
-<li>a blank line</li>
-<li>everything else is ignored</li>
+<p>Models are assumed to have the following structure:
+- lines of comments and otherwise [considered] useless information
+- one or more blank line
+- Header information (names and values separated by one or more space,</p>
+<blockquote>
+<div>one per line)</div></blockquote>
+<ul>
+<li><p class="first">one or more blank lines</p>
+</li>
+<li><p class="first">ONE line of column names (strings separated by one or more spaces)</p>
+</li>
+<li><dl class="first docutils">
+<dt>many lines of bulk data (integer followed by many doubles, separated</dt>
+<dd><p class="first last">by one or more spaces)</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">a blank line</p>
+</li>
+<li><p class="first">everything else is ignored</p>
+</li>
 </ul>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
