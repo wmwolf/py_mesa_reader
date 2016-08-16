@@ -133,6 +133,7 @@
             
   <h1>Source code for mesa_reader</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
@@ -156,6 +157,12 @@
 
 
 <span class="k">class</span> <span class="nc">BadPathError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="ne">Exception</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">UnknownFileTypeError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="ne">Exception</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
@@ -240,7 +247,32 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">read_data</span><span class="p">()</span>
 
 <div class="viewcode-block" id="MesaData.read_data"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.read_data">[docs]</a>    <span class="k">def</span> <span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Update data by re-reading from the original file name.</span>
+        <span class="sd">&quot;&quot;&quot;Decide if data file is log output or a model, then load the data</span>
+
+<span class="sd">        Log files and models are structured differently, so different methods</span>
+<span class="sd">        will be required to read in each. This method figures out which one</span>
+<span class="sd">        should be called and then punts to that method.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">model_matcher</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;.+\.mod&quot;</span><span class="p">)</span>
+        <span class="n">log_matcher</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;.+\.(log)|(data)&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">model_matcher</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">read_model_data</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">log_matcher</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">read_log_data</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnknownFileTypeError</span><span class="p">(</span><span class="s2">&quot;Unknown file type for file {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MesaData.read_log_data"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.read_log_data">[docs]</a>    <span class="k">def</span> <span class="nf">read_log_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reads in or update data from the original log (.data or .log) file.</span>
 
 <span class="sd">        This re-reads the data from the originally-provided file name. Mostly</span>
 <span class="sd">        useful if the data file has been changed since it was first read in or</span>
@@ -254,6 +286,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">,</span>
             <span class="n">skip_header</span><span class="o">=</span><span class="n">MesaData</span><span class="o">.</span><span class="n">bulk_names_line</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bulk_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">names</span>
+        <span class="n">header_data</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">MesaData</span><span class="o">.</span><span class="n">header_names_line</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
@@ -264,6 +297,83 @@
                     <span class="k">break</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">header_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header_names</span><span class="p">,</span> <span class="n">header_data</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">remove_backups</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MesaData.read_model_data"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.read_model_data">[docs]</a>    <span class="k">def</span> <span class="nf">read_model_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read in or updates data from the original model (.mod) file.</span>
+
+<span class="sd">        Models are assumed to have the following structure:</span>
+
+<span class="sd">        - lines of comments and otherwise [considered] useless information</span>
+<span class="sd">        - one or more blank line</span>
+<span class="sd">        - Header information (names and values separated by one or more space, one per line)</span>
+<span class="sd">        - one or more blank lines</span>
+<span class="sd">        - ONE line of column names (strings separated by one or more spaces)</span>
+<span class="sd">        - many lines of bulk data (integer followed by many doubles, separated by one or more spaces)</span>
+<span class="sd">        - a blank line</span>
+<span class="sd">        - everything else is ignored</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">pythonize_number</span><span class="p">(</span><span class="n">num_string</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Convert fotran double [string] to python readable number [string].</span>
+
+<span class="sd">            Converts numbers with exponential notation of D+, D-, d+, or d-</span>
+<span class="sd">            to E+ or E- so that a python interpreter properly understands them.</span>
+<span class="sd">            Leaves all other strings the untouched.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">num_string</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;(d|D)\+&#39;</span><span class="p">,</span> <span class="s1">&#39;E+&#39;</span><span class="p">,</span> <span class="n">num_string</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;(d|D)-&#39;</span><span class="p">,</span> <span class="s1">&#39;E-&#39;</span><span class="p">,</span> <span class="n">num_string</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+        <span class="c1"># Walk through file until we get to the last blank line, saving</span>
+        <span class="c1"># relevant data as we go.</span>
+        <span class="n">blank_line_matcher</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;^\s*$&#39;</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">found_blank_line</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">found_blank_line</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">found_blank_line</span> <span class="o">=</span> <span class="p">(</span><span class="n">blank_line_matcher</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="c1"># now on blank line 1, advance through one or more lines to get to</span>
+        <span class="c1"># header data</span>
+        <span class="k">while</span> <span class="n">found_blank_line</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span> 
+            <span class="n">found_blank_line</span> <span class="o">=</span> <span class="p">(</span><span class="n">blank_line_matcher</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span>            
+        <span class="c1"># now done with blank lines and on to header data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header_names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header_data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">found_blank_line</span><span class="p">:</span>
+            <span class="n">name</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="p">[</span><span class="n">datum</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">datum</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">header_data</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">pythonize_number</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">header_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">found_blank_line</span> <span class="o">=</span> <span class="p">(</span><span class="n">blank_line_matcher</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="c1"># now on blank line 2, advance until we get to column names</span>
+        <span class="k">while</span> <span class="n">found_blank_line</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span> 
+            <span class="n">found_blank_line</span> <span class="o">=</span> <span class="p">(</span><span class="n">blank_line_matcher</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span>            
+        <span class="bp">self</span><span class="o">.</span><span class="n">bulk_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;zone&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bulk_names</span> <span class="o">+=</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">temp_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">found_blank_line</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">found_blank_line</span><span class="p">:</span>
+            <span class="n">temp_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">eval</span><span class="p">(</span><span class="n">pythonize_number</span><span class="p">(</span><span class="n">datum</span><span class="p">))</span> <span class="k">for</span> <span class="n">datum</span> <span class="ow">in</span>
+                              <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()])</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">found_blank_line</span> <span class="o">=</span> <span class="p">(</span><span class="n">blank_line_matcher</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="n">temp_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">temp_data</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bulk_names</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bulk_names</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">temp_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
+            <span class="c1"># self.bulk_data = np.array(temp_data, names=self.bulk_names)</span>
 
 <div class="viewcode-block" id="MesaData.data"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.data">[docs]</a>    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Accesses the data and returns a numpy array with the appropriate data</span>
@@ -305,9 +415,18 @@
 <span class="sd">        MesaData.star_age will direct to to the corresponding MesaData.data</span>
 <span class="sd">        call.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_data</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;&#39; is not a valid data type.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_data</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">10</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">log_version</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ln_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ln_version</span><span class="p">(</span><span class="n">key</span><span class="p">)])</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp10_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">exp10_version</span><span class="p">(</span><span class="n">key</span><span class="p">)])</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_version</span><span class="p">(</span><span class="n">key</span><span class="p">)])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;&#39; is not a valid data type.&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MesaData.header"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.header">[docs]</a>    <span class="k">def</span> <span class="nf">header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Accesses the header, returning a scalar the appropriate data</span>
@@ -415,6 +534,119 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_names</span></div>
 
+<div class="viewcode-block" id="MesaData.log_version"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.log_version">[docs]</a>    <span class="k">def</span> <span class="nf">log_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Determine if the log of the desired value is available and return it.</span>
+
+<span class="sd">        If a log_10 version of the value desired is found in the data columns,</span>
+<span class="sd">        the &quot;logified&quot; name will be returned. Otherwise it will return `None`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key : str</span>
+<span class="sd">            Candidate string for accessing main data. This is what you want</span>
+<span class="sd">            to be able to use as an argument of MesaData.data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str or `None`</span>
+<span class="sd">            The &quot;logified&quot; version of the key, if available. If unavailable, </span>
+<span class="sd">            `None`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log_prefixes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;log_&#39;</span><span class="p">,</span> <span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="s1">&#39;lg_&#39;</span><span class="p">,</span> <span class="s1">&#39;lg&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">log_prefixes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_data</span><span class="p">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">key</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">key</span></div>
+
+<div class="viewcode-block" id="MesaData.ln_version"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.ln_version">[docs]</a>    <span class="k">def</span> <span class="nf">ln_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Determine if the ln of the desired value is available and return it.</span>
+
+<span class="sd">        If a log_e version of the value desired is found in the data columns,</span>
+<span class="sd">        the &quot;ln-ified&quot; name will be returned. Otherwise it will return `None`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key : str</span>
+<span class="sd">            Candidate string for accessing main data. This is what you want</span>
+<span class="sd">            to be able to use as an argument of MesaData.data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str or `None`</span>
+<span class="sd">            The &quot;ln-ified&quot; version of the key, if available. If unavailable, </span>
+<span class="sd">            `None`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log_prefixes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ln_&#39;</span><span class="p">,</span> <span class="s1">&#39;ln&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">log_prefixes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_data</span><span class="p">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">key</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">key</span></div>
+
+<div class="viewcode-block" id="MesaData.exp10_version"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.exp10_version">[docs]</a>    <span class="k">def</span> <span class="nf">exp10_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Find if the non-log version of a value is available and return it</span>
+
+<span class="sd">        If a non-log version of the value desired is found in the data columns,</span>
+<span class="sd">        the linear name will be returned. Otherwise it will return `None`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key : str</span>
+<span class="sd">            Candidate string for accessing main data. This is what you want</span>
+<span class="sd">            to be able to use as an argument of MesaData.data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str or `None`</span>
+<span class="sd">            The linear version of the key, if available. If unavailable, `None`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log_matcher</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;^lo?g_?(.+)&#39;</span><span class="p">)</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="n">log_matcher</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">matches</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">groups</span> <span class="o">=</span> <span class="n">matches</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_data</span><span class="p">(</span><span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="k">return</span> <span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="MesaData.exp_version"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.exp_version">[docs]</a>    <span class="k">def</span> <span class="nf">exp_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Find if the non-ln version of a value is available and return it</span>
+
+<span class="sd">        If a non-ln version of the value desired is found in the data columns,</span>
+<span class="sd">        the linear name will be returned. Otherwise it will return `None`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key : str</span>
+<span class="sd">            Candidate string for accessing main data. This is what you want</span>
+<span class="sd">            to be able to use as an argument of MesaData.data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str or `None`</span>
+<span class="sd">            The linear version of the key, if available. If unavailable, `None`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log_matcher</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;^ln_?(.+)&#39;</span><span class="p">)</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="n">log_matcher</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">matches</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">groups</span> <span class="o">=</span> <span class="n">matches</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_data</span><span class="p">(</span><span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="k">return</span> <span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="MesaData.any_version"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.any_version">[docs]</a>    <span class="k">def</span> <span class="nf">any_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Determine if `key` can point to a valid data category</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key : str</span>
+<span class="sd">            Candidate string for accessing main data. This is what you want</span>
+<span class="sd">            to be able to use as an argument of MesaData.data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if `key` can be mapped to a data type either directly or by</span>
+<span class="sd">            exponentiating/taking logarithms of existing data types            </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_data</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">or</span> 
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ln_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">or</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">exp10_version</span><span class="p">(</span><span class="n">key</span><span class="p">))</span></div>
+
 <div class="viewcode-block" id="MesaData.data_at_model_number"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.data_at_model_number">[docs]</a>    <span class="k">def</span> <span class="nf">data_at_model_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">m_num</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return main data at a specific model number (for history files).</span>
 
@@ -517,7 +749,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">,</span> <span class="n">to_remove</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method_name</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_data</span><span class="p">(</span><span class="n">method_name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">any_version</span><span class="p">(</span><span class="n">method_name</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">method_name</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_header</span><span class="p">(</span><span class="n">method_name</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">(</span><span class="n">method_name</span><span class="p">)</span>

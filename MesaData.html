@@ -592,7 +592,26 @@ to be able to use as an argument of MesaData.data.</p>
 <dl class="method">
 <dt id="mesa_reader.MesaData.read_data">
 <code class="descname">read_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.read_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.read_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update data by re-reading from the original file name.</p>
+<dd><p>Decide if data file is log output or a model, then load the data</p>
+<p>Log files and models are structured differently, so different methods
+will be required to read in each. This method figures out which one
+should be called and then punts to that method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>None</strong></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mesa_reader.MesaData.read_log_data">
+<code class="descname">read_log_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.read_log_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.read_log_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads in or update data from the original log (.data or .log) file.</p>
 <p>This re-reads the data from the originally-provided file name. Mostly
 useful if the data file has been changed since it was first read in or
 if the class methods MesaData.set_header_rows or MesaData.set_data_rows
@@ -602,6 +621,33 @@ have been used to alter how the data have been read in.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mesa_reader.MesaData.read_model_data">
+<code class="descname">read_model_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.read_model_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.read_model_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read in or updates data from the original model (.mod) file.</p>
+<p>Models are assumed to have the following structure:</p>
+<ul class="simple">
+<li>lines of comments and otherwise [considered] useless information</li>
+<li>one or more blank line</li>
+<li>Header information (names and values separated by one or more space, one per line)</li>
+<li>one or more blank lines</li>
+<li>ONE line of column names (strings separated by one or more spaces)</li>
+<li>many lines of bulk data (integer followed by many doubles, separated by one or more spaces)</li>
+<li>a blank line</li>
+<li>everything else is ignored</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>None</strong></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
 </tbody>
 </table>
