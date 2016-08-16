@@ -28,6 +28,12 @@ class BadPathError(Exception):
         Exception.__init__(self, msg)
 
 
+class UnknownFileTypeError(Exception):
+
+    def __init__(self, msg):
+        Exception.__init__(self, msg)
+
+
 class MesaData:
 
     """Structure containing data from a Mesa output file.
@@ -107,7 +113,32 @@ class MesaData:
         self.read_data()
 
     def read_data(self):
-        """Update data by re-reading from the original file name.
+        """Decide if data file is log output or a model, then load the data
+
+        Log files and models are structured differently, so different methods
+        will be required to read in each. This method figures out which one
+        should be called and then punts to that method.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        model_matcher = re.compile(".+\.mod")
+        log_matcher = re.compile(".+\.(log)|(data)")
+        if model_matcher.match(self.file_name) is not None:
+            self.read_model_data()
+        elif log_matcher.match(self.file_name) is not None:
+            self.read_log_data()
+        else:
+            raise UnknownFileTypeError("Unknown file type for file {}".format(
+                self.file_name))
+
+    def read_log_data(self):
+        """Reads in or update data from the original log (.data or .log) file.
 
         This re-reads the data from the originally-provided file name. Mostly
         useful if the data file has been changed since it was first read in or
@@ -121,6 +152,7 @@ class MesaData:
         self.bulk_data = np.genfromtxt(self.file_name,
             skip_header=MesaData.bulk_names_line - 1, names=True, dtype=None)
         self.bulk_names = self.bulk_data.dtype.names
+        header_data = []
         with open(self.file_name) as f:
             for i, line in enumerate(f):
                 if i == MesaData.header_names_line - 1:
@@ -131,6 +163,84 @@ class MesaData:
                     break
         self.header_data = dict(zip(self.header_names, header_data))
         self.remove_backups()
+
+    def read_model_data(self):
+        """Read in or updates data from the original model (.mod) file.
+
+        Models are assumed to have the following structure:
+        - lines of comments and otherwise [considered] useless information
+        - one or more blank line
+        - Header information (names and values separated by one or more space,
+                              one per line)
+        - one or more blank lines
+        - ONE line of column names (strings separated by one or more spaces)
+        - many lines of bulk data (integer followed by many doubles, separated
+                                   by one or more spaces)
+        - a blank line
+        - everything else is ignored
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
+        def pythonize_number(num_string):
+            """Convert fotran double [string] to python readable number [string].
+
+            Converts numbers with exponential notation of D+, D-, d+, or d-
+            to E+ or E- so that a python interpreter properly understands them.
+            Leaves all other strings the untouched.
+            """
+            num_string = re.sub('(d|D)\+', 'E+', num_string)
+            return re.sub('(d|D)-', 'E-', num_string)
+
+        with open(self.file_name, 'r') as f:
+            lines = f.readlines()
+        # Walk through file until we get to the last blank line, saving
+        # relevant data as we go.
+        blank_line_matcher = re.compile('^\s*$')
+        i = 0
+        found_blank_line = False
+        while not found_blank_line:
+            i += 1
+            found_blank_line = (blank_line_matcher.match(lines[i]) is not None)
+        # now on blank line 1, advance through one or more lines to get to
+        # header data
+        while found_blank_line:
+            i += 1 
+            found_blank_line = (blank_line_matcher.match(lines[i]) is not None)            
+        # now done with blank lines and on to header data
+        self.header_names = []
+        self.header_data = {}
+        while not found_blank_line:
+            name, val = [datum.strip() for datum in lines[i].split()]
+            self.header_data[name] = eval(pythonize_number(val))
+            self.header_names.append(name)
+            i += 1
+            found_blank_line = (blank_line_matcher.match(lines[i]) is not None)
+        # now on blank line 2, advance until we get to column names
+        while found_blank_line:
+            i += 1 
+            found_blank_line = (blank_line_matcher.match(lines[i]) is not None)            
+        self.bulk_names = ['zone']
+        self.bulk_names += lines[i].split()
+        i += 1
+        self.bulk_data = {}
+        temp_data = []
+        found_blank_line = False
+        while not found_blank_line:
+            temp_data.append([eval(pythonize_number(datum)) for datum in
+                              lines[i].split()])
+            i += 1
+            found_blank_line = (blank_line_matcher.match(lines[i]) is not None)
+        temp_data = np.array(temp_data).T
+        for i in range(len(self.bulk_names)):
+            self.bulk_data[self.bulk_names[i]] = temp_data[i]
+            # self.bulk_data = np.array(temp_data, names=self.bulk_names)
 
     def data(self, key):
         """Accesses the data and returns a numpy array with the appropriate data
@@ -174,13 +284,13 @@ class MesaData:
         """
         if self.in_data(key):
             return self.bulk_data[key]
-        elif self.log_version(key):
+        elif self.log_version(key) is not None:
             return 10**self.bulk_data[self.log_version(key)]
-        elif self.ln_version(key):
+        elif self.ln_version(key) is not None:
             return np.exp(self.bulk_data[self.ln_version(key)])
-        elif self.exp10_version(key):
+        elif self.exp10_version(key) is not None:
             return np.log10(self.bulk_data[self.exp10_version(key)])
-        elif self.exp_version(key):
+        elif self.exp_version(key) is not None:
             return np.log(self.bulk_data[self.exp_version(key)])
         else:
             raise KeyError("'" + str(key) + "' is not a valid data type.")
@@ -357,7 +467,7 @@ class MesaData:
         log_matcher = re.compile('^lo?g_?(.+)')
         matches = log_matcher.match(key)
         if matches is not None:
-            groups = log_matcher.match(key).groups()
+            groups = matches.groups()
             if self.in_data(groups[0]):
                 return groups[0]
 
@@ -381,7 +491,7 @@ class MesaData:
         log_matcher = re.compile('^ln_?(.+)')
         matches = log_matcher.match(key)
         if matches is not None:
-            groups = log_matcher.match(key)
+            groups = matches.groups()
             if self.in_data(groups[0]):
                 return groups[0]
 
@@ -401,9 +511,8 @@ class MesaData:
             exponentiating/taking logarithms of existing data types            
         """
         return bool(self.in_data(key) or self.log_version(key) or 
-            self.ln_version(key) or self.exp_version(key) or
-            self.exp10_version(key))
-
+                    self.ln_version(key) or self.exp_version(key) or
+                    self.exp10_version(key))
 
     def data_at_model_number(self, key, m_num):
         """Return main data at a specific model number (for history files).
