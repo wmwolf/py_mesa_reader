@@ -85,7 +85,8 @@ class MesaData:
     def set_data_rows(cls, name_line=6):
         cls.bulk_names_line = name_line
 
-    def __init__(self, file_name='./LOGS/history.data'):
+    def __init__(self, file_name=os.path.join(os.getcwd(), 'LOGS',
+                                              'history.data')):
         """Make a MesaData object from a Mesa output file.
 
         Reads a profile or history output file from mesa. Assumes a file with
@@ -129,9 +130,9 @@ class MesaData:
         """
         model_matcher = re.compile(".+\.mod")
         log_matcher = re.compile(".+\.(log)|(data)")
-        if model_matcher.match(self.file_name) is not None:
+        if model_matcher.search(self.file_name) is not None:
             self.read_model_data()
-        elif log_matcher.match(self.file_name) is not None:
+        elif log_matcher.search(self.file_name) is not None:
             self.read_log_data()
         else:
             raise UnknownFileTypeError("Unknown file type for file {}".format(
@@ -253,18 +254,24 @@ class MesaData:
         Parameters
         ----------
         key : str
-            Name of data. Must match a main data title in the source file.
+            Name of data. Must match a main data title in the source file. If it
+            is not a data title, will first check for a log_[`key`] or ln[`key`]
+            version and return an exponentiated version of that data. If `key`
+            looks like a `log_*` or `ln_*` name, searches for a linear
+            quantity of the appropriate name and returns the expected
+            logarithmic quantity.
 
         Returns
         -------
         numpy.ndarray
             Array of values for data corresponding to key at various time steps
-            (history) or grid points (profile).
+            (history) or grid points (profile or model).
 
         Raises
         ------
         KeyError
-            If `key` is an invalid key (i.e. not in `self.bulk_names`)
+            If `key` is an invalid key (i.e. not in `self.bulk_names` and no
+            fallback logarithmic or linear quantities found)
 
         Examples
         --------
@@ -281,6 +288,25 @@ class MesaData:
         In this case, x and y are the same because the non-existent method
         MesaData.star_age will direct to to the corresponding MesaData.data
         call.
+
+        Even data categories that are not in the file may still work.
+        Specifically, if a linear quantity is available, but the log is asked
+        for, the linear quantity will be first log-ified and then returned:
+
+        >>> m = MesaData()
+        >>> m.in_data('L')
+        False
+        >>> m.in_data('log_L')
+        True
+        >>> x = m.L
+        >>> y = 10**m.log_L
+        >>> x == y
+        True
+
+        Here, `data` was called implicitly with an argument of 'L' to get `x`.
+        Since `'L'` was an invalid data category, it first looked to see if a
+        logarithmic version existed. Indeed, `'log_L'` was present, so it was
+        retrieved, exponentiated, and returned.
         """
         if self.in_data(key):
             return self.bulk_data[key]
