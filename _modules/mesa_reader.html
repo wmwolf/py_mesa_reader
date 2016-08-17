@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mesa_reader &mdash; PyMesaReader 0.2.0 documentation</title>
+  <title>mesa_reader &mdash; PyMesaReader 0.3.0 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="PyMesaReader 0.2.0 documentation" href="../index.html"/>
+    <link rel="top" title="PyMesaReader 0.3.0 documentation" href="../index.html"/>
         <link rel="up" title="Module code" href="index.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.3
               </div>
             
           
@@ -219,7 +219,8 @@
     <span class="k">def</span> <span class="nf">set_data_rows</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">name_line</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
         <span class="n">cls</span><span class="o">.</span><span class="n">bulk_names_line</span> <span class="o">=</span> <span class="n">name_line</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">&#39;./LOGS/history.data&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;LOGS&#39;</span><span class="p">,</span>
+                                              <span class="s1">&#39;history.data&#39;</span><span class="p">)):</span>
         <span class="sd">&quot;&quot;&quot;Make a MesaData object from a Mesa output file.</span>
 
 <span class="sd">        Reads a profile or history output file from mesa. Assumes a file with</span>
@@ -263,9 +264,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">model_matcher</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;.+\.mod&quot;</span><span class="p">)</span>
         <span class="n">log_matcher</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;.+\.(log)|(data)&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">model_matcher</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">model_matcher</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">read_model_data</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">log_matcher</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">log_matcher</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">read_log_data</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">UnknownFileTypeError</span><span class="p">(</span><span class="s2">&quot;Unknown file type for file {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -387,18 +388,24 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        key : str</span>
-<span class="sd">            Name of data. Must match a main data title in the source file.</span>
+<span class="sd">            Name of data. Must match a main data title in the source file. If it</span>
+<span class="sd">            is not a data title, will first check for a log_[`key`] or ln[`key`]</span>
+<span class="sd">            version and return an exponentiated version of that data. If `key`</span>
+<span class="sd">            looks like a `log_*` or `ln_*` name, searches for a linear</span>
+<span class="sd">            quantity of the appropriate name and returns the expected</span>
+<span class="sd">            logarithmic quantity.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        numpy.ndarray</span>
 <span class="sd">            Array of values for data corresponding to key at various time steps</span>
-<span class="sd">            (history) or grid points (profile).</span>
+<span class="sd">            (history) or grid points (profile or model).</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        KeyError</span>
-<span class="sd">            If `key` is an invalid key (i.e. not in `self.bulk_names`)</span>
+<span class="sd">            If `key` is an invalid key (i.e. not in `self.bulk_names` and no</span>
+<span class="sd">            fallback logarithmic or linear quantities found)</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -415,6 +422,25 @@
 <span class="sd">        In this case, x and y are the same because the non-existent method</span>
 <span class="sd">        MesaData.star_age will direct to to the corresponding MesaData.data</span>
 <span class="sd">        call.</span>
+
+<span class="sd">        Even data categories that are not in the file may still work.</span>
+<span class="sd">        Specifically, if a linear quantity is available, but the log is asked</span>
+<span class="sd">        for, the linear quantity will be first log-ified and then returned:</span>
+
+<span class="sd">        &gt;&gt;&gt; m = MesaData()</span>
+<span class="sd">        &gt;&gt;&gt; m.in_data(&#39;L&#39;)</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; m.in_data(&#39;log_L&#39;)</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; x = m.L</span>
+<span class="sd">        &gt;&gt;&gt; y = 10**m.log_L</span>
+<span class="sd">        &gt;&gt;&gt; x == y</span>
+<span class="sd">        True</span>
+
+<span class="sd">        Here, `data` was called implicitly with an argument of &#39;L&#39; to get `x`.</span>
+<span class="sd">        Since `&#39;L&#39;` was an invalid data category, it first looked to see if a</span>
+<span class="sd">        logarithmic version existed. Indeed, `&#39;log_L&#39;` was present, so it was</span>
+<span class="sd">        retrieved, exponentiated, and returned.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_data</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
@@ -1237,7 +1263,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.2.0',
+            VERSION:'0.3.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
