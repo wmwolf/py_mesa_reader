@@ -86,7 +86,8 @@ class MesaData:
         cls.bulk_names_line = name_line
 
     def __init__(self, file_name=os.path.join(os.getcwd(), 'LOGS',
-                                              'history.data')):
+                                              'history.data'),
+                 file_type=None):
         """Make a MesaData object from a Mesa output file.
 
         Reads a profile or history output file from mesa. Assumes a file with
@@ -105,8 +106,14 @@ class MesaData:
         ----------
         file_name : str, optional
             File name to be read in. Default is 'LOGS/history.data'
+
+        file_type : str, optional
+            File type of file to be read.  Default is None, which will
+            auto-detect the type based on file extension.  Valid values are
+            'model' (a saved model) and 'log' (history or profile output).
         """
         self.file_name = file_name
+        self.file_type = file_type
         self.bulk_data = None
         self.bulk_names = None
         self.header_data = None
@@ -128,15 +135,25 @@ class MesaData:
         -------
         None
         """
-        model_matcher = re.compile(".+\.mod")
-        log_matcher = re.compile(".+\.(log)|(data)")
-        if model_matcher.search(self.file_name) is not None:
+
+        # attempt auto-detection of file_type (if not supplied)
+        if self.file_type is None:
+            if self.file_name.endswith((".data", ".log")):
+                self.file_type = 'log'
+            elif self.file_name.endswith(".mod"):
+                self.file_type = 'model'
+            else:
+                raise UnknownFileTypeError("Unknown file type for file {}".format(
+                    self.file_name))
+
+        # punt to reading method appropriate for each file type
+        if self.file_type == 'model':
             self.read_model_data()
-        elif log_matcher.search(self.file_name) is not None:
+        elif self.file_type == 'log':
             self.read_log_data()
         else:
-            raise UnknownFileTypeError("Unknown file type for file {}".format(
-                self.file_name))
+            raise UnknownFileTypeError("Unknown file type {}".format(
+                self.file_type))
 
     def read_log_data(self):
         """Reads in or update data from the original log (.data or .log) file.
