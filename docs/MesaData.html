@@ -167,15 +167,17 @@ body of these files are directly accessible as attributes and always via the
 </div>
 <dl class="class">
 <dt id="mesa_reader.MesaData">
-<em class="property">class </em><code class="descclassname">mesa_reader.</code><code class="descname">MesaData</code><span class="sig-paren">(</span><em>file_name='/Users/wmwolf/Repositories/py_mesa_reader/LOGS/history.data'</em><span class="sig-paren">)</span><a class="headerlink" href="#mesa_reader.MesaData" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">mesa_reader.</code><code class="descname">MesaData</code><span class="sig-paren">(</span><em>file_name='./LOGS/history.data'</em>, <em>file_type=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Structure containing data from a Mesa output file.</p>
 <p>Reads a profile or history output file from mesa. Assumes a file with
 the following structure:</p>
-<p>line 1: header names
-line 2: header data
-line 3: blank
-line 4: main data names
-line 5: main data values</p>
+<ul class="simple">
+<li>line 1: header names</li>
+<li>line 2: header data</li>
+<li>line 3: blank</li>
+<li>line 4: main data names</li>
+<li>line 5: main data values</li>
+</ul>
 <p>This structure can be altered by using the class methods
 MesaData.set_header_rows and MesaData.set_data_rows.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -223,7 +225,7 @@ accessed via the <cite>data</cite> method.</p>
 
 <dl class="method">
 <dt id="mesa_reader.MesaData.data">
-<code class="descname">data</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#mesa_reader.MesaData.data" title="Permalink to this definition">¶</a></dt>
+<code class="descname">data</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accesses the data and returns a numpy array with the appropriate data</p>
 <p>Accepts a string key, like star_age (for history files) or logRho (for
 profile files) and returns the corresponding numpy array of data for
@@ -286,7 +288,7 @@ retrieved, exponentiated, and returned.</p>
 
 <dl class="method">
 <dt id="mesa_reader.MesaData.data_at_model_number">
-<code class="descname">data_at_model_number</code><span class="sig-paren">(</span><em>key</em>, <em>m_num</em><span class="sig-paren">)</span><a class="headerlink" href="#mesa_reader.MesaData.data_at_model_number" title="Permalink to this definition">¶</a></dt>
+<code class="descname">data_at_model_number</code><span class="sig-paren">(</span><em>key</em>, <em>m_num</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.data_at_model_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.data_at_model_number" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return main data at a specific model number (for history files).</p>
 <p>Finds the index i where MesaData.data(&#8216;model_number&#8217;)[i] == m_num. Then
 returns MesaData.data(key)[i]. Essentially lets you use model numbers
@@ -321,7 +323,7 @@ MesaData.data(&#8216;model_number&#8217;) == <cite>m_num</cite></p>
 
 <dl class="method">
 <dt id="mesa_reader.MesaData.header">
-<code class="descname">header</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#mesa_reader.MesaData.header" title="Permalink to this definition">¶</a></dt>
+<code class="descname">header</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.header" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accesses the header, returning a scalar the appropriate data</p>
 <p>Accepts a string key, like version_number and returns the corresponding
 datum for that key. Can also just use the shorthand
@@ -359,7 +361,7 @@ sense, it will instead call MesaData.header(&#8216;version_number&#8217;)</p>
 
 <dl class="method">
 <dt id="mesa_reader.MesaData.in_data">
-<code class="descname">in_data</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#mesa_reader.MesaData.in_data" title="Permalink to this definition">¶</a></dt>
+<code class="descname">in_data</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.in_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.in_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determine if <cite>key</cite> is an available main data category.</p>
 <p>Checks if string <cite>key</cite> is a valid argument of MesaData.data. Returns
 True if it is, otherwise False</p>
@@ -383,7 +385,7 @@ shouldn&#8217;t need to call it.</p>
 
 <dl class="method">
 <dt id="mesa_reader.MesaData.in_header">
-<code class="descname">in_header</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#mesa_reader.MesaData.in_header" title="Permalink to this definition">¶</a></dt>
+<code class="descname">in_header</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.in_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.in_header" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determine if <cite>key</cite> is an available header data category.</p>
 <p>Checks if string <cite>key</cite> is a valid argument of MesaData.header. Returns
 True if it is, otherwise False</p>
@@ -407,7 +409,7 @@ shouldn&#8217;t need to call it.</p>
 
 <dl class="method">
 <dt id="mesa_reader.MesaData.index_of_model_number">
-<code class="descname">index_of_model_number</code><span class="sig-paren">(</span><em>m_num</em><span class="sig-paren">)</span><a class="headerlink" href="#mesa_reader.MesaData.index_of_model_number" title="Permalink to this definition">¶</a></dt>
+<code class="descname">index_of_model_number</code><span class="sig-paren">(</span><em>m_num</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.index_of_model_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.index_of_model_number" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return index where MesaData.data(&#8216;model_number&#8217;) is <cite>m_num</cite>.</p>
 <p>Returns the index i where MesaData.data(&#8216;model_number&#8217;)[i] == m_num.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -442,7 +444,7 @@ shouldn&#8217;t need to call it.</p>
 
 <dl class="method">
 <dt id="mesa_reader.MesaData.is_history">
-<code class="descname">is_history</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mesa_reader.MesaData.is_history" title="Permalink to this definition">¶</a></dt>
+<code class="descname">is_history</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.is_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.is_history" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determine if the source file is a history file</p>
 <p>Checks if &#8216;model_number&#8217; is a valid key for self.data. If it is, return
 True. Otherwise return False. This is used in determining whether or not
@@ -461,7 +463,7 @@ to cleanse the file of backups and restarts in the MesaData.read_data.</p>
 
 <dl class="method">
 <dt id="mesa_reader.MesaData.read_data">
-<code class="descname">read_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mesa_reader.MesaData.read_data" title="Permalink to this definition">¶</a></dt>
+<code class="descname">read_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.read_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.read_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decide if data file is log output or a model, then load the data</p>
 <p>Log files and models are structured differently, so different methods
 will be required to read in each. This method figures out which one
@@ -482,7 +484,7 @@ should be called and then punts to that method.</p>
 
 <dl class="method">
 <dt id="mesa_reader.MesaData.read_log_data">
-<code class="descname">read_log_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mesa_reader.MesaData.read_log_data" title="Permalink to this definition">¶</a></dt>
+<code class="descname">read_log_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.read_log_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.read_log_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads in or update data from the original log (.data or .log) file.</p>
 <p>This re-reads the data from the originally-provided file name. Mostly
 useful if the data file has been changed since it was first read in or
@@ -502,22 +504,16 @@ have been used to alter how the data have been read in.</p>
 
 <dl class="method">
 <dt id="mesa_reader.MesaData.read_model_data">
-<code class="descname">read_model_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mesa_reader.MesaData.read_model_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in or updates data from the original model (.mod) file.</p>
-<p>Models are assumed to have the following structure:
-- lines of comments and otherwise [considered] useless information
-- one or more blank line
-- Header information (names and values separated by one or more space,</p>
-<blockquote>
-<div>one per line)</div></blockquote>
+<code class="descname">read_model_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.read_model_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.read_model_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read in or update data from the original model (.mod) file.</p>
+<p>Models are assumed to have the following structure:</p>
 <ul class="simple">
+<li>lines of comments and otherwise [considered] useless information</li>
+<li>one or more blank line</li>
+<li>Header information (names and values separated by one or more space, one per line)</li>
 <li>one or more blank lines</li>
 <li>ONE line of column names (strings separated by one or more spaces)</li>
-<li><dl class="first docutils">
-<dt>many lines of bulk data (integer followed by many doubles, separated</dt>
-<dd>by one or more spaces)</dd>
-</dl>
-</li>
+<li>many lines of bulk data (integer followed by many doubles, separated by one or more spaces)</li>
 <li>a blank line</li>
 <li>everything else is ignored</li>
 </ul>
@@ -537,7 +533,7 @@ have been used to alter how the data have been read in.</p>
 
 <dl class="method">
 <dt id="mesa_reader.MesaData.remove_backups">
-<code class="descname">remove_backups</code><span class="sig-paren">(</span><em>dbg=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mesa_reader.MesaData.remove_backups" title="Permalink to this definition">¶</a></dt>
+<code class="descname">remove_backups</code><span class="sig-paren">(</span><em>dbg=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.remove_backups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.remove_backups" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cleanses a history file of backups and restarts</p>
 <p>If the file is a history file, goes through and ensure that the
 model_number data are monotonically increasing. It removes rows of data

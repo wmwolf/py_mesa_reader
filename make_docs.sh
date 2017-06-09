@@ -4,4 +4,4 @@
 # Makefile) and then moves the html product into the docs directory
 
 make html
-mv docs_build/html docs
+cp -r docs_build/html/* docs/

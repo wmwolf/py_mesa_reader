@@ -1096,9 +1096,9 @@ class MesaLogDir:
         if to_use in self.profile_dict:
             return self.profile_dict[to_use]
 
-        file_name = os.path.join(self.log_path,
-                                 (self.profile_prefix +
-                                  str(to_use) + '.' + self.profile_suffix))
+        file_name = join(self.log_path,
+                         (self.profile_prefix + str(to_use) + '.' +
+                          self.profile_suffix))
         p = MesaData(file_name)
         if self.memoize_profiles:
             self.profile_dict[to_use] = p
