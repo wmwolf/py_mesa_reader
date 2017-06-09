@@ -1,0 +1,11 @@
+.DS_STORE
+.idea
+.ropeproject
+__pycache__
+build
+dist
+make.bat
+*.pyc
+*.swp
+*.egg-info
+.buildinfo
