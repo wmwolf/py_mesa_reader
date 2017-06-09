@@ -1,4 +1,5 @@
 import os
+from os.path import join
 import re
 
 import numpy as np
@@ -41,11 +42,11 @@ class MesaData:
     Reads a profile or history output file from mesa. Assumes a file with
     the following structure:
 
-    line 1: header names
-    line 2: header data
-    line 3: blank
-    line 4: main data names
-    line 5: main data values
+    - line 1: header names
+    - line 2: header data
+    - line 3: blank
+    - line 4: main data names
+    - line 5: main data values
 
     This structure can be altered by using the class methods
     MesaData.set_header_rows and MesaData.set_data_rows.
@@ -85,9 +86,8 @@ class MesaData:
     def set_data_rows(cls, name_line=6):
         cls.bulk_names_line = name_line
 
-    def __init__(self, file_name=os.path.join(os.getcwd(), 'LOGS',
-                                              'history.data'),
-                 file_type=None):
+    def __init__(self, file_name=os.path.join('.', 'LOGS',
+                                              'history.data')):
         """Make a MesaData object from a Mesa output file.
 
         Reads a profile or history output file from mesa. Assumes a file with
@@ -167,8 +167,9 @@ class MesaData:
         -------
         None
         """
-        self.bulk_data = np.genfromtxt(self.file_name,
-            skip_header=MesaData.bulk_names_line - 1, names=True, dtype=None)
+        self.bulk_data = np.genfromtxt(
+            self.file_name, skip_header=MesaData.bulk_names_line - 1,
+            names=True, dtype=None)
         self.bulk_names = self.bulk_data.dtype.names
         header_data = []
         with open(self.file_name) as f:
@@ -186,14 +187,15 @@ class MesaData:
         """Read in or updates data from the original model (.mod) file.
 
         Models are assumed to have the following structure:
+
         - lines of comments and otherwise [considered] useless information
         - one or more blank line
         - Header information (names and values separated by one or more space,
-                              one per line)
+          one per line)
         - one or more blank lines
         - ONE line of column names (strings separated by one or more spaces)
         - many lines of bulk data (integer followed by many doubles, separated
-                                   by one or more spaces)
+          by one or more spaces)
         - a blank line
         - everything else is ignored
 
@@ -229,8 +231,8 @@ class MesaData:
         # now on blank line 1, advance through one or more lines to get to
         # header data
         while found_blank_line:
-            i += 1 
-            found_blank_line = (blank_line_matcher.match(lines[i]) is not None)            
+            i += 1
+            found_blank_line = (blank_line_matcher.match(lines[i]) is not None)
         # now done with blank lines and on to header data
         self.header_names = []
         self.header_data = {}
@@ -242,8 +244,8 @@ class MesaData:
             found_blank_line = (blank_line_matcher.match(lines[i]) is not None)
         # now on blank line 2, advance until we get to column names
         while found_blank_line:
-            i += 1 
-            found_blank_line = (blank_line_matcher.match(lines[i]) is not None)            
+            i += 1
+            found_blank_line = (blank_line_matcher.match(lines[i]) is not None)
         self.bulk_names = ['zone']
         self.bulk_names += lines[i].split()
         i += 1
@@ -459,7 +461,7 @@ class MesaData:
         Returns
         -------
         str or `None`
-            The "logified" version of the key, if available. If unavailable, 
+            The "logified" version of the key, if available. If unavailable,
             `None`.
         """
         log_prefixes = ['log_', 'log', 'lg_', 'lg']
@@ -482,7 +484,7 @@ class MesaData:
         Returns
         -------
         str or `None`
-            The "ln-ified" version of the key, if available. If unavailable, 
+            The "ln-ified" version of the key, if available. If unavailable,
             `None`.
         """
         log_prefixes = ['ln_', 'ln']
@@ -551,7 +553,7 @@ class MesaData:
         -------
         bool
             True if `key` can be mapped to a data type either directly or by
-            exponentiating/taking logarithms of existing data types            
+            exponentiating/taking logarithms of existing data types
         """
         return bool(self.in_data(key) or self._log_version(key) or
                     self._ln_version(key) or self._exp_version(key) or
@@ -715,7 +717,7 @@ class MesaProfileIndex:
         cls.index_names = name_arr
         return name_arr
 
-    def __init__(self, file_name='./LOGS/profiles.index'):
+    def __init__(self, file_name=join('.', 'LOGS', 'profiles.index')):
         self.file_name = file_name
         self.index_data = None
         self.model_number_string = ''
@@ -737,8 +739,9 @@ class MesaProfileIndex:
         -------
         None
         """
-        temp_index_data = np.genfromtxt(self.file_name,
-            skip_header=MesaProfileIndex.index_start_line - 1, dtype=None)
+        temp_index_data = np.genfromtxt(
+            self.file_name, skip_header=MesaProfileIndex.index_start_line - 1,
+            dtype=None)
         self.model_number_string = MesaProfileIndex.index_names[0]
         self.profile_number_string = MesaProfileIndex.index_names[-1]
         self.index_data = temp_index_data[np.argsort(temp_index_data[:, 0])]
@@ -822,13 +825,43 @@ class MesaProfileIndex:
         Raises
         ------
         ProfileError
-            If no profile number can be found that corresponds to `model_number`
+            If no profile number can be found that corresponds to
+            `model_number`
         """
         if not (self.have_profile_with_model_number(model_number)):
             raise ProfileError("No profile with model number " +
                                str(model_number) + ".")
         indices = np.where(self.data(self.model_number_string) == model_number)
         return np.take(self.data(self.profile_number_string), indices[0])[0]
+
+    def model_with_profile_number(self, profile_number):
+        """Converts a profile number to a profile number if possible.
+
+        If `profile_number` has a corresponding model number in the index,
+        returns it. Otherwise throws an error.
+
+        Attributes
+        ----------
+        profile_number : int
+            profile number to be converted into a model number
+
+        Returns
+        -------
+        int
+            model number corresponding to `profile_number`
+
+        Raises
+        ------
+        ProfileError
+            If no model number can be found that corresponds to
+            `profile_number`
+        """
+        if not (self.have_profile_with_profile_number(profile_number)):
+            raise ProfileError("No Profile with profile number " +
+                               str(profile_number) + ".")
+        indices = np.where(
+            self.data(self.profile_number_string) == profile_number)
+        return np.take(self.data(self.model_number_string), indices[0])[0]
 
     def __getattr__(self, method_name):
         if method_name in self.index_data.keys():
@@ -1013,6 +1046,21 @@ class MesaLogDir:
             profile number that corresponds to `m_num`.
         """
         return self.profiles.profile_with_model_number(m_num)
+
+    def model_with_profile_number(self, p_num):
+        """Converts a profile number to a corresponding model number
+
+        Parameters
+        ----------
+        p_num : int
+            profile number to be converted
+
+        Returns
+        -------
+        int
+            model number that corresponds to `p_num`.
+        """
+        return self.profiles.model_with_profile_number(p_num)
 
     def profile_data(self, model_number=-1, profile_number=-1):
         """Generate or retrieve MesaData from a model or profile number.
