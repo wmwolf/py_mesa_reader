@@ -86,8 +86,8 @@ class MesaData:
     def set_data_rows(cls, name_line=6):
         cls.bulk_names_line = name_line
 
-    def __init__(self, file_name=os.path.join('.', 'LOGS',
-                                              'history.data')):
+    def __init__(self, file_name=join('.', 'LOGS', 'history.data'),
+                 file_type=None):
         """Make a MesaData object from a Mesa output file.
 
         Reads a profile or history output file from mesa. Assumes a file with
