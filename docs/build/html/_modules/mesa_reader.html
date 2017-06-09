@@ -62,13 +62,6 @@
           </a>
 
           
-            
-            
-              <div class="version">
-                3.1
-              </div>
-            
-          
 
           
 <div role="search">
@@ -90,9 +83,15 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../MesaData.html">MesaData</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../MesaLogDir.html">MesaLogDir</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../MesaProfileIndex.html">MesaProfileIndex</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../MesaData.html">MesaData</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../MesaLogDir.html">MesaLogDir</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../MesaProfileIndex.html">MesaProfileIndex</a><ul class="simple">
+</ul>
+</li>
 </ul>
 
             
@@ -158,6 +157,7 @@
             
   <h1>Source code for mesa_reader</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -193,18 +193,18 @@
         <span class="ne">Exception</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="MesaData"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaData">[docs]</a><span class="k">class</span> <span class="nc">MesaData</span><span class="p">:</span>
+<div class="viewcode-block" id="MesaData"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData">[docs]</a><span class="k">class</span> <span class="nc">MesaData</span><span class="p">:</span>
 
     <span class="sd">&quot;&quot;&quot;Structure containing data from a Mesa output file.</span>
 
 <span class="sd">    Reads a profile or history output file from mesa. Assumes a file with</span>
 <span class="sd">    the following structure:</span>
 
-<span class="sd">    line 1: header names</span>
-<span class="sd">    line 2: header data</span>
-<span class="sd">    line 3: blank</span>
-<span class="sd">    line 4: main data names</span>
-<span class="sd">    line 5: main data values</span>
+<span class="sd">    - line 1: header names</span>
+<span class="sd">    - line 2: header data</span>
+<span class="sd">    - line 3: blank</span>
+<span class="sd">    - line 4: main data names</span>
+<span class="sd">    - line 5: main data values</span>
 
 <span class="sd">    This structure can be altered by using the class methods</span>
 <span class="sd">    MesaData.set_header_rows and MesaData.set_data_rows.</span>
@@ -244,7 +244,7 @@
     <span class="k">def</span> <span class="nf">set_data_rows</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name_line</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">bulk_names_line</span> <span class="o">=</span> <span class="n">name_line</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;LOGS&#39;</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;LOGS&#39;</span><span class="p">,</span>
                                               <span class="s1">&#39;history.data&#39;</span><span class="p">)):</span>
         <span class="sd">&quot;&quot;&quot;Make a MesaData object from a Mesa output file.</span>
 
@@ -272,7 +272,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">header_names</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">read_data</span><span class="p">()</span>
 
-<div class="viewcode-block" id="MesaData.read_data"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaData.read_data">[docs]</a>    <span class="k">def</span> <span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MesaData.read_data"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.read_data">[docs]</a>    <span class="k">def</span> <span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Decide if data file is log output or a model, then load the data</span>
 
 <span class="sd">        Log files and models are structured differently, so different methods</span>
@@ -297,7 +297,7 @@
             <span class="k">raise</span> <span class="n">UnknownFileTypeError</span><span class="p">(</span><span class="s2">&quot;Unknown file type for file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="MesaData.read_log_data"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaData.read_log_data">[docs]</a>    <span class="k">def</span> <span class="nf">read_log_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MesaData.read_log_data"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.read_log_data">[docs]</a>    <span class="k">def</span> <span class="nf">read_log_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Reads in or update data from the original log (.data or .log) file.</span>
 
 <span class="sd">        This re-reads the data from the originally-provided file name. Mostly</span>
@@ -325,18 +325,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">header_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header_names</span><span class="p">,</span> <span class="n">header_data</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">remove_backups</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="MesaData.read_model_data"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaData.read_model_data">[docs]</a>    <span class="k">def</span> <span class="nf">read_model_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MesaData.read_model_data"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.read_model_data">[docs]</a>    <span class="k">def</span> <span class="nf">read_model_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Read in or updates data from the original model (.mod) file.</span>
 
 <span class="sd">        Models are assumed to have the following structure:</span>
+
 <span class="sd">        - lines of comments and otherwise [considered] useless information</span>
 <span class="sd">        - one or more blank line</span>
 <span class="sd">        - Header information (names and values separated by one or more space,</span>
-<span class="sd">                              one per line)</span>
+<span class="sd">          one per line)</span>
 <span class="sd">        - one or more blank lines</span>
 <span class="sd">        - ONE line of column names (strings separated by one or more spaces)</span>
 <span class="sd">        - many lines of bulk data (integer followed by many doubles, separated</span>
-<span class="sd">                                   by one or more spaces)</span>
+<span class="sd">          by one or more spaces)</span>
 <span class="sd">        - a blank line</span>
 <span class="sd">        - everything else is ignored</span>
 
@@ -403,7 +404,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">bulk_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bulk_names</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">temp_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
             <span class="c1"># self.bulk_data = np.array(temp_data, names=self.bulk_names)</span>
 
-<div class="viewcode-block" id="MesaData.data"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaData.data">[docs]</a>    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="MesaData.data"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.data">[docs]</a>    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Accesses the data and returns a numpy array with the appropriate data</span>
 
 <span class="sd">        Accepts a string key, like star_age (for history files) or logRho (for</span>
@@ -481,7 +482,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;&#39; is not a valid data type.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MesaData.header"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaData.header">[docs]</a>    <span class="k">def</span> <span class="nf">header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="MesaData.header"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.header">[docs]</a>    <span class="k">def</span> <span class="nf">header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Accesses the header, returning a scalar the appropriate data</span>
 
 <span class="sd">        Accepts a string key, like version_number and returns the corresponding</span>
@@ -525,7 +526,7 @@
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;&#39; is not a valid header name.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">header_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="MesaData.is_history"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaData.is_history">[docs]</a>    <span class="k">def</span> <span class="nf">is_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MesaData.is_history"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.is_history">[docs]</a>    <span class="k">def</span> <span class="nf">is_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Determine if the source file is a history file</span>
 
 <span class="sd">        Checks if &#39;model_number&#39; is a valid key for self.data. If it is, return</span>
@@ -539,7 +540,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s1">&#39;model_number&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_names</span></div>
 
-<div class="viewcode-block" id="MesaData.in_header"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaData.in_header">[docs]</a>    <span class="k">def</span> <span class="nf">in_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="MesaData.in_header"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.in_header">[docs]</a>    <span class="k">def</span> <span class="nf">in_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Determine if `key` is an available header data category.</span>
 
 <span class="sd">        Checks if string `key` is a valid argument of MesaData.header. Returns</span>
@@ -563,7 +564,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">header_names</span></div>
 
-<div class="viewcode-block" id="MesaData.in_data"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaData.in_data">[docs]</a>    <span class="k">def</span> <span class="nf">in_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="MesaData.in_data"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.in_data">[docs]</a>    <span class="k">def</span> <span class="nf">in_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Determine if `key` is an available main data category.</span>
 
 <span class="sd">        Checks if string `key` is a valid argument of MesaData.data. Returns</span>
@@ -700,7 +701,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_ln_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exp_version</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">or</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_exp10_version</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
 
-<div class="viewcode-block" id="MesaData.data_at_model_number"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaData.data_at_model_number">[docs]</a>    <span class="k">def</span> <span class="nf">data_at_model_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">m_num</span><span class="p">):</span>
+<div class="viewcode-block" id="MesaData.data_at_model_number"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.data_at_model_number">[docs]</a>    <span class="k">def</span> <span class="nf">data_at_model_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">m_num</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return main data at a specific model number (for history files).</span>
 
 <span class="sd">        Finds the index i where MesaData.data(&#39;model_number&#39;)[i] == m_num. Then</span>
@@ -727,7 +728,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">key</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">index_of_model_number</span><span class="p">(</span><span class="n">m_num</span><span class="p">)]</span></div>
 
-<div class="viewcode-block" id="MesaData.index_of_model_number"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaData.index_of_model_number">[docs]</a>    <span class="k">def</span> <span class="nf">index_of_model_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m_num</span><span class="p">):</span>
+<div class="viewcode-block" id="MesaData.index_of_model_number"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.index_of_model_number">[docs]</a>    <span class="k">def</span> <span class="nf">index_of_model_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m_num</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return index where MesaData.data(&#39;model_number&#39;) is `m_num`.</span>
 
 <span class="sd">        Returns the index i where MesaData.data(&#39;model_number&#39;)[i] == m_num.</span>
@@ -768,7 +769,7 @@
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="MesaData.remove_backups"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaData.remove_backups">[docs]</a>    <span class="k">def</span> <span class="nf">remove_backups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbg</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="MesaData.remove_backups"><a class="viewcode-back" href="../MesaData.html#mesa_reader.MesaData.remove_backups">[docs]</a>    <span class="k">def</span> <span class="nf">remove_backups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbg</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Cleanses a history file of backups and restarts</span>
 
 <span class="sd">        If the file is a history file, goes through and ensure that the</span>
@@ -810,7 +811,7 @@
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">method_name</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="MesaProfileIndex"><a class="viewcode-back" href="../index.html#mesa_reader.MesaProfileIndex">[docs]</a><span class="k">class</span> <span class="nc">MesaProfileIndex</span><span class="p">:</span>
+<div class="viewcode-block" id="MesaProfileIndex"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaProfileIndex">[docs]</a><span class="k">class</span> <span class="nc">MesaProfileIndex</span><span class="p">:</span>
 
     <span class="sd">&quot;&quot;&quot;Structure containing data from the profile index from MESA output.</span>
 
@@ -858,7 +859,7 @@
         <span class="bp">cls</span><span class="o">.</span><span class="n">index_names</span> <span class="o">=</span> <span class="n">name_arr</span>
         <span class="k">return</span> <span class="n">name_arr</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">&#39;./LOGS/profiles.index&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;LOGS&#39;</span><span class="p">,</span> <span class="s1">&#39;profiles.index&#39;</span><span class="p">)):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">file_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">index_data</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_number_string</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
@@ -867,7 +868,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">model_numbers</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">read_index</span><span class="p">()</span>
 
-<div class="viewcode-block" id="MesaProfileIndex.read_index"><a class="viewcode-back" href="../index.html#mesa_reader.MesaProfileIndex.read_index">[docs]</a>    <span class="k">def</span> <span class="nf">read_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MesaProfileIndex.read_index"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaProfileIndex.read_index">[docs]</a>    <span class="k">def</span> <span class="nf">read_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Read (or re-read) data from `self.file_name`.</span>
 
 <span class="sd">        Read the file into an numpy array, sorting the table in order of</span>
@@ -891,7 +892,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">profile_numbers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">profile_number_string</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_numbers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_number_string</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MesaProfileIndex.data"><a class="viewcode-back" href="../index.html#mesa_reader.MesaProfileIndex.data">[docs]</a>    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="MesaProfileIndex.data"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaProfileIndex.data">[docs]</a>    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Access index data and return array of column corresponding to `key`.</span>
 
 <span class="sd">        Parameters</span>
@@ -915,7 +916,7 @@
                            <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index_data</span><span class="p">[</span><span class="n">key</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="MesaProfileIndex.have_profile_with_model_number"><a class="viewcode-back" href="../index.html#mesa_reader.MesaProfileIndex.have_profile_with_model_number">[docs]</a>    <span class="k">def</span> <span class="nf">have_profile_with_model_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_number</span><span class="p">):</span>
+<div class="viewcode-block" id="MesaProfileIndex.have_profile_with_model_number"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaProfileIndex.have_profile_with_model_number">[docs]</a>    <span class="k">def</span> <span class="nf">have_profile_with_model_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_number</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Determines if given `model_number` has a matching profile number.</span>
 
 <span class="sd">        Attributes</span>
@@ -931,7 +932,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">model_number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_number_string</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MesaProfileIndex.have_profile_with_profile_number"><a class="viewcode-back" href="../index.html#mesa_reader.MesaProfileIndex.have_profile_with_profile_number">[docs]</a>    <span class="k">def</span> <span class="nf">have_profile_with_profile_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile_number</span><span class="p">):</span>
+<div class="viewcode-block" id="MesaProfileIndex.have_profile_with_profile_number"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaProfileIndex.have_profile_with_profile_number">[docs]</a>    <span class="k">def</span> <span class="nf">have_profile_with_profile_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile_number</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Determines if given `profile_number` is a valid profile number.</span>
 
 <span class="sd">        Attributes</span>
@@ -947,7 +948,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">profile_number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">profile_number_string</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MesaProfileIndex.profile_with_model_number"><a class="viewcode-back" href="../index.html#mesa_reader.MesaProfileIndex.profile_with_model_number">[docs]</a>    <span class="k">def</span> <span class="nf">profile_with_model_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_number</span><span class="p">):</span>
+<div class="viewcode-block" id="MesaProfileIndex.profile_with_model_number"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaProfileIndex.profile_with_model_number">[docs]</a>    <span class="k">def</span> <span class="nf">profile_with_model_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_number</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Converts a model number to a profile number if possible.</span>
 
 <span class="sd">        If `model_number` has a corresponding profile number in the index,</span>
@@ -975,7 +976,7 @@
         <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_number_string</span><span class="p">)</span> <span class="o">==</span> <span class="n">model_number</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">profile_number_string</span><span class="p">),</span> <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="MesaProfileIndex.model_with_profile_number"><a class="viewcode-back" href="../index.html#mesa_reader.MesaProfileIndex.model_with_profile_number">[docs]</a>    <span class="k">def</span> <span class="nf">model_with_profile_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile_number</span><span class="p">):</span>
+<div class="viewcode-block" id="MesaProfileIndex.model_with_profile_number"><a class="viewcode-back" href="../MesaProfileIndex.html#mesa_reader.MesaProfileIndex.model_with_profile_number">[docs]</a>    <span class="k">def</span> <span class="nf">model_with_profile_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile_number</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Converts a profile number to a profile number if possible.</span>
 
 <span class="sd">        If `profile_number` has a corresponding model number in the index,</span>

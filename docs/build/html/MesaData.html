@@ -63,13 +63,6 @@
           </a>
 
           
-            
-            
-              <div class="version">
-                3.1
-              </div>
-            
-          
 
           
 <div role="search">
@@ -94,8 +87,12 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">MesaData</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="MesaLogDir.html">MesaLogDir</a></li>
-<li class="toctree-l1"><a class="reference internal" href="MesaProfileIndex.html">MesaProfileIndex</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MesaLogDir.html">MesaLogDir</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="MesaProfileIndex.html">MesaProfileIndex</a><ul class="simple">
+</ul>
+</li>
 </ul>
 
             
@@ -170,15 +167,17 @@ body of these files are directly accessible as attributes and always via the
 </div>
 <dl class="class">
 <dt id="mesa_reader.MesaData">
-<em class="property">class </em><code class="descclassname">mesa_reader.</code><code class="descname">MesaData</code><span class="sig-paren">(</span><em>file_name='/Users/wmwolf/Repositories/py_mesa_reader/docs/LOGS/history.data'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">mesa_reader.</code><code class="descname">MesaData</code><span class="sig-paren">(</span><em>file_name='./LOGS/history.data'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Structure containing data from a Mesa output file.</p>
 <p>Reads a profile or history output file from mesa. Assumes a file with
 the following structure:</p>
-<p>line 1: header names
-line 2: header data
-line 3: blank
-line 4: main data names
-line 5: main data values</p>
+<ul class="simple">
+<li>line 1: header names</li>
+<li>line 2: header data</li>
+<li>line 3: blank</li>
+<li>line 4: main data names</li>
+<li>line 5: main data values</li>
+</ul>
 <p>This structure can be altered by using the class methods
 MesaData.set_header_rows and MesaData.set_data_rows.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -507,20 +506,16 @@ have been used to alter how the data have been read in.</p>
 <dt id="mesa_reader.MesaData.read_model_data">
 <code class="descname">read_model_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesa_reader.html#MesaData.read_model_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesa_reader.MesaData.read_model_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read in or updates data from the original model (.mod) file.</p>
-<p>Models are assumed to have the following structure:
-- lines of comments and otherwise [considered] useless information
-- one or more blank line
-- Header information (names and values separated by one or more space,</p>
-<blockquote>
-<div>one per line)</div></blockquote>
+<p>Models are assumed to have the following structure:</p>
 <ul class="simple">
+<li>lines of comments and otherwise [considered] useless information</li>
+<li>one or more blank line</li>
+<li>Header information (names and values separated by one or more space,
+one per line)</li>
 <li>one or more blank lines</li>
 <li>ONE line of column names (strings separated by one or more spaces)</li>
-<li><dl class="first docutils">
-<dt>many lines of bulk data (integer followed by many doubles, separated</dt>
-<dd>by one or more spaces)</dd>
-</dl>
-</li>
+<li>many lines of bulk data (integer followed by many doubles, separated
+by one or more spaces)</li>
 <li>a blank line</li>
 <li>everything else is ignored</li>
 </ul>

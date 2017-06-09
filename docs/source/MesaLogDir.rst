@@ -11,7 +11,7 @@ find profiles by profile number, model number, or by selecting according to a
 more flexible history criteria.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 3 
 
 .. autoclass:: mesa_reader.MesaLogDir
    :members:

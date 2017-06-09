@@ -1,4 +1,5 @@
 import os
+from os.path import join
 import re
 
 import numpy as np
@@ -41,11 +42,11 @@ class MesaData:
     Reads a profile or history output file from mesa. Assumes a file with
     the following structure:
 
-    line 1: header names
-    line 2: header data
-    line 3: blank
-    line 4: main data names
-    line 5: main data values
+    - line 1: header names
+    - line 2: header data
+    - line 3: blank
+    - line 4: main data names
+    - line 5: main data values
 
     This structure can be altered by using the class methods
     MesaData.set_header_rows and MesaData.set_data_rows.
@@ -85,7 +86,7 @@ class MesaData:
     def set_data_rows(cls, name_line=6):
         cls.bulk_names_line = name_line
 
-    def __init__(self, file_name=os.path.join(os.getcwd(), 'LOGS',
+    def __init__(self, file_name=os.path.join('.', 'LOGS',
                                               'history.data')):
         """Make a MesaData object from a Mesa output file.
 
@@ -170,14 +171,15 @@ class MesaData:
         """Read in or updates data from the original model (.mod) file.
 
         Models are assumed to have the following structure:
+
         - lines of comments and otherwise [considered] useless information
         - one or more blank line
         - Header information (names and values separated by one or more space,
-                              one per line)
+          one per line)
         - one or more blank lines
         - ONE line of column names (strings separated by one or more spaces)
         - many lines of bulk data (integer followed by many doubles, separated
-                                   by one or more spaces)
+          by one or more spaces)
         - a blank line
         - everything else is ignored
 
@@ -699,7 +701,7 @@ class MesaProfileIndex:
         cls.index_names = name_arr
         return name_arr
 
-    def __init__(self, file_name='./LOGS/profiles.index'):
+    def __init__(self, file_name=join('.', 'LOGS', 'profiles.index')):
         self.file_name = file_name
         self.index_data = None
         self.model_number_string = ''

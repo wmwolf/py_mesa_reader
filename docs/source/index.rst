@@ -15,11 +15,13 @@ Here you will find some [limited] documentation of the three main classes in the
    MesaLogDir
    MesaProfileIndex
 
-
-
-Indices and tables
-==================
-
 * :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+
+
+
+.. Indices and tables
+.. ==================
+..
+.. * :ref:`genindex`
+.. * :ref:`modindex`
+.. * :ref:`search`

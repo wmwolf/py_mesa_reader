@@ -13,7 +13,7 @@ can also be used on its own.
 .. toctree::
    :maxdepth: 3
 
-.. autoclass:: mesa_reader.MesaData
+.. autoclass:: mesa_reader.MesaProfileIndex
    :members:
 
 
