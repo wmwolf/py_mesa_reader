@@ -184,18 +184,16 @@ class MesaData:
         self.remove_backups()
 
     def read_model_data(self):
-        """Read in or updates data from the original model (.mod) file.
+        """Read in or update data from the original model (.mod) file.
 
         Models are assumed to have the following structure:
 
         - lines of comments and otherwise [considered] useless information
         - one or more blank line
-        - Header information (names and values separated by one or more space,
-          one per line)
+        - Header information (names and values separated by one or more space, one per line)
         - one or more blank lines
         - ONE line of column names (strings separated by one or more spaces)
-        - many lines of bulk data (integer followed by many doubles, separated
-          by one or more spaces)
+        - many lines of bulk data (integer followed by many doubles, separated by one or more spaces)
         - a blank line
         - everything else is ignored
 
