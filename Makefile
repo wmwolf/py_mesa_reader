@@ -6,7 +6,7 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = PyMesaReader
 SOURCEDIR     = docs_source
-BUILDDIR      = docs
+BUILDDIR      = docs_build
 
 # Put it first so that "make" without argument is like "make help".
 help:
