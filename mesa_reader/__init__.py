@@ -120,6 +120,22 @@ class MesaData:
         self.header_names = None
         self.read_data()
 
+    def __lt__(self, other):
+        try:
+            sage = float(self.star_age)
+            oage = float(other.star_age)
+            return sage < oage
+        except:
+            return self.file_name < other.file_name
+
+    def __str__(self):
+        try:
+            model_number = int(self.model_number)
+            age = float(self.star_age)
+            return "MESA model # {:6}, t = {:20.10g} yr".format(model_number, age)
+        except:
+            return "{}".format(self.file_name)
+
     def read_data(self):
         """Decide if data file is log output or a model, then load the data
 
