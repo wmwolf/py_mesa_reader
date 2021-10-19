@@ -251,7 +251,7 @@ class MesaData:
         self.header_names = []
         self.header_data = {}
         while not found_blank_line:
-            name, val = [datum.strip() for datum in lines[i].split()]
+            name, val = [datum.strip() for datum in lines[i].split()[:2]]
             self.header_data[name] = eval(pythonize_number(val))
             self.header_names.append(name)
             i += 1
