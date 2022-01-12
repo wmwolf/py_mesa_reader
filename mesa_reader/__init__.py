@@ -86,6 +86,14 @@ class MesaData:
     def set_data_rows(cls, name_line=6):
         cls.bulk_names_line = name_line
 
+    # For pickle support
+    def __getstate__(self):
+        return (self.file_name, self.bulk_data, self.bulk_names, self.header_data, self.header_names)
+
+    # For pickle support
+    def __setstate__(self, state):
+        self.file_name, self.bulk_data, self.bulk_names, self.header_data, self.header_names = state
+
     def __init__(self, file_name=join('.', 'LOGS', 'history.data'),
                  file_type=None):
         """Make a MesaData object from a Mesa output file.
