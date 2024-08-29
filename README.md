@@ -1,10 +1,14 @@
-py_mesa_reader
-==============
+mesa_reader
+===========
 
-Tools for easily accessing and manipulating data from MESA in python.
+Tools for easily accessing and manipulating data from `MESA star` and `MESA binary` in python.
 
 ## Installation
-Install by cloning or downloading the repository, `cd` into it and then execute
+The easiest way to install is via `pip`:
+
+    pip install mesa_reader
+
+You can also install by cloning or downloading the repository at github.com/wmwolf/py_mesa_reader, `cd` into it and then execute
 
     python setup.py install
 
@@ -12,7 +16,7 @@ or
 
     pip install .
     
-to  install package on your system.
+to install the package on your system.
 
 ## Uninstallation
 Uninstall by executing
