@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='mesa_reader',
-    version='0.3.0',
+    version='0.3.3',
     description='tools for interacting with output from MESA star',
     url='http://github.com/wmwolf/py_mesa_reader',
     author='William M. Wolf',
