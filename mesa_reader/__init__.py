@@ -8,35 +8,34 @@ import numpy as np
 class ProfileError(Exception):
 
     def __init__(self, msg):
-        Exception.__init__(self, msg)
+        super().__init__(self, msg)
 
 
 class HistoryError(Exception):
 
     def __init__(self, msg):
-        Exception.__init__(self, msg)
+        super().__init__(self, msg)
 
 
 class ModelNumberError(Exception):
 
     def __init__(self, msg):
-        Exception.__init__(self, msg)
+        super().__init__(self, msg)
 
 
 class BadPathError(Exception):
 
     def __init__(self, msg):
-        Exception.__init__(self, msg)
+        super().__init__(self, msg)
 
 
 class UnknownFileTypeError(Exception):
 
     def __init__(self, msg):
-        Exception.__init__(self, msg)
+        super().__init__(self, msg)
 
 
 class MesaData:
-
     """Structure containing data from a Mesa output file.
 
     Reads a profile or history output file from mesa. Assumes a file with
@@ -88,14 +87,25 @@ class MesaData:
 
     # For pickle support
     def __getstate__(self):
-        return (self.file_name, self.bulk_data, self.bulk_names, self.header_data, self.header_names)
+        return (
+            self.file_name,
+            self.bulk_data,
+            self.bulk_names,
+            self.header_data,
+            self.header_names,
+        )
 
     # For pickle support
     def __setstate__(self, state):
-        self.file_name, self.bulk_data, self.bulk_names, self.header_data, self.header_names = state
+        (
+            self.file_name,
+            self.bulk_data,
+            self.bulk_names,
+            self.header_data,
+            self.header_names,
+        ) = state
 
-    def __init__(self, file_name=join('.', 'LOGS', 'history.data'),
-                 file_type=None):
+    def __init__(self, file_name=join(".", "LOGS", "history.data"), file_type=None):
         """Make a MesaData object from a Mesa output file.
 
         Reads a profile or history output file from mesa. Assumes a file with
@@ -163,21 +173,21 @@ class MesaData:
         # attempt auto-detection of file_type (if not supplied)
         if self.file_type is None:
             if self.file_name.endswith((".data", ".log")):
-                self.file_type = 'log'
+                self.file_type = "log"
             elif self.file_name.endswith(".mod"):
-                self.file_type = 'model'
+                self.file_type = "model"
             else:
-                raise UnknownFileTypeError("Unknown file type for file {}".format(
-                    self.file_name))
+                raise UnknownFileTypeError(
+                    "Unknown file type for file {}".format(self.file_name)
+                )
 
         # punt to reading method appropriate for each file type
-        if self.file_type == 'model':
+        if self.file_type == "model":
             self.read_model_data()
-        elif self.file_type == 'log':
+        elif self.file_type == "log":
             self.read_log_data()
         else:
-            raise UnknownFileTypeError("Unknown file type {}".format(
-                self.file_type))
+            raise UnknownFileTypeError("Unknown file type {}".format(self.file_type))
 
     def read_log_data(self):
         """Reads in or update data from the original log (.data or .log) file.
@@ -192,8 +202,11 @@ class MesaData:
         None
         """
         self.bulk_data = np.genfromtxt(
-            self.file_name, skip_header=MesaData.bulk_names_line - 1,
-            names=True, dtype=None)
+            self.file_name,
+            skip_header=MesaData.bulk_names_line - 1,
+            names=True,
+            dtype=None,
+        )
         self.bulk_names = self.bulk_data.dtype.names
         header_data = []
         with open(self.file_name) as f:
@@ -231,30 +244,30 @@ class MesaData:
         """
 
         def pythonize_number(num_string):
-            """Convert fotran double [string] to python readable number [string].
+            """Convert fortran double [string] to python readable number [string].
 
             Converts numbers with exponential notation of D+, D-, d+, or d-
             to E+ or E- so that a python interpreter properly understands them.
             Leaves all other strings the untouched.
             """
-            num_string = re.sub('(d|D)\+', 'E+', num_string)
-            return re.sub('(d|D)-', 'E-', num_string)
+            num_string = re.sub(r"(d|D)\+", "E+", num_string)
+            return re.sub(r"(d|D)-", "E-", num_string)
 
-        with open(self.file_name, 'r') as f:
+        with open(self.file_name, "r") as f:
             lines = f.readlines()
         # Walk through file until we get to the last blank line, saving
         # relevant data as we go.
-        blank_line_matcher = re.compile('^\s*$')
+        blank_line_matcher = re.compile(r"^\s*$")
         i = 0
         found_blank_line = False
         while not found_blank_line:
             i += 1
-            found_blank_line = (blank_line_matcher.match(lines[i]) is not None)
+            found_blank_line = blank_line_matcher.match(lines[i]) is not None
         # now on blank line 1, advance through one or more lines to get to
         # header data
         while found_blank_line:
             i += 1
-            found_blank_line = (blank_line_matcher.match(lines[i]) is not None)
+            found_blank_line = blank_line_matcher.match(lines[i]) is not None
         # now done with blank lines and on to header data
         self.header_names = []
         self.header_data = {}
@@ -263,22 +276,23 @@ class MesaData:
             self.header_data[name] = eval(pythonize_number(val))
             self.header_names.append(name)
             i += 1
-            found_blank_line = (blank_line_matcher.match(lines[i]) is not None)
+            found_blank_line = blank_line_matcher.match(lines[i]) is not None
         # now on blank line 2, advance until we get to column names
         while found_blank_line:
             i += 1
-            found_blank_line = (blank_line_matcher.match(lines[i]) is not None)
-        self.bulk_names = ['zone']
+            found_blank_line = blank_line_matcher.match(lines[i]) is not None
+        self.bulk_names = ["zone"]
         self.bulk_names += lines[i].split()
         i += 1
         self.bulk_data = {}
         temp_data = []
         found_blank_line = False
         while not found_blank_line:
-            temp_data.append([eval(pythonize_number(datum)) for datum in
-                              lines[i].split()])
+            temp_data.append(
+                [eval(pythonize_number(datum)) for datum in lines[i].split()]
+            )
             i += 1
-            found_blank_line = (blank_line_matcher.match(lines[i]) is not None)
+            found_blank_line = blank_line_matcher.match(lines[i]) is not None
         temp_data = np.array(temp_data).T
         for i in range(len(self.bulk_names)):
             self.bulk_data[self.bulk_names[i]] = temp_data[i]
@@ -352,7 +366,7 @@ class MesaData:
         if self.in_data(key):
             return self.bulk_data[key]
         elif self._log_version(key) is not None:
-            return 10**self.bulk_data[self._log_version(key)]
+            return 10 ** self.bulk_data[self._log_version(key)]
         elif self._ln_version(key) is not None:
             return np.exp(self.bulk_data[self._ln_version(key)])
         elif self._exp10_version(key) is not None:
@@ -418,7 +432,7 @@ class MesaData:
         bool
             True if file is a history file, otherwise False
         """
-        return 'model_number' in self.bulk_names
+        return "model_number" in self.bulk_names
 
     def in_header(self, key):
         """Determine if `key` is an available header data category.
@@ -486,7 +500,7 @@ class MesaData:
             The "logified" version of the key, if available. If unavailable,
             `None`.
         """
-        log_prefixes = ['log_', 'log', 'lg_', 'lg']
+        log_prefixes = ["log_", "log", "lg_", "lg"]
         for prefix in log_prefixes:
             if self.in_data(prefix + key):
                 return prefix + key
@@ -509,7 +523,7 @@ class MesaData:
             The "ln-ified" version of the key, if available. If unavailable,
             `None`.
         """
-        log_prefixes = ['ln_', 'ln']
+        log_prefixes = ["ln_", "ln"]
         for prefix in log_prefixes:
             if self.in_data(prefix + key):
                 return prefix + key
@@ -531,7 +545,7 @@ class MesaData:
         str or `None`
             The linear version of the key, if available. If unavailable, `None`.
         """
-        log_matcher = re.compile('^lo?g_?(.+)')
+        log_matcher = re.compile(r"^lo?g_?(.+)")
         matches = log_matcher.match(key)
         if matches is not None:
             groups = matches.groups()
@@ -555,7 +569,7 @@ class MesaData:
         str or `None`
             The linear version of the key, if available. If unavailable, `None`.
         """
-        log_matcher = re.compile('^ln_?(.+)')
+        log_matcher = re.compile(r"^ln_?(.+)")
         matches = log_matcher.match(key)
         if matches is not None:
             groups = matches.groups()
@@ -577,9 +591,13 @@ class MesaData:
             True if `key` can be mapped to a data type either directly or by
             exponentiating/taking logarithms of existing data types
         """
-        return bool(self.in_data(key) or self._log_version(key) or
-                    self._ln_version(key) or self._exp_version(key) or
-                    self._exp10_version(key))
+        return bool(
+            self.in_data(key)
+            or self._log_version(key)
+            or self._ln_version(key)
+            or self._exp_version(key)
+            or self._exp10_version(key)
+        )
 
     def data_at_model_number(self, key, m_num):
         """Return main data at a specific model number (for history files).
@@ -636,16 +654,23 @@ class MesaData:
         data_at_model_number : returns the datum of a specific key a model no.
         """
         if not self.is_history():
-            raise HistoryError("Can't get data at model number " +
-                               "because this isn't a history file")
-        index = np.where(self.data('model_number') == m_num)[0]
+            raise HistoryError(
+                "Can't get data at model number " + "because this isn't a history file"
+            )
+        index = np.where(self.data("model_number") == m_num)[0]
         if len(index) > 1:
-            raise ModelNumberError("Found more than one entry where model " +
-                                   "number is " + str(m_num) + " in " +
-                                   self.file_name + ". Report this.")
+            raise ModelNumberError(
+                "Found more than one entry where model "
+                + "number is "
+                + str(m_num)
+                + " in "
+                + self.file_name
+                + ". Report this."
+            )
         elif len(index) == 0:
-            raise ModelNumberError("Couldn't find any entries with model " +
-                                   "number " + str(m_num) + ".")
+            raise ModelNumberError(
+                "Couldn't find any entries with model " + "number " + str(m_num) + "."
+            )
         elif len(index) == 1:
             return index[0]
 
@@ -670,9 +695,9 @@ class MesaData:
         if dbg:
             print("Scrubbing history...")
         to_remove = []
-        for i in range(len(self.data('model_number')) - 1):
-            smallest_future = np.min(self.data('model_number')[i + 1:])
-            if self.data('model_number')[i] >= smallest_future:
+        for i in range(len(self.data("model_number")) - 1):
+            smallest_future = np.min(self.data("model_number")[i + 1 :])
+            if self.data("model_number")[i] >= smallest_future:
                 to_remove.append(i)
         if len(to_remove) == 0:
             if dbg:
@@ -692,7 +717,6 @@ class MesaData:
 
 
 class MesaProfileIndex:
-
     """Structure containing data from the profile index from MESA output.
 
     Reads in data from profile index file from MESA, allowing a mapping from
@@ -726,7 +750,7 @@ class MesaProfileIndex:
 
     index_start_line = 2
     index_end = None
-    index_names = ['model_numbers', 'priorities', 'profile_numbers']
+    index_names = ["model_numbers", "priorities", "profile_numbers"]
 
     @classmethod
     def set_index_rows(cls, index_start=2, index_end=None):
@@ -739,11 +763,11 @@ class MesaProfileIndex:
         cls.index_names = name_arr
         return name_arr
 
-    def __init__(self, file_name=join('.', 'LOGS', 'profiles.index')):
+    def __init__(self, file_name=join(".", "LOGS", "profiles.index")):
         self.file_name = file_name
         self.index_data = None
-        self.model_number_string = ''
-        self.profile_number_string = ''
+        self.model_number_string = ""
+        self.profile_number_string = ""
         self.profile_numbers = None
         self.model_numbers = None
         self.read_index()
@@ -762,13 +786,14 @@ class MesaProfileIndex:
         None
         """
         temp_index_data = np.genfromtxt(
-            self.file_name, skip_header=MesaProfileIndex.index_start_line - 1,
-            dtype=None)
+            self.file_name,
+            skip_header=MesaProfileIndex.index_start_line - 1,
+            dtype=None,
+        )
         self.model_number_string = MesaProfileIndex.index_names[0]
         self.profile_number_string = MesaProfileIndex.index_names[-1]
         self.index_data = temp_index_data[np.argsort(temp_index_data[:, 0])]
-        self.index_data = dict(zip(MesaProfileIndex.index_names,
-                                   temp_index_data.T))
+        self.index_data = dict(zip(MesaProfileIndex.index_names, temp_index_data.T))
         self.profile_numbers = self.data(self.profile_number_string)
         self.model_numbers = self.data(self.model_number_string)
 
@@ -792,8 +817,7 @@ class MesaProfileIndex:
             If input key is not a valid column header name.
         """
         if key not in self.index_names:
-            raise KeyError("'" + str(key) + "' is not a column in " +
-                           self.file_name)
+            raise KeyError("'" + str(key) + "' is not a column in " + self.file_name)
         return np.array(self.index_data[key])
 
     def have_profile_with_model_number(self, model_number):
@@ -851,8 +875,9 @@ class MesaProfileIndex:
             `model_number`
         """
         if not (self.have_profile_with_model_number(model_number)):
-            raise ProfileError("No profile with model number " +
-                               str(model_number) + ".")
+            raise ProfileError(
+                "No profile with model number " + str(model_number) + "."
+            )
         indices = np.where(self.data(self.model_number_string) == model_number)
         return np.take(self.data(self.profile_number_string), indices[0])[0]
 
@@ -879,10 +904,10 @@ class MesaProfileIndex:
             `profile_number`
         """
         if not (self.have_profile_with_profile_number(profile_number)):
-            raise ProfileError("No Profile with profile number " +
-                               str(profile_number) + ".")
-        indices = np.where(
-            self.data(self.profile_number_string) == profile_number)
+            raise ProfileError(
+                "No Profile with profile number " + str(profile_number) + "."
+            )
+        indices = np.where(self.data(self.profile_number_string) == profile_number)
         return np.take(self.data(self.model_number_string), indices[0])[0]
 
     def __getattr__(self, method_name):
@@ -893,7 +918,6 @@ class MesaProfileIndex:
 
 
 class MesaLogDir:
-
     """Structure providing access to both history and profile output from MESA
 
     Provides access for accessing the history and profile data of a MESA run
@@ -963,9 +987,15 @@ class MesaLogDir:
         empty if memoization is shut off.
     """
 
-    def __init__(self, log_path='LOGS', profile_prefix='profile',
-                 profile_suffix='data', history_file='history.data',
-                 index_file='profiles.index', memoize_profiles=True):
+    def __init__(
+        self,
+        log_path="LOGS",
+        profile_prefix="profile",
+        profile_suffix="data",
+        history_file="history.data",
+        index_file="profiles.index",
+        memoize_profiles=True,
+    ):
         self.log_path = log_path
         self.profile_prefix = profile_prefix
         self.profile_suffix = profile_suffix
@@ -974,17 +1004,17 @@ class MesaLogDir:
 
         # Check if log_path and files are dir/files.
         if not os.path.isdir(self.log_path):
-            raise BadPathError(self.log_path + ' is not a valid directory.')
+            raise BadPathError(self.log_path + " is not a valid directory.")
 
         self.history_path = os.path.join(self.log_path, self.history_file)
         if not os.path.isfile(self.history_path):
-            raise BadPathError(self.history_file + ' not found in ' +
-                               self.log_path + '.')
+            raise BadPathError(
+                self.history_file + " not found in " + self.log_path + "."
+            )
 
         self.index_path = os.path.join(self.log_path, self.index_file)
         if not os.path.isfile(self.index_path):
-            raise BadPathError(self.index_file + ' not found in ' +
-                               self.log_path + '.')
+            raise BadPathError(self.index_file + " not found in " + self.log_path + ".")
 
         self.memoize_profiles = memoize_profiles
 
@@ -1120,9 +1150,10 @@ class MesaLogDir:
         if to_use in self.profile_dict:
             return self.profile_dict[to_use]
 
-        file_name = join(self.log_path,
-                         (self.profile_prefix + str(to_use) + '.' +
-                          self.profile_suffix))
+        file_name = join(
+            self.log_path,
+            (self.profile_prefix + str(to_use) + "." + self.profile_suffix),
+        )
         p = MesaData(file_name)
         if self.memoize_profiles:
             self.profile_dict[to_use] = p
@@ -1178,8 +1209,7 @@ class MesaLogDir:
         for m_num in self.model_numbers:
             this_input = []
             for key in keys:
-                this_input.append(
-                    self.history.data_at_model_number(key, m_num))
+                this_input.append(self.history.data_at_model_number(key, m_num))
             inputs[m_num] = this_input
         mask = np.array([f(*inputs[m_num]) for m_num in self.model_numbers])
         return self.model_numbers[mask]
