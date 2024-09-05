@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='mesa_reader',
-    version='0.3.4',
+    version='0.3.5',
     description='Tools for interacting with output from MESA star and MESA binary',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
