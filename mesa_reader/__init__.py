@@ -1,7 +1,6 @@
-import os
+import os, re
 from os.path import join
-import re
-
+from pathlib import Path
 import numpy as np
 
 
@@ -172,9 +171,9 @@ class MesaData:
 
         # attempt auto-detection of file_type (if not supplied)
         if self.file_type is None:
-            if self.file_name.endswith((".data", ".log")):
+            if Path (self.file_name).suffix in [".data", ".log"]:
                 self.file_type = "log"
-            elif self.file_name.endswith(".mod"):
+            elif Path (self.file_name).suffix==".mod":
                 self.file_type = "model"
             else:
                 raise UnknownFileTypeError(
