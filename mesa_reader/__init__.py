@@ -6,31 +6,26 @@ import numpy as np
 
 
 class ProfileError(Exception):
-
     def __init__(self, msg):
         super().__init__(self, msg)
 
 
 class HistoryError(Exception):
-
     def __init__(self, msg):
         super().__init__(self, msg)
 
 
 class ModelNumberError(Exception):
-
     def __init__(self, msg):
         super().__init__(self, msg)
 
 
 class BadPathError(Exception):
-
     def __init__(self, msg):
         super().__init__(self, msg)
 
 
 class UnknownFileTypeError(Exception):
-
     def __init__(self, msg):
         super().__init__(self, msg)
 
@@ -143,7 +138,7 @@ class MesaData:
             sage = float(self.star_age)
             oage = float(other.star_age)
             return sage < oage
-        except:
+        except Exception:
             return self.file_name < other.file_name
 
     def __str__(self):
@@ -151,7 +146,7 @@ class MesaData:
             model_number = int(self.model_number)
             age = float(self.star_age)
             return "MESA model # {:6}, t = {:20.10g} yr".format(model_number, age)
-        except:
+        except Exception:
             return "{}".format(self.file_name)
 
     def read_data(self):
@@ -205,6 +200,7 @@ class MesaData:
             self.file_name,
             skip_header=MesaData.bulk_names_line - 1,
             names=True,
+            ndmin=1,  # Make sure a single entry is still a 1D array
             dtype=None,
         )
         self.bulk_names = self.bulk_data.dtype.names
@@ -591,7 +587,7 @@ class MesaData:
             True if `key` can be mapped to a data type either directly or by
             exponentiating/taking logarithms of existing data types
         """
-        return bool(
+        return (
             self.in_data(key)
             or self._log_version(key)
             or self._ln_version(key)

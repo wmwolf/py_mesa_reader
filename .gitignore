@@ -9,3 +9,4 @@ make.bat
 *.swp
 *.egg-info
 .buildinfo
+.vscode
