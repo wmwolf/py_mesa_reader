@@ -496,6 +496,8 @@ class MesaData:
             The "logified" version of the key, if available. If unavailable,
             `None`.
         """
+        if key=="luminosity" and self.in_data("log_L"):
+            return "log_L"
         log_prefixes = ["log_", "log", "lg_", "lg"]
         for prefix in log_prefixes:
             if self.in_data(prefix + key):
@@ -541,6 +543,8 @@ class MesaData:
         str or `None`
             The linear version of the key, if available. If unavailable, `None`.
         """
+        if key=="log_L" and self.in_data("luminosity"):
+            return "luminosity"
         log_matcher = re.compile(r"^lo?g_?(.+)")
         matches = log_matcher.match(key)
         if matches is not None:
