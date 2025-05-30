@@ -17,15 +17,21 @@
 
 # mesa_reader
 
-Tools for easily accessing and manipulating data from `MESA star` and `MESA binary` in Python.
+A Python package for easily accessing and manipulating output of the [Modules for Experiments in Stellar Astrophysics (MESA)](https://mesastar.org/) code.
 
 
 ## Installation
 
-The easiest way to install is via `pip`:
+The easiest way to install the package is via `pip`:
 
 ```console
 pip install mesa_reader
+```
+
+and start using it in your Python scripts by import it:
+
+```python
+import mesa_reader as mr
 ```
 
 You can also install by cloning or downloading this repository, `cd` into it and then execute
@@ -45,7 +51,7 @@ to install the package on your system.
 
 ## Uninstallation
 
-Uninstall by executing
+Uninstall the package by executing
 
 ```console
 pip uninstall mesa_reader
