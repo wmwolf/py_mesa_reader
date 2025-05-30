@@ -28,12 +28,6 @@ The easiest way to install the package is via `pip`:
 pip install mesa_reader
 ```
 
-and start using it in your Python scripts by import it:
-
-```python
-import mesa_reader as mr
-```
-
 You can also install by cloning or downloading this repository, `cd` into it and then execute
 
 ```console
@@ -59,6 +53,12 @@ pip uninstall mesa_reader
 
 
 ## Usage
+
+Start using the package in your Python scripts by first importing it:
+
+```python
+import mesa_reader as mr
+```
 
 Complete documentation on the `mesa_reader` module found
 [here](https://wmwolf.github.io/py_mesa_reader).
