@@ -8,5 +8,7 @@ make.bat
 *.pyc
 *.swp
 *.egg-info
+.venv
+.pytest_cache
 .buildinfo
 .vscode

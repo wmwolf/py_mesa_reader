@@ -1,7 +1,10 @@
-import os, re
+import os
+import re
 from os.path import join
 from pathlib import Path
+
 import numpy as np
+from pandas import read_csv
 
 
 class ProfileError(Exception):
@@ -166,9 +169,9 @@ class MesaData:
 
         # attempt auto-detection of file_type (if not supplied)
         if self.file_type is None:
-            if Path (self.file_name).suffix in [".data", ".log"]:
+            if Path(self.file_name).suffix in [".data", ".log"]:
                 self.file_type = "log"
-            elif Path (self.file_name).suffix==".mod":
+            elif Path(self.file_name).suffix == ".mod":
                 self.file_type = "model"
             else:
                 raise UnknownFileTypeError(
@@ -195,23 +198,26 @@ class MesaData:
         -------
         None
         """
-        self.bulk_data = np.genfromtxt(
-            self.file_name,
-            skip_header=MesaData.bulk_names_line - 1,
-            names=True,
-            ndmin=1,  # Make sure a single entry is still a 1D array
-            dtype=None,
-        )
-        self.bulk_names = self.bulk_data.dtype.names
-        header_data = []
-        with open(self.file_name) as f:
-            for i, line in enumerate(f):
-                if i == MesaData.header_names_line - 1:
-                    self.header_names = line.split()
-                elif i == MesaData.header_names_line:
-                    header_data = [eval(datum) for datum in line.split()]
-                elif i > MesaData.header_names_line:
-                    break
+        # pandas.read_csv parses the bulk table in C, which is dramatically
+        # faster than numpy.genfromtxt's line-by-line Python parsing for the
+        # large history/profile files this package targets.
+        with open(self.file_name, "r") as file:
+            # Advance to and read the header name/value rows.
+            for _ in range(MesaData.header_names_line - 1):
+                file.readline()
+            self.header_names = file.readline().split()
+            header_data = [eval(datum) for datum in file.readline().split()]
+
+            # Advance to the bulk-name row, which read_csv consumes as its
+            # column header. The number of intervening lines is derived from
+            # the (configurable) line positions rather than hard-coded.
+            for _ in range(MesaData.bulk_names_line - MesaData.header_names_line - 2):
+                file.readline()
+            dataframe = read_csv(file, sep=r"\s+", dtype=None)
+            records = dataframe.to_records(index=False)
+            self.bulk_names = tuple(dataframe.columns)
+            self.bulk_data = np.array(records, dtype=records.dtype.descr)
+
         self.header_data = dict(zip(self.header_names, header_data))
         self.remove_backups()
 
@@ -689,18 +695,28 @@ class MesaData:
             return None
         if dbg:
             print("Scrubbing history...")
-        to_remove = []
-        for i in range(len(self.data("model_number")) - 1):
-            smallest_future = np.min(self.data("model_number")[i + 1 :])
-            if self.data("model_number")[i] >= smallest_future:
-                to_remove.append(i)
-        if len(to_remove) == 0:
+
+        # A row is genuine only if its model number is smaller than every model
+        # number that comes after it; otherwise it is cruft superseded by a
+        # later restart. `suffix_min[i]` is the minimum model number over rows
+        # i..end, so `suffix_min[i + 1]` is the smallest future model number.
+        # This is the vectorized (O(n)) form of the original per-row np.min
+        # scan. Note that drop_duplicates(keep="last") is NOT equivalent: it
+        # leaves the now-orphaned rows between a restart and its original run,
+        # breaking the monotonicity of model_number.
+        model_number = self.data("model_number")
+        suffix_min = np.minimum.accumulate(model_number[::-1])[::-1]
+        keep = np.ones(len(model_number), dtype=bool)
+        keep[:-1] = model_number[:-1] < suffix_min[1:]
+
+        n_removed = np.count_nonzero(~keep)
+        if n_removed == 0:
             if dbg:
                 print("Already clean!")
             return None
         if dbg:
-            print("Removing {} lines.".format(len(to_remove)))
-        self.bulk_data = np.delete(self.bulk_data, to_remove)
+            print("Removing {} lines.".format(n_removed))
+        self.bulk_data = self.bulk_data[keep]
 
     def __getattr__(self, method_name):
         if self._any_version(method_name):
@@ -770,25 +786,31 @@ class MesaProfileIndex:
     def read_index(self):
         """Read (or re-read) data from `self.file_name`.
 
-        Read the file into an numpy array, sorting the table in order of
-        increasing model numbers and establishes the `profile_numbers` and
-        `model_numbers` attributes. Converts data and names into a dictionary.
-        Called automatically at instantiation, but may be called again to
-        refresh data.
+        Reads the index file into per-column numpy arrays, keyed by
+        `MesaProfileIndex.index_names`, sorted in order of increasing model
+        number, and establishes the `profile_numbers` and `model_numbers`
+        attributes. Called automatically at instantiation, but may be called
+        again to refresh data.
 
         Returns
         -------
         None
         """
-        temp_index_data = np.genfromtxt(
-            self.file_name,
-            skip_header=MesaProfileIndex.index_start_line - 1,
-            dtype=None,
-        )
         self.model_number_string = MesaProfileIndex.index_names[0]
         self.profile_number_string = MesaProfileIndex.index_names[-1]
-        self.index_data = temp_index_data[np.argsort(temp_index_data[:, 0])]
-        self.index_data = dict(zip(MesaProfileIndex.index_names, temp_index_data.T))
+        index_frame = read_csv(
+            self.file_name,
+            skiprows=MesaProfileIndex.index_start_line - 1,
+            sep=r"\s+",
+            header=None,
+        )
+        # Column 0 is the model number; sort rows by it so the index is in
+        # time order regardless of how the file was written or edited.
+        index_frame = index_frame.sort_values(by=0, kind="stable")
+        self.index_data = {
+            name: index_frame[column].to_numpy()
+            for column, name in enumerate(MesaProfileIndex.index_names)
+        }
         self.profile_numbers = self.data(self.profile_number_string)
         self.model_numbers = self.data(self.model_number_string)
 

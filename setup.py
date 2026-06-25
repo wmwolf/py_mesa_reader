@@ -11,7 +11,7 @@ setup(
     author_email="wolfwm@uwec.edu",
     license="MIT",
     packages=["mesa_reader"],
-    install_requires=["numpy"],
+    install_requires=["numpy", "pandas"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
