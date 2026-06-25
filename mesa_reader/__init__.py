@@ -1,7 +1,10 @@
-import os, re
+import os
+import re
 from os.path import join
 from pathlib import Path
+
 import numpy as np
+from pandas import DataFrame, read_csv
 
 
 class ProfileError(Exception):
@@ -147,6 +150,7 @@ class MesaData:
             return "MESA model # {:6}, t = {:20.10g} yr".format(model_number, age)
         except Exception:
             return "{}".format(self.file_name)
+        
 
     def read_data(self):
         """Decide if data file is log output or a model, then load the data
@@ -195,23 +199,26 @@ class MesaData:
         -------
         None
         """
-        self.bulk_data = np.genfromtxt(
-            self.file_name,
-            skip_header=MesaData.bulk_names_line - 1,
-            names=True,
-            ndmin=1,  # Make sure a single entry is still a 1D array
-            dtype=None,
-        )
-        self.bulk_names = self.bulk_data.dtype.names
-        header_data = []
-        with open(self.file_name) as f:
-            for i, line in enumerate(f):
-                if i == MesaData.header_names_line - 1:
-                    self.header_names = line.split()
-                elif i == MesaData.header_names_line:
-                    header_data = [eval(datum) for datum in line.split()]
-                elif i > MesaData.header_names_line:
-                    break
+        # I'm attempting to speed up this process with some dirty tricks
+        # Using pandas's read_csv function gives us c-like performance as 
+        # opposed to genfromtxt's native (slow, icky) python
+        with open(self.file_name, "r") as file:
+
+            for _ in range(MesaData.header_names_line - 1):
+                file.readline() # skip 1st line
+
+            self.header_names = file.readline().split(None, -1)
+            header_data = file.readline().split(None, -1)
+
+            for _ in range(2):
+                file.readline()
+
+            _dataframe = read_csv(file, sep="\s+", dtype=None)
+            _records = _dataframe.to_records(index=False)
+
+            self.bulk_names = _dataframe.columns.values
+            self.bulk_data = np.array(_records, dtype=_records.dtype.descr)
+
         self.header_data = dict(zip(self.header_names, header_data))
         self.remove_backups()
 
@@ -689,18 +696,19 @@ class MesaData:
             return None
         if dbg:
             print("Scrubbing history...")
-        to_remove = []
-        for i in range(len(self.data("model_number")) - 1):
-            smallest_future = np.min(self.data("model_number")[i + 1 :])
-            if self.data("model_number")[i] >= smallest_future:
-                to_remove.append(i)
-        if len(to_remove) == 0:
+
+        model_numbers = DataFrame(self.data("model_number"))
+        kept_indices = model_numbers.drop_duplicates(keep="last").index
+        
+        if len(model_numbers) - len(kept_indices) == 0:
             if dbg:
                 print("Already clean!")
-            return None
+            return
         if dbg:
-            print("Removing {} lines.".format(len(to_remove)))
-        self.bulk_data = np.delete(self.bulk_data, to_remove)
+            print(f"Found {len(model_numbers) - len(kept_indices)} lines to remove.")
+
+        self.bulk_data = self.bulk_data[kept_indices]
+        return
 
     def __getattr__(self, method_name):
         if self._any_version(method_name):
