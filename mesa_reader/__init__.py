@@ -4,7 +4,7 @@ from os.path import join
 from pathlib import Path
 
 import numpy as np
-from pandas import DataFrame, read_csv
+from pandas import read_csv
 
 
 class ProfileError(Exception):
@@ -150,7 +150,6 @@ class MesaData:
             return "MESA model # {:6}, t = {:20.10g} yr".format(model_number, age)
         except Exception:
             return "{}".format(self.file_name)
-        
 
     def read_data(self):
         """Decide if data file is log output or a model, then load the data
@@ -170,9 +169,9 @@ class MesaData:
 
         # attempt auto-detection of file_type (if not supplied)
         if self.file_type is None:
-            if Path (self.file_name).suffix in [".data", ".log"]:
+            if Path(self.file_name).suffix in [".data", ".log"]:
                 self.file_type = "log"
-            elif Path (self.file_name).suffix==".mod":
+            elif Path(self.file_name).suffix == ".mod":
                 self.file_type = "model"
             else:
                 raise UnknownFileTypeError(
@@ -199,25 +198,25 @@ class MesaData:
         -------
         None
         """
-        # I'm attempting to speed up this process with some dirty tricks
-        # Using pandas's read_csv function gives us c-like performance as 
-        # opposed to genfromtxt's native (slow, icky) python
+        # pandas.read_csv parses the bulk table in C, which is dramatically
+        # faster than numpy.genfromtxt's line-by-line Python parsing for the
+        # large history/profile files this package targets.
         with open(self.file_name, "r") as file:
-
+            # Advance to and read the header name/value rows.
             for _ in range(MesaData.header_names_line - 1):
-                file.readline() # skip 1st line
-
-            self.header_names = file.readline().split(None, -1)
-            header_data = file.readline().split(None, -1)
-
-            for _ in range(2):
                 file.readline()
+            self.header_names = file.readline().split()
+            header_data = [eval(datum) for datum in file.readline().split()]
 
-            _dataframe = read_csv(file, sep="\s+", dtype=None)
-            _records = _dataframe.to_records(index=False)
-
-            self.bulk_names = _dataframe.columns.values
-            self.bulk_data = np.array(_records, dtype=_records.dtype.descr)
+            # Advance to the bulk-name row, which read_csv consumes as its
+            # column header. The number of intervening lines is derived from
+            # the (configurable) line positions rather than hard-coded.
+            for _ in range(MesaData.bulk_names_line - MesaData.header_names_line - 2):
+                file.readline()
+            dataframe = read_csv(file, sep=r"\s+", dtype=None)
+            records = dataframe.to_records(index=False)
+            self.bulk_names = tuple(dataframe.columns)
+            self.bulk_data = np.array(records, dtype=records.dtype.descr)
 
         self.header_data = dict(zip(self.header_names, header_data))
         self.remove_backups()
@@ -697,18 +696,27 @@ class MesaData:
         if dbg:
             print("Scrubbing history...")
 
-        model_numbers = DataFrame(self.data("model_number"))
-        kept_indices = model_numbers.drop_duplicates(keep="last").index
-        
-        if len(model_numbers) - len(kept_indices) == 0:
+        # A row is genuine only if its model number is smaller than every model
+        # number that comes after it; otherwise it is cruft superseded by a
+        # later restart. `suffix_min[i]` is the minimum model number over rows
+        # i..end, so `suffix_min[i + 1]` is the smallest future model number.
+        # This is the vectorized (O(n)) form of the original per-row np.min
+        # scan. Note that drop_duplicates(keep="last") is NOT equivalent: it
+        # leaves the now-orphaned rows between a restart and its original run,
+        # breaking the monotonicity of model_number.
+        model_number = self.data("model_number")
+        suffix_min = np.minimum.accumulate(model_number[::-1])[::-1]
+        keep = np.ones(len(model_number), dtype=bool)
+        keep[:-1] = model_number[:-1] < suffix_min[1:]
+
+        n_removed = np.count_nonzero(~keep)
+        if n_removed == 0:
             if dbg:
                 print("Already clean!")
-            return
+            return None
         if dbg:
-            print(f"Found {len(model_numbers) - len(kept_indices)} lines to remove.")
-
-        self.bulk_data = self.bulk_data[kept_indices]
-        return
+            print("Removing {} lines.".format(n_removed))
+        self.bulk_data = self.bulk_data[keep]
 
     def __getattr__(self, method_name):
         if self._any_version(method_name):
