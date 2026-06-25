@@ -10,8 +10,8 @@
 [pypi-badge]:          https://img.shields.io/pypi/v/mesa-reader?label=PyPI&logo=pypi
 [workflow-test-link]:  https://github.com/wmwolf/py_mesa_reader/actions/workflows/test-package.yml
 [workflow-test-badge]: https://github.com/wmwolf/py_mesa_reader/actions/workflows/test-package.yml/badge.svg?event=push
-[docs-link]:           https://wmwolf.github.io/py_mesa_reader
-[docs-badge]:          https://github.com/wmwolf/py_mesa_reader/actions/workflows/pages/pages-build-deployment/badge.svg
+[docs-link]:           https://billwolf.space/py_mesa_reader
+[docs-badge]:          https://github.com/wmwolf/py_mesa_reader/actions/workflows/docs.yml/badge.svg
 [license-link]:        https://opensource.org/license/lgpl-3-0
 [license-badge]:       https://img.shields.io/badge/license-LGPLv3-blue.svg
 
