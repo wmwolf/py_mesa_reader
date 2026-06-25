@@ -10,3 +10,7 @@ make.bat
 *.egg-info
 .buildinfo
 .vscode
+.venv
+.pytest_cache
+_site
+docs_build
