@@ -786,23 +786,27 @@ class MesaProfileIndex:
     def read_index(self):
         """Read (or re-read) data from `self.file_name`.
 
-        Reads the index file (in file order) into per-column numpy arrays,
-        keyed by `MesaProfileIndex.index_names`, and establishes the
-        `profile_numbers` and `model_numbers` attributes. Called automatically
-        at instantiation, but may be called again to refresh data.
+        Reads the index file into per-column numpy arrays, keyed by
+        `MesaProfileIndex.index_names`, sorted in order of increasing model
+        number, and establishes the `profile_numbers` and `model_numbers`
+        attributes. Called automatically at instantiation, but may be called
+        again to refresh data.
 
         Returns
         -------
         None
         """
+        self.model_number_string = MesaProfileIndex.index_names[0]
+        self.profile_number_string = MesaProfileIndex.index_names[-1]
         index_frame = read_csv(
             self.file_name,
             skiprows=MesaProfileIndex.index_start_line - 1,
             sep=r"\s+",
             header=None,
         )
-        self.model_number_string = MesaProfileIndex.index_names[0]
-        self.profile_number_string = MesaProfileIndex.index_names[-1]
+        # Column 0 is the model number; sort rows by it so the index is in
+        # time order regardless of how the file was written or edited.
+        index_frame = index_frame.sort_values(by=0, kind="stable")
         self.index_data = {
             name: index_frame[column].to_numpy()
             for column, name in enumerate(MesaProfileIndex.index_names)

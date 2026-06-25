@@ -42,9 +42,9 @@ def test_invalid_column_raises():
         idx.data("not_a_column")
 
 
-def test_preserves_file_order(tmp_path):
-    # Rows are kept in file order (the index is not re-sorted by model number);
-    # the mapping must still resolve correctly regardless of row order.
+def test_sorts_by_model_number(tmp_path):
+    # An index whose rows are out of model-number order must be sorted into
+    # increasing model-number (time) order, matching the documented behavior.
     index_file = tmp_path / "profiles.index"
     index_file.write_text(
         "# comment line\n"
@@ -52,7 +52,8 @@ def test_preserves_file_order(tmp_path):
         "          10            2            1\n"
     )
     idx = mr.MesaProfileIndex(str(index_file))
-    np.testing.assert_array_equal(idx.model_numbers, [20, 10])
-    np.testing.assert_array_equal(idx.profile_numbers, [2, 1])
+    np.testing.assert_array_equal(idx.model_numbers, [10, 20])
+    np.testing.assert_array_equal(idx.profile_numbers, [1, 2])
+    assert np.all(np.diff(idx.model_numbers) > 0)
     assert idx.profile_with_model_number(10) == 1
     assert idx.model_with_profile_number(2) == 20
