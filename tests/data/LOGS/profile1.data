@@ -1,0 +1,9 @@
+           1            2            3
+   model_number       num_zones      star_age
+              10              3         1000.0
+
+           1            2            3            4
+             zone           mass         logRho              L
+                1            1.0            2.0          100.0
+                2            0.5            1.0          200.0
+                3            0.1            0.0          300.0
