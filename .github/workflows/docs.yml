@@ -26,6 +26,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # Configure the Pages deployment context (sets the Actions build type and
+      # base URL). Required for the deploy job, especially the first deployment
+      # after switching Pages from "deploy from a branch" to "GitHub Actions".
+      - uses: actions/configure-pages@v5
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
