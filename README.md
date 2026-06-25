@@ -12,8 +12,8 @@
 [workflow-test-badge]: https://github.com/wmwolf/py_mesa_reader/actions/workflows/test-package.yml/badge.svg?event=push
 [docs-link]:           https://wmwolf.github.io/py_mesa_reader
 [docs-badge]:          https://github.com/wmwolf/py_mesa_reader/actions/workflows/pages/pages-build-deployment/badge.svg
-[license-link]:        https://opensource.org/license/gpl-3-0
-[license-badge]:       https://img.shields.io/badge/license-GPLv3-blue.svg
+[license-link]:        https://opensource.org/license/lgpl-3-0
+[license-badge]:       https://img.shields.io/badge/license-LGPLv3-blue.svg
 
 # mesa_reader
 

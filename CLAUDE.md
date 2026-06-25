@@ -24,12 +24,13 @@ make html                      # build Sphinx docs into docs_build/ (also: bash 
 ```
 
 CI (`.github/workflows/test-package.yml`) runs `ruff format --check`, `ruff check`,
-and `pytest` on Python 3.12 and 3.13. There are currently no committed test files,
-so `pytest` collects nothing — add tests under a `tests/` directory or `test_*.py`
-files.
+and `pytest` on Python 3.12 and 3.13. Tests and fixtures live under `tests/`.
 
-The published HTML docs live in `docs/` (served by GitHub Pages); the reStructuredText
-sources are in `docs_source/`. `build/`, `dist/`, and `*.egg-info/` are build artifacts.
+The published HTML docs live in `docs/`; the reStructuredText sources are in
+`docs_source/`. Docs are rebuilt from docstrings and deployed to GitHub Pages by
+`.github/workflows/docs.yml` on each release (not on every push), so docstring
+changes only reach the live site when a new version is released. `build/`, `dist/`,
+and `*.egg-info/` are build artifacts.
 
 ## Architecture
 

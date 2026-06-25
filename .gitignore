@@ -12,7 +12,5 @@ make.bat
 .pytest_cache
 .buildinfo
 .vscode
-.venv
-.pytest_cache
 _site
 docs_build
