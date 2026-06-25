@@ -38,14 +38,14 @@ that build on each other:
 
 - **`MesaData`** — the core file reader. Reads a single MESA log file (history or
   profile, `.data`/`.log`) or a saved model (`.mod`). File type is auto-detected from
-  the extension. Log files are parsed with `np.genfromtxt` into a record array
-  (`bulk_data`) plus a header dict; `.mod` files use a hand-rolled line walker
-  (`read_model_data`) that converts Fortran `D`-exponent notation to Python floats.
-  History files are scrubbed of backups/restarts so `model_number` is monotonic
-  (`remove_backups`).
+  the extension. Log files are parsed with `pandas.read_csv` (fast C parser) and
+  then converted to a numpy structured array (`bulk_data`) plus a header dict;
+  `.mod` files use a hand-rolled line walker (`read_model_data`) that converts
+  Fortran `D`-exponent notation to Python floats. History files are scrubbed of
+  backups/restarts so `model_number` is monotonic (`remove_backups`).
 
-- **`MesaProfileIndex`** — parses `profiles.index`, providing the
-  profile-number ↔ model-number mapping.
+- **`MesaProfileIndex`** — parses `profiles.index` (also via `pandas.read_csv`),
+  providing the profile-number ↔ model-number mapping.
 
 - **`MesaLogDir`** — ties a whole LOGS directory together: it owns one `MesaData`
   history object plus a `MesaProfileIndex`, and lazily constructs (and optionally
@@ -71,3 +71,10 @@ that build on each other:
 - **Header/model values are parsed with `eval`.** `read_log_data` and
   `read_model_data` call `eval` on tokens from the file. This is intentional for
   reading numeric/string MESA output; keep input assumed to be trusted MESA files.
+
+- **pandas parses, numpy holds and computes.** File ingestion uses
+  `pandas.read_csv` for speed, but the in-memory data (`bulk_data`, the arrays
+  returned by `data()` and `MesaProfileIndex.data()`) are numpy, and array math
+  (`np.exp`/`np.log10`, `np.where`, `np.minimum.accumulate`) stays in numpy. This
+  split is deliberate — numpy is pandas' own dependency, and the numpy-array
+  return type is the public API contract. Don't convert these to DataFrames/Series.
